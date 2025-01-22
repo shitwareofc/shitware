@@ -1,10 +1,10 @@
 #include "Head.h"
 #include "CS2_SDK.h"
-const float Rensen_Version = 1.1;//程序版本
-const string Rensen_ReleaseDate = "BR - [2025-01-21 22:17]";//程序发布日期时间
+const float Rensen_Version = 4.94;//程序版本
+const string Rensen_ReleaseDate = "KR[2024-09-19 21:20]";//程序发布日期时间
 namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 {
-	EasyGUI::EasyGUI GUI_VAR; EasyGUI::EasyGUI_IO GUI_IO; BOOL Menu_Open = true; string Preset_Folder = "Configs";//菜单初始化变量
+	EasyGUI::EasyGUI GUI_VAR; EasyGUI::EasyGUI_IO GUI_IO; BOOL Menu_Open = true; string Preset_Folder = "RPr";//菜单初始化变量
 	//----------------------------------------------------------------------------------------------
 	BOOL UI_Legit_Aimbot = 0;
 	int UI_Legit_Aimbot_Key = 0;
@@ -1046,7 +1046,6 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				if (!UI_Spoof_FakeRageBot_Target)FakeRageBot_SliderString = "Target: Any target";
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_Spoof_7>({ Block_Spoof.x + 20,Block_Spoof.y }, 11, FakeRageBot_SliderString, 0, 64, UI_Spoof_FakeRageBot_Target);
 				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 12, "Step on head", UI_Spoof_StepOnHead);
-				GUI_VAR.GUI_Tips(Block_Misc, 1, "This here is more like a macro, it's very legit.");
 				GUI_VAR.GUI_Tips(Block_Misc, 2, "Play sound when hitting player.");
 				GUI_VAR.GUI_Tips(Block_Misc, 5, "Makes a subtle sound when approaching an enemy.");
 				GUI_VAR.GUI_Tips(Block_Misc, 8, "Auto attack when conditions such as distance and blood volume are met.");
@@ -1173,9 +1172,9 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Text({ Block_About.x + 47,Block_About.y }, 1, "for Counter-Strike 2", { 100,100,100 });
 				GUI_VAR.GUI_Text(Block_About, 2, "Version: " + Variable::Float_Precision(Rensen_Version), { 100,100,100 });
 				GUI_VAR.GUI_Text(Block_About, 3, "Release date: " + Rensen_ReleaseDate, { 100,100,100 });
-				GUI_VAR.GUI_Text(Block_About, 4, "Team: NoSHIT", { 100,100,100 });
+				GUI_VAR.GUI_Text(Block_About, 4, "Author: nety.com", { 100,100,100 });
 				static BOOL OpenGithubURL; GUI_VAR.GUI_Button_Small({ Block_About.x + 10,Block_About.y }, 4, OpenGithubURL);
-				if (OpenGithubURL)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开作者Github主题页面
+				if (OpenGithubURL)System::Open_Website("nety.com");//打开作者Github主题页面
 				GUI_VAR.GUI_Tips({ Block_About.x + 10,Block_About.y }, 1, "No ban record!", 0, GUI_IO.GUIColor);
 				const auto Block_Menu = GUI_VAR.GUI_Block(150, 210, 310, "Menu");
 				GUI_VAR.GUI_Text(Block_Menu, 1, "Menu key");
@@ -1192,7 +1191,7 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				if (StartCS && CS2_MEM.Get_ProcessHWND() == 0)if (CS2_MEM.Get_ProcessHWND() == 0)System::Open_Website("steam://rungameid/730");//启动CS
 				if (QuitCS && CS2_MEM.Get_ProcessHWND() != 0)Window::Kill_Window(CS2_MEM.Get_ProcessHWND());//关闭CS
 				static BOOL GithubRepositories; GUI_VAR.GUI_Button(Block_Menu, 7, "Store repositories", GithubRepositories, 60);
-				if (GithubRepositories)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开Github项目地址
+				if (GithubRepositories)System::Open_Website("nety.com");//打开Github项目地址
 				static BOOL RestartMenu; GUI_VAR.GUI_Button(Block_Menu, 8, "Restart menu", RestartMenu, 75);
 				if (RestartMenu) { GUI_VAR.Window_SetTitle("Shitware - Restarting"); System::Self_Restart(); }//重启菜单
 				static BOOL UnloadMenu; GUI_VAR.GUI_Button(Block_Menu, 9, "Unload", UnloadMenu, 95);
@@ -1483,26 +1482,17 @@ void Thread_Misc() noexcept//杂项线程 (一些菜单事件处理和杂项功�
 		else Sleep(50);//降低CPU占用
 	}
 }
-void Thread_Funtion_BunnyHop() noexcept
+void Thread_Funtion_BunnyHop() noexcept//功能线程: 连跳
 {
 	System::Log("Load Thread: Thread_Funtion_BunnyHop()");
-
 	while (true)
 	{
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() > 0 && UI_Misc_BunnyHop && System::Get_Key(VK_SPACE))
+		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Misc_BunnyHop && System::Get_Key(VK_SPACE))
 		{
-			if (Global_LocalPlayer.Flags() & (1 << 0))
-			{
-				ExecuteCommand("+jump");
-				Sleep(15);
-				ExecuteCommand("-jump");
-			}
+			if (Global_LocalPlayer.Flags() & (1 << 0)) { ExecuteCommand("+jump"); Sleep(1); ExecuteCommand("-jump"); }//当本地人物触及到地面跳跃
 			Sleep(System::Rand_Number(1, 5, System::Tick()));
 		}
-		else
-		{
-			Sleep(50);
-		}
+		else Sleep(50);
 	}
 }
 void Thread_Funtion_Aimbot() noexcept//功能线程: 瞄准机器人
@@ -1645,64 +1635,43 @@ void Thread_Funtion_Triggerbot() noexcept//功能线程: 自动扳机
 		else Sleep(50);
 	}
 }
-void Thread_Funtion_AssisteAim() noexcept //功能线程: 精确瞄准
+void Thread_Funtion_AssisteAim() noexcept//功能线程: 精确瞄准
 {
 	System::Log("Load Thread: Thread_Funtion_AssisteAim()");
 	while (true)
 	{
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health()) //当CS窗口在最前端 && 本地人物活着
+		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health())//当CS窗口在最前端 && 本地人物活着
 		{
-			Sleep(1); //降低CPU利用率
-			if (UI_Legit_PreciseAim) //精确瞄准
+			Sleep(1);//降低CPU利用率
+			if (UI_Legit_PreciseAim)//精确瞄准
 			{
-				const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon(); //本地人物手持武器ID
-				if (Local_ActiveWeaponID == 42 || Local_ActiveWeaponID == 59 || Local_ActiveWeaponID >= 500)
-				{
-					ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_DefaultSensitivity));
-					Sleep(10);
-					continue; //过滤特殊武器 (刀类)
-				}
-				if (Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn()))
-					ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_EnableSensitivity));
-				else
-					ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_DefaultSensitivity));
+				const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();//本地人物手持武器ID
+				if (Local_ActiveWeaponID == 42 || Local_ActiveWeaponID == 59 || Local_ActiveWeaponID >= 500) { ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_DefaultSensitivity)); Sleep(10); continue; }//过滤特殊武器 (刀类)
+				if (Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn()))ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_EnableSensitivity));
+				else ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_DefaultSensitivity));
 			}
-
-			if (UI_Legit_MagnetAim && !System::Get_Key(VK_LBUTTON) && Global_LocalPlayer.ActiveWeapon() != 0 && Global_LocalPlayer.ActiveWeapon(true) != 3 && Global_LocalPlayer.MoveSpeed() <= 150) //磁吸瞄准
+			if (UI_Legit_MagnetAim && !System::Get_Key(VK_LBUTTON) && Global_LocalPlayer.ActiveWeapon() != 0 && Global_LocalPlayer.ActiveWeapon(true) != 3 && Global_LocalPlayer.MoveSpeed() <= 150)//磁吸瞄准
 			{
-				const float Aim_Range = UI_Legit_MagnetAim_Range / 5; //瞄准范围
-				struct AimPlayerFOV
+				const float Aim_Range = UI_Legit_MagnetAim_Range / 5;//瞄准范围
+				struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; }; AimPlayerFOV EligiblePlayers = {};//记录变量和变量结构体 (寻找与准星距离最近的人物)
+				for (short i = 0; i < Global_ValidClassID.size(); ++i)//人物ID遍历
 				{
-					Base::PlayerPawn Pawn = 0;
-					float MinFov = 1337;
-					Variable::Vector3 AimAngle = {};
-				};
-				AimPlayerFOV EligiblePlayers = {}; //记录变量和变量结构体 (寻找与准星距离最近的人物)
-				for (short i = 0; i < Global_ValidClassID.size(); ++i) //人物ID遍历
-				{
-					const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]); //遍历的人物Pawn
-					if (!Advanced::Check_Enemy(PlayerPawn)) continue; // 判断是否敌人
-
-					// Check adicional para Spotted (caso "Judging Wall" esteja ativado)
-					if (UI_Legit_Aimbot_JudgingWall && !PlayerPawn.Spotted()) continue;
-
+					const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
+					if (!Advanced::Check_Enemy(PlayerPawn) || !PlayerPawn.Spotted())continue;//简单的实体判断
 					const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Base::ViewAngles());
 					const auto Fov = hypot(NeedAngle.x, NeedAngle.y);
-					if (Fov < EligiblePlayers.MinFov) //范围判断
+					if (Fov < EligiblePlayers.MinFov)//范围判断
 					{
-						EligiblePlayers.Pawn = PlayerPawn; //刷新PlayerPawn
-						EligiblePlayers.MinFov = Fov;      //刷新最短Fov
-						EligiblePlayers.AimAngle = NeedAngle; //刷新最终瞄准的Angle
+						EligiblePlayers.Pawn = PlayerPawn;//刷新PlayerPawn
+						EligiblePlayers.MinFov = Fov;//刷新最短Fov
+						EligiblePlayers.AimAngle = NeedAngle;//刷新最终瞄准的Angle
 					}
 				}
-
-				if (UI_Legit_MagnetAim_OnlyHeadLine) EligiblePlayers.AimAngle.y = 0; //只处理Y坐标 (只磁吸爆头线)
-				if (EligiblePlayers.MinFov <= Aim_Range && EligiblePlayers.MinFov >= 0.5)
-					System::Mouse_Move(-EligiblePlayers.AimAngle.y * (10 - UI_Legit_MagnetAim_Smooth), EligiblePlayers.AimAngle.x * (10 - UI_Legit_MagnetAim_Smooth) * 0.7, UI_Misc_MouseLowSensitivity);
+				if (UI_Legit_MagnetAim_OnlyHeadLine)EligiblePlayers.AimAngle.y = 0;//只处理Y坐标 (只磁吸爆头线)
+				if (EligiblePlayers.MinFov <= Aim_Range && EligiblePlayers.MinFov >= 0.5)System::Mouse_Move(-EligiblePlayers.AimAngle.y * (10 - UI_Legit_MagnetAim_Smooth), EligiblePlayers.AimAngle.x * (10 - UI_Legit_MagnetAim_Smooth) * 0.7, UI_Misc_MouseLowSensitivity);
 			}
 		}
-		else
-			Sleep(50);
+		else Sleep(50);
 	}
 }
 void Thread_Funtion_RemoveRecoil() noexcept//功能线程: 移除后坐力
@@ -2149,7 +2118,7 @@ int main() noexcept//主线程 (加载多线程, 一些杂项功能)
 	if (FindWindow(0, L"Shitware - Menu")) { Window::Message_Box("Shitware Error", "The program is already running.", MB_ICONSTOP); exit(0); }//防止多开程序
 	//----------------------------------------------------------------------------------------------------------------------------------
 	System::URL_READ UserID_READ = { "Cache_UserID" }; BOOL Attest = false;//认证变量
-	if (UserID_READ.StoreMem("https://raw.githubusercontent.com/shitwareofc/shitware/refs/heads/main/UserID.uid"))//Github读取有效用户ID
+	if (UserID_READ.StoreMem("https://github.com/shitwareofc/shitware/blob/main/Cloud%20Files/UserID.uid?raw=true"))//Github读取有效用户ID
 	{
 		for (short i = 0; i <= 10000; ++i) { if (System::Get_UserName() == UserID_READ.Read(i) || Variable::String_Upper(UserID_READ.Read(i)) == "BYPASS") { Attest = true; break; } }//遍历检测并修改认证
 		UserID_READ.Release();//释放缓存
@@ -2158,7 +2127,7 @@ int main() noexcept//主线程 (加载多线程, 一些杂项功能)
 	if (!Attest) { Window::Message_Box("Shitware Attest - " + System::Get_UserName(), "Your identity cannot be passed.\n\nUnable to access from Chinese IP.\n\nAuthor: https://www.dfg.com.br/user/no_sht/listings\n", MB_ICONSTOP); exit(0); }//未被认证则直接退出
 	//----------------------------------------------------------------------------------------------------------------------------------
 	System::URL_READ AutoUpdate = { "Cache_Update" };//自动更新系统 (中国IP用户需要挂梯子)
-	if (AutoUpdate.StoreMem("https://raw.githubusercontent.com/shitwareofc/shitware/refs/heads/main/Main.cpp"))//版本号更新检查
+	if (AutoUpdate.StoreMem("https://github.com/shitwareofc/shitware/blob/main/Main.cpp?raw=true"))//版本号更新检查
 	{
 		auto Version = AutoUpdate.Read(3); Version.erase(0, 29); Version.erase(Version.size() - 15, 999);//擦除无用字符只获取版本号
 		AutoUpdate.Release();//释放缓存
@@ -2171,7 +2140,7 @@ int main() noexcept//主线程 (加载多线程, 一些杂项功能)
 	Window::Hide_ConsoleWindow();//隐藏控制台
 	System::Set_ProcessPriority();//将Rensen程序优先级设置为高 (防止崩溃)
 	Window::Initialization_ConsoleWindow();//初始化控制台窗口 (初始化窗口大小, 清除字符)
-	printf("Welcome to Shitware for Counter-Strike 2 cheat.\nThe Shitware project is a external version.\nTeam: NoSHIT\nThe following information returned is debugging information.\n");//作者留言
+	printf("Welcome to Shitware for Counter-Strike 2 cheat.\nThe Shitware project is a version converted from EXTERNAL.\nBy: NoSHIT\nThe following information returned is debugging information.\n");//作者留言
 	System::Log("Load Thread: main()");
 	thread Thread_Menu_ = thread(Thread_Menu); Sleep(30);
 	thread Thread_Misc_ = thread(Thread_Misc); Sleep(30);
