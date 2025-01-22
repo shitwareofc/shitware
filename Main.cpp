@@ -1,2180 +1,1995 @@
 #include "Head.h"
-#include "CS2_SDK.h"
-const float Rensen_Version = 1.0;//程序版本
-const string Rensen_ReleaseDate = "BR[2025-01-20 15:00]";//程序发布日期时间
-namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
+BOOL TeamCheck = false;//人物所处队伍变量
+namespace CS2_SDK//开发者工具库(防止和基础函数冲突)
 {
-	EasyGUI::EasyGUI GUI_VAR; EasyGUI::EasyGUI_IO GUI_IO; BOOL Menu_Open = true; string Preset_Folder = "RPr";//菜单初始化变量
-	//----------------------------------------------------------------------------------------------
-	BOOL UI_Legit_Aimbot = 0;
-	int UI_Legit_Aimbot_Key = 0;
-	BOOL UI_Legit_Aimbot_JudgingWall = 0;
-	BOOL UI_Legit_Aimbot_RemoveRecoil = 0;
-	BOOL UI_Legit_Aimbot_TriggerOnAim = 0;
-	BOOL UI_Legit_Aimbot_AutoShoot = 0;
-	BOOL UI_Legit_Aimbot_AutoStop = 0;
-	int UI_Legit_Aimbot_AutoShootDelay = 0;
-	BOOL UI_Legit_AdaptiveAimbot = 0;
-	BOOL UI_Legit_Armory_ShowAimbotRange = 0;
-	BOOL UI_Legit_Armory_BodyAim_PISTOL = 0;
-	int UI_Legit_Armory_Range_PISTOL = 0;
-	float UI_Legit_Armory_Smooth_PISTOL = 0;
-	BOOL UI_Legit_Armory_BodyAim_RIFLE = 0;
-	int UI_Legit_Armory_Range_RIFLE = 0;
-	float UI_Legit_Armory_Smooth_RIFLE = 0;
-	BOOL UI_Legit_Armory_BodyAim_SNIPER = 0;
-	int UI_Legit_Armory_Range_SNIPER = 0;
-	float UI_Legit_Armory_Smooth_SNIPER = 0;
-	BOOL UI_Legit_Triggerbot = 0;
-	int UI_Legit_Triggerbot_Key = 0;
-	BOOL UI_Legit_Triggerbot_AnyTarget = 0;
-	int UI_Legit_Triggerbot_ShootDelay = 1;
-	int UI_Legit_Triggerbot_ShootDuration = 1;
-	BOOL UI_Legit_PreciseAim = 0;
-	float UI_Legit_PreciseAim_DefaultSensitivity = 0;
-	float UI_Legit_PreciseAim_EnableSensitivity = 0;
-	BOOL UI_Legit_RemoveRecoil = 0;
-	BOOL UI_Legit_RemoveRecoil_HorizontalRepair = 0;
-	int UI_Legit_RemoveRecoil_StartBullet = 1;
-	BOOL UI_Legit_Backtracking = 0;
-	int UI_Legit_Backtracking_MaximumTime = 0;
-	BOOL UI_Visual_ESP = 0;
-	int UI_Visual_ESP_Key = 0;
-	BOOL UI_Visual_ESP_Box = 0;
-	BOOL UI_Visual_ESP_Health = 0;
-	BOOL UI_Visual_ESP_ActiveWeapon = 0;
-	BOOL UI_Visual_ESP_Line = 0;
-	BOOL UI_Visual_ESP_Skeleton = 0;
-	BOOL UI_Visual_ESP_HeadDot = 0;
-	BOOL UI_Visual_ESP_State = 0;
-	BOOL UI_Visual_ESP_Name = 0;
-	BOOL UI_Visual_ESP_Drops = 0;
-	BOOL UI_Visual_ESP_OutFOV = 0;
-	int UI_Visual_ESP_OutFOV_Size = 20;
-	int UI_Visual_ESP_OutFOV_Radius = 0;
-	BOOL UI_Visual_ESP_CustomColor = 0;
-	Variable::Vector4 UI_Visual_ESP_CustomColor_Color = { 255,255,255,255 };
-	int UI_Visual_ESP_DrawDelay = 1;
-	BOOL UI_Visual_Radar = 0;
-	BOOL UI_Visual_Radar_FollowAngle = 0;
-	float UI_Visual_Radar_Range = 0.2;
-	int UI_Visual_Radar_Size = 150;
-	int UI_Visual_Radar_Alpha = 255;
-	Variable::Vector2 UI_Visual_Radar_Pos = { 30, 30 };
-	BOOL UI_Misc_BunnyHop = 0;
-	BOOL UI_Misc_HitSound = 0;
-	int UI_Misc_HitSound_Tone = 10;
-	int	UI_Misc_HitSound_Length = 10;
-	BOOL UI_Visual_HitMark = 0;
-	BOOL UI_Visual_HitMark_Damage = 0;
-	int UI_Visual_HitMark_Range = 3;
-	int UI_Visual_HitMark_Length = 3;
-	BOOL UI_Misc_AutoKnife = 0;
-	BOOL UI_Misc_AutoTaser = 0;
-	int UI_Misc_AutoKnife_Key = 0;
-	int UI_Misc_AutoTaser_Key = 0;
-	BOOL UI_Misc_Watermark = 1;
-	BOOL UI_Misc_SniperCrosshair = 0;
-	BOOL UI_Misc_TeamCheck = 1;
-	BOOL UI_Misc_LockGameWindow = 0;
-	BOOL UI_Debug_ShowDebugWindow = 0;
-	BOOL UI_Misc_Sonar = 0;
-	int UI_Misc_Sonar_Key = 0;
-	int UI_Misc_Sonar_Range_Far = 500;
-	int UI_Misc_Sonar_Range_Near = 0;
-	int UI_Setting_MenuKey = 45;
-	BOOL UI_Setting_CustomColor = 0;
-	Variable::Vector4 UI_Setting_MainColor = { 255,255,255,250 };
-	Variable::Vector4 UI_Visual_HitMark_Color = { 255,255,255 };
-	int UI_Visual_HitMark_Thickness = 1;
-	BOOL UI_Legit_Triggerbot_ShootWhenAccurate = 0;
-	BOOL UI_Misc_AntiAFKKick = 0;
-	BOOL UI_Legit_MagnetAim = 0;
-	float UI_Legit_MagnetAim_Smooth = 0;
-	float UI_Legit_AdaptiveAimbot_InitialSmooth = 0;
-	int UI_Misc_SniperCrosshair_Size = 10;
-	BOOL UI_Spoof_Spoof = 0;
-	BOOL UI_Spoof_AimbotTeam = 0;
-	int UI_Spoof_AimbotTeam_Key = 0;
-	float UI_Spoof_AimbotTeam_Smooth = 0;
-	BOOL UI_Spoof_IncreaseRecoil = 0;
-	int UI_Spoof_IncreaseRecoil_Value = 50;
-	BOOL UI_Spoof_DropC4 = 0;
-	BOOL UI_Spoof_FakeAntiAim = 0;
-	int UI_Spoof_FakeAntiAim_Key = 0;
-	BOOL UI_Spoof_KillDropSniper = 0;
-	float UI_Setting_MenuAnimation = 4;
-	BOOL UI_Visual_HitMark_KillEffect = 0;
-	int UI_Visual_HitMark_KillEffect_Quantity = 10;
-	int UI_Visual_HitMark_KillEffect_Range = 10;
-	int UI_Visual_ESP_Skeleton_Thickness = 1;
-	BOOL UI_Misc_ByPassOBS = 0;
-	BOOL UI_Misc_SavePerformance = 0;
-	BOOL UI_Legit_Aimbot_AutoScope = 0;
-	BOOL UI_Misc_NightMode = 0;
-	int UI_Misc_NightMode_Alpha = 100;
-	BOOL UI_Spoof_LearnPlayer = 0;
-	int UI_Spoof_LearnPlayer_Key = 0;
-	BOOL UI_Misc_AutoPeek = 0;
-	int UI_Misc_AutoPeek_Key = 0;
-	BOOL UI_Spoof_FakeRageBot = 0;
-	int UI_Spoof_FakeRageBot_Key = 0;
-	int UI_Spoof_FakeRageBot_Target = 0;
-	BOOL UI_Misc_QuickStop = 0;
-	string UI_Setting_MenuFont = "";
-	int UI_Setting_MenuFontSize = 0;
-	BOOL UI_Misc_AutoKillCeasefire = 0;
-	BOOL UI_Misc_CursorESP = 0;
-	int UI_Misc_CursorESP_Key = 0;
-	BOOL UI_Legit_Armory_HitSiteParser = 0;
-	int UI_Visual_ESP_DrawAlpha = 255;
-	BOOL UI_Legit_Armory_BodyAim_SHOTGUN = 0;
-	int UI_Legit_Armory_Range_SHOTGUN = 0;
-	float UI_Legit_Armory_Smooth_SHOTGUN = 0;
-	int UI_Legit_Armory_TriggerDistance_SHOTGUN = 100;
-	int UI_Legit_MagnetAim_Range = 0;
-	int UI_Legit_Backtracking_MinimumTime = 0;
-	int UI_Legit_RemoveRecoil_Sensitive = 0;
-	BOOL UI_Visual_HitMark_CustomColor = 0;
-	int UI_Legit_Aimbot_AutoShootHitChance = 0;
-	BOOL UI_Legit_MagnetAim_OnlyHeadLine = 0;
-	BOOL UI_Misc_WalkingBot = 0;
-	int UI_Misc_WalkingBot_Map = 0;
-	BOOL UI_Misc_MouseLowSensitivity = 0;
-	BOOL UI_Spoof_StepOnHead = 0;
-	//----------------------------------------------------------------------------------------------
-	void CreatePreset(string FileName = "") noexcept { if (FileName != "")System::Create_File(Preset_Folder + "\\" + FileName + ".cfg"); }//创建特定预设
-	void DeletePreset(string FileName = "") noexcept { System::Delete_File(Preset_Folder + "\\" + FileName + ".cfg"); }//删除特定预设
-	void SavePreset(string FileName = "") noexcept//保存特定预设
+	HWND CS2_HWND = NULL;
+	System::Memory CS2_MEM = { "cs2.exe" };
+	auto Module_client = CS2_MEM.Get_Module("client.dll");//模块地址: 本地
+	auto Module_engine = CS2_MEM.Get_Module("engine.dll");//模块地址: 引擎
+	auto Module_server = CS2_MEM.Get_Module("server.dll");//模块地址: 服务器
+	vector<short> Global_ValidClassID = { NULL };//有效实体
+	BOOL Global_IsShowWindow = false, Global_TeamCheck = false;//窗口显示,团队过滤
+	void ExecuteCommand(string Command_Str) noexcept//发送指令到CS控制台
 	{
-		System::Set_File(Preset_Folder + "\\" + FileName + ".cfg",
-			to_string(UI_Legit_Aimbot) + "\n" +
-			to_string(UI_Legit_Aimbot_Key) + "\n" +
-			to_string(UI_Legit_Aimbot_JudgingWall) + "\n" +
-			to_string(UI_Legit_Aimbot_RemoveRecoil) + "\n" +
-			to_string(UI_Legit_Aimbot_TriggerOnAim) + "\n" +
-			to_string(UI_Legit_Aimbot_AutoShoot) + "\n" +
-			to_string(UI_Legit_Aimbot_AutoStop) + "\n" +
-			to_string(UI_Legit_Aimbot_AutoShootDelay) + "\n" +
-			to_string(UI_Legit_AdaptiveAimbot) + "\n" +
-			to_string(UI_Legit_Armory_ShowAimbotRange) + "\n" +
-			to_string(UI_Legit_Armory_BodyAim_PISTOL) + "\n" +
-			to_string(UI_Legit_Armory_Range_PISTOL) + "\n" +
-			to_string(UI_Legit_Armory_Smooth_PISTOL) + "\n" +
-			to_string(UI_Legit_Armory_BodyAim_RIFLE) + "\n" +
-			to_string(UI_Legit_Armory_Range_RIFLE) + "\n" +
-			to_string(UI_Legit_Armory_Smooth_RIFLE) + "\n" +
-			to_string(UI_Legit_Armory_BodyAim_SNIPER) + "\n" +
-			to_string(UI_Legit_Armory_Range_SNIPER) + "\n" +
-			to_string(UI_Legit_Armory_Smooth_SNIPER) + "\n" +
-			to_string(UI_Legit_Triggerbot) + "\n" +
-			to_string(UI_Legit_Triggerbot_Key) + "\n" +
-			to_string(UI_Legit_Triggerbot_AnyTarget) + "\n" +
-			to_string(UI_Legit_Triggerbot_ShootDelay) + "\n" +
-			to_string(UI_Legit_Triggerbot_ShootDuration) + "\n" +
-			to_string(UI_Legit_PreciseAim) + "\n" +
-			to_string(UI_Legit_PreciseAim_DefaultSensitivity) + "\n" +
-			to_string(UI_Legit_PreciseAim_EnableSensitivity) + "\n" +
-			to_string(UI_Legit_RemoveRecoil) + "\n" +
-			to_string(UI_Legit_RemoveRecoil_HorizontalRepair) + "\n" +
-			to_string(UI_Legit_RemoveRecoil_StartBullet) + "\n" +
-			to_string(UI_Legit_Backtracking) + "\n" +
-			to_string(UI_Legit_Backtracking_MaximumTime) + "\n" +
-			to_string(UI_Visual_ESP) + "\n" +
-			to_string(UI_Visual_ESP_Key) + "\n" +
-			to_string(UI_Visual_ESP_Box) + "\n" +
-			to_string(UI_Visual_ESP_Health) + "\n" +
-			to_string(UI_Visual_ESP_ActiveWeapon) + "\n" +
-			to_string(UI_Visual_ESP_Line) + "\n" +
-			to_string(UI_Visual_ESP_Skeleton) + "\n" +
-			to_string(UI_Visual_ESP_HeadDot) + "\n" +
-			to_string(UI_Visual_ESP_State) + "\n" +
-			to_string(UI_Visual_ESP_Name) + "\n" +
-			to_string(UI_Visual_ESP_Drops) + "\n" +
-			to_string(UI_Visual_ESP_OutFOV) + "\n" +
-			to_string(UI_Visual_ESP_OutFOV_Size) + "\n" +
-			to_string(UI_Visual_ESP_OutFOV_Radius) + "\n" +
-			to_string(UI_Visual_ESP_CustomColor) + "\n" +
-			to_string(UI_Visual_ESP_CustomColor_Color.r) + "\n" +
-			to_string(UI_Visual_ESP_CustomColor_Color.g) + "\n" +
-			to_string(UI_Visual_ESP_CustomColor_Color.b) + "\n" +
-			to_string(UI_Visual_ESP_CustomColor_Color.a) + "\n" +
-			to_string(UI_Visual_ESP_DrawDelay) + "\n" +
-			to_string(UI_Visual_Radar) + "\n" +
-			to_string(UI_Visual_Radar_FollowAngle) + "\n" +
-			to_string(UI_Visual_Radar_Range) + "\n" +
-			to_string(UI_Visual_Radar_Size) + "\n" +
-			to_string(UI_Visual_Radar_Alpha) + "\n" +
-			to_string(UI_Visual_Radar_Pos.x) + "\n" +
-			to_string(UI_Visual_Radar_Pos.y) + "\n" +
-			to_string(UI_Misc_BunnyHop) + "\n" +
-			to_string(UI_Misc_HitSound) + "\n" +
-			to_string(UI_Misc_HitSound_Tone) + "\n" +
-			to_string(UI_Misc_HitSound_Length) + "\n" +
-			to_string(UI_Visual_HitMark) + "\n" +
-			to_string(UI_Visual_HitMark_Damage) + "\n" +
-			to_string(UI_Visual_HitMark_Range) + "\n" +
-			to_string(UI_Visual_HitMark_Length) + "\n" +
-			to_string(UI_Misc_AutoKnife) + "\n" +
-			to_string(UI_Misc_AutoTaser) + "\n" +
-			to_string(UI_Misc_AutoKnife_Key) + "\n" +
-			to_string(UI_Misc_AutoTaser_Key) + "\n" +
-			to_string(UI_Misc_Watermark) + "\n" +
-			to_string(UI_Misc_SniperCrosshair) + "\n" +
-			to_string(UI_Misc_TeamCheck) + "\n" +
-			to_string(UI_Misc_LockGameWindow) + "\n" +
-			to_string(UI_Debug_ShowDebugWindow) + "\n" +
-			to_string(UI_Misc_Sonar) + "\n" +
-			to_string(UI_Misc_Sonar_Key) + "\n" +
-			to_string(UI_Misc_Sonar_Range_Far) + "\n" +
-			to_string(UI_Misc_Sonar_Range_Near) + "\n" +
-			to_string(UI_Setting_MenuKey) + "\n" +
-			to_string(UI_Setting_CustomColor) + "\n" +
-			to_string(UI_Setting_MainColor.r) + "\n" +
-			to_string(UI_Setting_MainColor.g) + "\n" +
-			to_string(UI_Setting_MainColor.b) + "\n" +
-			to_string(UI_Setting_MainColor.a) + "\n" +
-			to_string(UI_Visual_HitMark_Color.r) + "\n" +
-			to_string(UI_Visual_HitMark_Color.g) + "\n" +
-			to_string(UI_Visual_HitMark_Color.b) + "\n" +
-			to_string(UI_Visual_HitMark_Thickness) + "\n" +
-			to_string(UI_Legit_Triggerbot_ShootWhenAccurate) + "\n" +
-			to_string(UI_Misc_AntiAFKKick) + "\n" +
-			to_string(UI_Legit_MagnetAim) + "\n" +
-			to_string(UI_Legit_MagnetAim_Smooth) + "\n" +
-			to_string(UI_Legit_AdaptiveAimbot_InitialSmooth) + "\n" +
-			to_string(UI_Misc_SniperCrosshair_Size) + "\n" +
-			to_string(UI_Spoof_Spoof) + "\n" +
-			to_string(UI_Spoof_AimbotTeam) + "\n" +
-			to_string(UI_Spoof_AimbotTeam_Key) + "\n" +
-			to_string(UI_Spoof_AimbotTeam_Smooth) + "\n" +
-			to_string(UI_Spoof_IncreaseRecoil) + "\n" +
-			to_string(UI_Spoof_IncreaseRecoil_Value) + "\n" +
-			to_string(UI_Spoof_DropC4) + "\n" +
-			to_string(UI_Spoof_FakeAntiAim) + "\n" +
-			to_string(UI_Spoof_FakeAntiAim_Key) + "\n" +
-			to_string(UI_Spoof_KillDropSniper) + "\n" +
-			to_string(UI_Setting_MenuAnimation) + "\n" +
-			to_string(UI_Visual_HitMark_KillEffect) + "\n" +
-			to_string(UI_Visual_HitMark_KillEffect_Quantity) + "\n" +
-			to_string(UI_Visual_HitMark_KillEffect_Range) + "\n" +
-			to_string(UI_Visual_ESP_Skeleton_Thickness) + "\n" +
-			to_string(UI_Misc_ByPassOBS) + "\n" +
-			to_string(UI_Misc_SavePerformance) + "\n" +
-			to_string(UI_Legit_Aimbot_AutoScope) + "\n" +
-			to_string(UI_Misc_NightMode) + "\n" +
-			to_string(UI_Misc_NightMode_Alpha) + "\n" +
-			to_string(UI_Spoof_LearnPlayer) + "\n" +
-			to_string(UI_Spoof_LearnPlayer_Key) + "\n" +
-			to_string(UI_Misc_AutoPeek) + "\n" +
-			to_string(UI_Misc_AutoPeek_Key) + "\n" +
-			to_string(UI_Spoof_FakeRageBot) + "\n" +
-			to_string(UI_Spoof_FakeRageBot_Key) + "\n" +
-			to_string(UI_Spoof_FakeRageBot_Target) + "\n" +
-			to_string(UI_Misc_QuickStop) + "\n" +
-			UI_Setting_MenuFont + "\n" +
-			to_string(UI_Setting_MenuFontSize) + "\n" +
-			to_string(UI_Misc_AutoKillCeasefire) + "\n" +
-			to_string(UI_Misc_CursorESP) + "\n" +
-			to_string(UI_Misc_CursorESP_Key) + "\n" +
-			to_string(UI_Legit_Armory_HitSiteParser) + "\n" +
-			to_string(UI_Visual_ESP_DrawAlpha) + "\n" +
-			to_string(UI_Legit_Armory_BodyAim_SHOTGUN) + "\n" +
-			to_string(UI_Legit_Armory_Range_SHOTGUN) + "\n" +
-			to_string(UI_Legit_Armory_Smooth_SHOTGUN) + "\n" +
-			to_string(UI_Legit_Armory_TriggerDistance_SHOTGUN) + "\n" +
-			to_string(UI_Legit_MagnetAim_Range) + "\n" +
-			to_string(UI_Legit_Backtracking_MinimumTime) + "\n" +
-			to_string(UI_Legit_RemoveRecoil_Sensitive) + "\n" +
-			to_string(UI_Visual_HitMark_CustomColor) + "\n" +
-			to_string(UI_Legit_Aimbot_AutoShootHitChance) + "\n" +
-			to_string(UI_Legit_MagnetAim_OnlyHeadLine) + "\n" +
-			to_string(UI_Misc_WalkingBot) + "\n" +
-			to_string(UI_Misc_WalkingBot_Map) + "\n" +
-			to_string(UI_Misc_MouseLowSensitivity) + "\n" +
-			to_string(UI_Spoof_StepOnHead) + "\n"
-		);
+		COPYDATASTRUCT m_cData; m_cData.cbData = strlen(Command_Str.c_str()) + 1; m_cData.dwData = 0; m_cData.lpData = (void*)Command_Str.c_str();
+		SendMessage(CS2_MEM.Get_ProcessHWND(), WM_COPYDATA, 0, (LPARAM)&m_cData);//发送命令
+		//-----------------------------------------------------------------------------------
+		if (Command_Str == "+jump")System::Key_Con_HWND(CS2_HWND, VK_SPACE, true);
+		else if (Command_Str == "-jump")System::Key_Con_HWND(CS2_HWND, VK_SPACE, false);
+		else if (Command_Str == "+duck")System::Key_Con_HWND(CS2_HWND, VK_CONTROL, true);
+		else if (Command_Str == "-duck")System::Key_Con_HWND(CS2_HWND, VK_CONTROL, false);
+		else if (Command_Str == "+lookatweapon")System::Key_Con_HWND(CS2_HWND, 0x46, true);
+		else if (Command_Str == "-lookatweapon")System::Key_Con_HWND(CS2_HWND, 0x46, false);
+		else if (Command_Str == "drop")System::Key_Click_HWND(CS2_HWND, 0x47, true);
+		else if (Command_Str == "+attack")mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+		else if (Command_Str == "-attack")mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+		else if (Command_Str == "+attack2")mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
+		else if (Command_Str == "-attack2")mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+		else if (Command_Str == "+forward")System::Key_Con_HWND(CS2_HWND, 0x57, true);
+		else if (Command_Str == "-forward")System::Key_Con_HWND(CS2_HWND, 0x57, false);
+		else if (Command_Str == "+back")System::Key_Con_HWND(CS2_HWND, 0x53, true);
+		else if (Command_Str == "-back")System::Key_Con_HWND(CS2_HWND, 0x53, false);
+		else if (Command_Str == "+left")System::Key_Con_HWND(CS2_HWND, 0x41, true);
+		else if (Command_Str == "-left")System::Key_Con_HWND(CS2_HWND, 0x41, false);
+		else if (Command_Str == "+right")System::Key_Con_HWND(CS2_HWND, 0x44, true);
+		else if (Command_Str == "-right")System::Key_Con_HWND(CS2_HWND, 0x44, false);
+		//-----------------------------------------------------------------------------------
 	}
-	void LoadPreset(string FileName = "") noexcept//加载特定预设
+	namespace CS2_Offsets//CS2固定偏移量 (游戏更新时需要同时更新 https://github.com/a2x/cs2-dumper.git)
 	{
-		FileName = Preset_Folder + "\\" + FileName + ".cfg"; if (System::Get_File(FileName, 1) == "")return;//不加载空配置
-		UI_Legit_Aimbot = Variable::string_int_(System::Get_File(FileName, 1));
-		UI_Legit_Aimbot_Key = Variable::string_int_(System::Get_File(FileName, 2));
-		UI_Legit_Aimbot_JudgingWall = Variable::string_int_(System::Get_File(FileName, 3));
-		UI_Legit_Aimbot_RemoveRecoil = Variable::string_int_(System::Get_File(FileName, 4));
-		UI_Legit_Aimbot_TriggerOnAim = Variable::string_int_(System::Get_File(FileName, 5));
-		UI_Legit_Aimbot_AutoShoot = Variable::string_int_(System::Get_File(FileName, 6));
-		UI_Legit_Aimbot_AutoStop = Variable::string_int_(System::Get_File(FileName, 7));
-		UI_Legit_Aimbot_AutoShootDelay = Variable::string_int_(System::Get_File(FileName, 8));
-		UI_Legit_AdaptiveAimbot = Variable::string_int_(System::Get_File(FileName, 9));
-		UI_Legit_Armory_ShowAimbotRange = Variable::string_int_(System::Get_File(FileName, 10));
-		UI_Legit_Armory_BodyAim_PISTOL = Variable::string_int_(System::Get_File(FileName, 11));
-		UI_Legit_Armory_Range_PISTOL = Variable::string_int_(System::Get_File(FileName, 12));
-		UI_Legit_Armory_Smooth_PISTOL = Variable::string_float_(System::Get_File(FileName, 13));
-		UI_Legit_Armory_BodyAim_RIFLE = Variable::string_int_(System::Get_File(FileName, 14));
-		UI_Legit_Armory_Range_RIFLE = Variable::string_int_(System::Get_File(FileName, 15));
-		UI_Legit_Armory_Smooth_RIFLE = Variable::string_float_(System::Get_File(FileName, 16));
-		UI_Legit_Armory_BodyAim_SNIPER = Variable::string_int_(System::Get_File(FileName, 17));
-		UI_Legit_Armory_Range_SNIPER = Variable::string_int_(System::Get_File(FileName, 18));
-		UI_Legit_Armory_Smooth_SNIPER = Variable::string_float_(System::Get_File(FileName, 19));
-		UI_Legit_Triggerbot = Variable::string_int_(System::Get_File(FileName, 20));
-		UI_Legit_Triggerbot_Key = Variable::string_int_(System::Get_File(FileName, 21));
-		UI_Legit_Triggerbot_AnyTarget = Variable::string_int_(System::Get_File(FileName, 22));
-		UI_Legit_Triggerbot_ShootDelay = Variable::string_int_(System::Get_File(FileName, 23));
-		UI_Legit_Triggerbot_ShootDuration = Variable::string_int_(System::Get_File(FileName, 24));
-		UI_Legit_PreciseAim = Variable::string_int_(System::Get_File(FileName, 25));
-		UI_Legit_PreciseAim_DefaultSensitivity = Variable::string_float_(System::Get_File(FileName, 26));
-		UI_Legit_PreciseAim_EnableSensitivity = Variable::string_float_(System::Get_File(FileName, 27));
-		UI_Legit_RemoveRecoil = Variable::string_int_(System::Get_File(FileName, 28));
-		UI_Legit_RemoveRecoil_HorizontalRepair = Variable::string_int_(System::Get_File(FileName, 29));
-		UI_Legit_RemoveRecoil_StartBullet = Variable::string_int_(System::Get_File(FileName, 30));
-		UI_Legit_Backtracking = Variable::string_int_(System::Get_File(FileName, 31));
-		UI_Legit_Backtracking_MaximumTime = Variable::string_int_(System::Get_File(FileName, 32));
-		UI_Visual_ESP = Variable::string_int_(System::Get_File(FileName, 33));
-		UI_Visual_ESP_Key = Variable::string_int_(System::Get_File(FileName, 34));
-		UI_Visual_ESP_Box = Variable::string_int_(System::Get_File(FileName, 35));
-		UI_Visual_ESP_Health = Variable::string_int_(System::Get_File(FileName, 36));
-		UI_Visual_ESP_ActiveWeapon = Variable::string_int_(System::Get_File(FileName, 37));
-		UI_Visual_ESP_Line = Variable::string_int_(System::Get_File(FileName, 38));
-		UI_Visual_ESP_Skeleton = Variable::string_int_(System::Get_File(FileName, 39));
-		UI_Visual_ESP_HeadDot = Variable::string_int_(System::Get_File(FileName, 40));
-		UI_Visual_ESP_State = Variable::string_int_(System::Get_File(FileName, 41));
-		UI_Visual_ESP_Name = Variable::string_int_(System::Get_File(FileName, 42));
-		UI_Visual_ESP_Drops = Variable::string_int_(System::Get_File(FileName, 43));
-		UI_Visual_ESP_OutFOV = Variable::string_int_(System::Get_File(FileName, 44));
-		UI_Visual_ESP_OutFOV_Size = Variable::string_int_(System::Get_File(FileName, 45));
-		UI_Visual_ESP_OutFOV_Radius = Variable::string_int_(System::Get_File(FileName, 46));
-		UI_Visual_ESP_CustomColor = Variable::string_int_(System::Get_File(FileName, 47));
-		UI_Visual_ESP_CustomColor_Color = { Variable::string_int_(System::Get_File(FileName, 48)),Variable::string_int_(System::Get_File(FileName, 49)),Variable::string_int_(System::Get_File(FileName, 50)),Variable::string_int_(System::Get_File(FileName, 51)) };
-		UI_Visual_ESP_DrawDelay = Variable::string_int_(System::Get_File(FileName, 52));
-		UI_Visual_Radar = Variable::string_int_(System::Get_File(FileName, 53));
-		UI_Visual_Radar_FollowAngle = Variable::string_int_(System::Get_File(FileName, 54));
-		UI_Visual_Radar_Range = Variable::string_float_(System::Get_File(FileName, 55));
-		UI_Visual_Radar_Size = Variable::string_int_(System::Get_File(FileName, 56));
-		UI_Visual_Radar_Alpha = Variable::string_int_(System::Get_File(FileName, 57));
-		UI_Visual_Radar_Pos = { Variable::string_int_(System::Get_File(FileName, 58)), Variable::string_int_(System::Get_File(FileName, 59)) };
-		UI_Misc_BunnyHop = Variable::string_int_(System::Get_File(FileName, 60));
-		UI_Misc_HitSound = Variable::string_int_(System::Get_File(FileName, 61));
-		UI_Misc_HitSound_Tone = Variable::string_int_(System::Get_File(FileName, 62));
-		UI_Misc_HitSound_Length = Variable::string_int_(System::Get_File(FileName, 63));
-		UI_Visual_HitMark = Variable::string_int_(System::Get_File(FileName, 64));
-		UI_Visual_HitMark_Damage = Variable::string_int_(System::Get_File(FileName, 65));
-		UI_Visual_HitMark_Range = Variable::string_int_(System::Get_File(FileName, 66));
-		UI_Visual_HitMark_Length = Variable::string_int_(System::Get_File(FileName, 67));
-		UI_Misc_AutoKnife = Variable::string_int_(System::Get_File(FileName, 68));
-		UI_Misc_AutoTaser = Variable::string_int_(System::Get_File(FileName, 69));
-		UI_Misc_AutoKnife_Key = Variable::string_int_(System::Get_File(FileName, 70));
-		UI_Misc_AutoTaser_Key = Variable::string_int_(System::Get_File(FileName, 71));
-		UI_Misc_Watermark = Variable::string_int_(System::Get_File(FileName, 72));
-		UI_Misc_SniperCrosshair = Variable::string_int_(System::Get_File(FileName, 73));
-		UI_Misc_TeamCheck = Variable::string_int_(System::Get_File(FileName, 74));
-		UI_Misc_LockGameWindow = Variable::string_int_(System::Get_File(FileName, 75));
-		UI_Debug_ShowDebugWindow = Variable::string_int_(System::Get_File(FileName, 76));
-		UI_Misc_Sonar = Variable::string_int_(System::Get_File(FileName, 77));
-		UI_Misc_Sonar_Key = Variable::string_int_(System::Get_File(FileName, 78));
-		UI_Misc_Sonar_Range_Far = Variable::string_int_(System::Get_File(FileName, 79));
-		UI_Misc_Sonar_Range_Near = Variable::string_int_(System::Get_File(FileName, 80));
-		UI_Setting_MenuKey = Variable::string_int_(System::Get_File(FileName, 81));
-		UI_Setting_CustomColor = Variable::string_int_(System::Get_File(FileName, 82));
-		UI_Setting_MainColor = { Variable::string_int_(System::Get_File(FileName, 83)),Variable::string_int_(System::Get_File(FileName, 84)),Variable::string_int_(System::Get_File(FileName, 85)),Variable::string_int_(System::Get_File(FileName, 86)) };
-		UI_Visual_HitMark_Color = { Variable::string_int_(System::Get_File(FileName, 87)),Variable::string_int_(System::Get_File(FileName, 88)),Variable::string_int_(System::Get_File(FileName, 89)) };
-		UI_Visual_HitMark_Thickness = Variable::string_int_(System::Get_File(FileName, 90));
-		UI_Legit_Triggerbot_ShootWhenAccurate = Variable::string_int_(System::Get_File(FileName, 91));
-		UI_Misc_AntiAFKKick = Variable::string_int_(System::Get_File(FileName, 92));
-		UI_Legit_MagnetAim = Variable::string_int_(System::Get_File(FileName, 93));
-		UI_Legit_MagnetAim_Smooth = Variable::string_float_(System::Get_File(FileName, 94));
-		UI_Legit_AdaptiveAimbot_InitialSmooth = Variable::string_float_(System::Get_File(FileName, 95));
-		UI_Misc_SniperCrosshair_Size = Variable::string_int_(System::Get_File(FileName, 96));
-		UI_Spoof_Spoof = Variable::string_int_(System::Get_File(FileName, 97));
-		UI_Spoof_AimbotTeam = Variable::string_int_(System::Get_File(FileName, 98));
-		UI_Spoof_AimbotTeam_Key = Variable::string_int_(System::Get_File(FileName, 99));
-		UI_Spoof_AimbotTeam_Smooth = Variable::string_float_(System::Get_File(FileName, 100));
-		UI_Spoof_IncreaseRecoil = Variable::string_int_(System::Get_File(FileName, 101));
-		UI_Spoof_IncreaseRecoil_Value = Variable::string_int_(System::Get_File(FileName, 102));
-		UI_Spoof_DropC4 = Variable::string_int_(System::Get_File(FileName, 103));
-		UI_Spoof_FakeAntiAim = Variable::string_int_(System::Get_File(FileName, 104));
-		UI_Spoof_FakeAntiAim_Key = Variable::string_int_(System::Get_File(FileName, 105));
-		UI_Spoof_KillDropSniper = Variable::string_int_(System::Get_File(FileName, 106));
-		UI_Setting_MenuAnimation = Variable::string_float_(System::Get_File(FileName, 107));
-		UI_Visual_HitMark_KillEffect = Variable::string_int_(System::Get_File(FileName, 108));
-		UI_Visual_HitMark_KillEffect_Quantity = Variable::string_int_(System::Get_File(FileName, 109));
-		UI_Visual_HitMark_KillEffect_Range = Variable::string_int_(System::Get_File(FileName, 110));
-		UI_Visual_ESP_Skeleton_Thickness = Variable::string_int_(System::Get_File(FileName, 111));
-		UI_Misc_ByPassOBS = Variable::string_int_(System::Get_File(FileName, 112));
-		UI_Misc_SavePerformance = Variable::string_int_(System::Get_File(FileName, 113));
-		UI_Legit_Aimbot_AutoScope = Variable::string_int_(System::Get_File(FileName, 114));
-		UI_Misc_NightMode = Variable::string_int_(System::Get_File(FileName, 115));
-		UI_Misc_NightMode_Alpha = Variable::string_int_(System::Get_File(FileName, 116));
-		UI_Spoof_LearnPlayer = Variable::string_int_(System::Get_File(FileName, 117));
-		UI_Spoof_LearnPlayer_Key = Variable::string_int_(System::Get_File(FileName, 118));
-		UI_Misc_AutoPeek = Variable::string_int_(System::Get_File(FileName, 119));
-		UI_Misc_AutoPeek_Key = Variable::string_int_(System::Get_File(FileName, 120));
-		UI_Spoof_FakeRageBot = Variable::string_int_(System::Get_File(FileName, 121));
-		UI_Spoof_FakeRageBot_Key = Variable::string_int_(System::Get_File(FileName, 122));
-		UI_Spoof_FakeRageBot_Target = Variable::string_int_(System::Get_File(FileName, 123));
-		UI_Misc_QuickStop = Variable::string_int_(System::Get_File(FileName, 124));
-		UI_Setting_MenuFont = System::Get_File(FileName, 125);
-		UI_Setting_MenuFontSize = Variable::string_int_(System::Get_File(FileName, 126));
-		UI_Misc_AutoKillCeasefire = Variable::string_int_(System::Get_File(FileName, 127));
-		UI_Misc_CursorESP = Variable::string_int_(System::Get_File(FileName, 128));
-		UI_Misc_CursorESP_Key = Variable::string_int_(System::Get_File(FileName, 129));
-		UI_Legit_Armory_HitSiteParser = Variable::string_int_(System::Get_File(FileName, 130));
-		UI_Visual_ESP_DrawAlpha = Variable::string_int_(System::Get_File(FileName, 131));
-		UI_Legit_Armory_BodyAim_SHOTGUN = Variable::string_int_(System::Get_File(FileName, 132));
-		UI_Legit_Armory_Range_SHOTGUN = Variable::string_int_(System::Get_File(FileName, 133));
-		UI_Legit_Armory_Smooth_SHOTGUN = Variable::string_float_(System::Get_File(FileName, 134));
-		UI_Legit_Armory_TriggerDistance_SHOTGUN = Variable::string_int_(System::Get_File(FileName, 135));
-		UI_Legit_MagnetAim_Range = Variable::string_int_(System::Get_File(FileName, 136));
-		UI_Legit_Backtracking_MinimumTime = Variable::string_int_(System::Get_File(FileName, 137));
-		UI_Legit_RemoveRecoil_Sensitive = Variable::string_int_(System::Get_File(FileName, 138));
-		UI_Visual_HitMark_CustomColor = Variable::string_int_(System::Get_File(FileName, 139));
-		UI_Legit_Aimbot_AutoShootHitChance = Variable::string_int_(System::Get_File(FileName, 140));
-		UI_Legit_MagnetAim_OnlyHeadLine = Variable::string_int_(System::Get_File(FileName, 141));
-		UI_Misc_WalkingBot = Variable::string_int_(System::Get_File(FileName, 142));
-		UI_Misc_WalkingBot_Map = Variable::string_int_(System::Get_File(FileName, 143));
-		UI_Misc_MouseLowSensitivity = Variable::string_int_(System::Get_File(FileName, 144));
-		UI_Spoof_StepOnHead = Variable::string_int_(System::Get_File(FileName, 145));
+		string Offsets_Date = "[2025-01-22 17:40]";
+		uintptr_t dwLocalPlayerController = 0x1A6A210;
+		uintptr_t dwLocalPlayerPawn = 0x186DE00;
+		uintptr_t dwEntityList = 0x1A197E8;
+		uintptr_t dwViewAngles = 0x1A8E9A0;
+		uintptr_t dwViewMatrix = 0x1A84890;
+		uintptr_t m_hPlayerPawn = 0x80C;
+		uintptr_t m_iTeamNum = 0x3E3;
+		uintptr_t m_ArmorValue = 0x241C;
+		uintptr_t m_iHealth = 0x344;
+		uintptr_t m_iIDEntIndex = 0x1458;
+		uintptr_t m_fFlags = 0x3EC;
+		uintptr_t m_iShotsFired = 0x23FC;
+		uintptr_t m_vecVelocity = 0x400;
+		uintptr_t m_bSpotted = 0x23D8;//m_entitySpottedState + m_bSpotted
+		uintptr_t m_bIsScoped = 0x23E8;
+		uintptr_t m_pClippingWeapon = 0x13A0;
+		uintptr_t m_pGameSceneNode = 0x328;
+		uintptr_t m_vecOrigin = 0x88;
+		uintptr_t m_aimPunchCache = 0x15A8;
+		uintptr_t m_vecViewOffset = 0xCB0;
+		uintptr_t m_dwBoneMatrix = 0xB800;//m_modelState + 0x80
+		uintptr_t m_iszPlayerName = 0x660;
+		uintptr_t m_pActionTrackingServices = 0x730;
+		uintptr_t m_iNumRoundKills = 0x110;
+		uintptr_t m_unTotalRoundDamageDealt = 0x118;
+		uintptr_t m_iItemDefinitionIndex = 0x1352;//m_AttributeManager + m_Item + m_iItemDefinitionIndex
+		uintptr_t m_angEyeAngles = 0x1438;
 	}
-	void LoadCloudPreset(string FileName = "", string NormalURL = "https://github.com/shitwareofc/shitware/blob/main/Cloud%20Files/") noexcept//加载特定Github云预设
+	namespace Base//基础内存函数
 	{
-		System::URL_READ URL_PRESET = { "Cache_CloudPreset" };
-		if (URL_PRESET.StoreMem(NormalURL + FileName + (string)".cfg?raw=true"))
+		uintptr_t EntityList() noexcept { return CS2_MEM.Read<uintptr_t>(Module_client + CS2_Offsets::dwEntityList); }//实体列表
+		uintptr_t Convert(uintptr_t EntityList, uintptr_t Player) noexcept { return CS2_MEM.Read<uintptr_t>(CS2_MEM.Read<uintptr_t>(EntityList + 8 * ((Player & 0x7FFF) >> 9) + 16) + 120 * (Player & 0x1FF)); }//各种转换
+		class PlayerPawn//玩家Pawn内存类
 		{
-			UI_Legit_Aimbot = Variable::string_int_(URL_PRESET.Read(1));
-			UI_Legit_Aimbot_Key = Variable::string_int_(URL_PRESET.Read(2));
-			UI_Legit_Aimbot_JudgingWall = Variable::string_int_(URL_PRESET.Read(3));
-			UI_Legit_Aimbot_RemoveRecoil = Variable::string_int_(URL_PRESET.Read(4));
-			UI_Legit_Aimbot_TriggerOnAim = Variable::string_int_(URL_PRESET.Read(5));
-			UI_Legit_Aimbot_AutoShoot = Variable::string_int_(URL_PRESET.Read(6));
-			UI_Legit_Aimbot_AutoStop = Variable::string_int_(URL_PRESET.Read(7));
-			UI_Legit_Aimbot_AutoShootDelay = Variable::string_int_(URL_PRESET.Read(8));
-			UI_Legit_AdaptiveAimbot = Variable::string_int_(URL_PRESET.Read(9));
-			UI_Legit_Armory_ShowAimbotRange = Variable::string_int_(URL_PRESET.Read(10));
-			UI_Legit_Armory_BodyAim_PISTOL = Variable::string_int_(URL_PRESET.Read(11));
-			UI_Legit_Armory_Range_PISTOL = Variable::string_int_(URL_PRESET.Read(12));
-			UI_Legit_Armory_Smooth_PISTOL = Variable::string_float_(URL_PRESET.Read(13));
-			UI_Legit_Armory_BodyAim_RIFLE = Variable::string_int_(URL_PRESET.Read(14));
-			UI_Legit_Armory_Range_RIFLE = Variable::string_int_(URL_PRESET.Read(15));
-			UI_Legit_Armory_Smooth_RIFLE = Variable::string_float_(URL_PRESET.Read(16));
-			UI_Legit_Armory_BodyAim_SNIPER = Variable::string_int_(URL_PRESET.Read(17));
-			UI_Legit_Armory_Range_SNIPER = Variable::string_int_(URL_PRESET.Read(18));
-			UI_Legit_Armory_Smooth_SNIPER = Variable::string_float_(URL_PRESET.Read(19));
-			UI_Legit_Triggerbot = Variable::string_int_(URL_PRESET.Read(20));
-			UI_Legit_Triggerbot_Key = Variable::string_int_(URL_PRESET.Read(21));
-			UI_Legit_Triggerbot_AnyTarget = Variable::string_int_(URL_PRESET.Read(22));
-			UI_Legit_Triggerbot_ShootDelay = Variable::string_int_(URL_PRESET.Read(23));
-			UI_Legit_Triggerbot_ShootDuration = Variable::string_int_(URL_PRESET.Read(24));
-			UI_Legit_PreciseAim = Variable::string_int_(URL_PRESET.Read(25));
-			UI_Legit_PreciseAim_DefaultSensitivity = Variable::string_float_(URL_PRESET.Read(26));
-			UI_Legit_PreciseAim_EnableSensitivity = Variable::string_float_(URL_PRESET.Read(27));
-			UI_Legit_RemoveRecoil = Variable::string_int_(URL_PRESET.Read(28));
-			UI_Legit_RemoveRecoil_HorizontalRepair = Variable::string_int_(URL_PRESET.Read(29));
-			UI_Legit_RemoveRecoil_StartBullet = Variable::string_int_(URL_PRESET.Read(30));
-			UI_Legit_Backtracking = Variable::string_int_(URL_PRESET.Read(31));
-			UI_Legit_Backtracking_MaximumTime = Variable::string_int_(URL_PRESET.Read(32));
-			UI_Visual_ESP = Variable::string_int_(URL_PRESET.Read(33));
-			UI_Visual_ESP_Key = Variable::string_int_(URL_PRESET.Read(34));
-			UI_Visual_ESP_Box = Variable::string_int_(URL_PRESET.Read(35));
-			UI_Visual_ESP_Health = Variable::string_int_(URL_PRESET.Read(36));
-			UI_Visual_ESP_ActiveWeapon = Variable::string_int_(URL_PRESET.Read(37));
-			UI_Visual_ESP_Line = Variable::string_int_(URL_PRESET.Read(38));
-			UI_Visual_ESP_Skeleton = Variable::string_int_(URL_PRESET.Read(39));
-			UI_Visual_ESP_HeadDot = Variable::string_int_(URL_PRESET.Read(40));
-			UI_Visual_ESP_State = Variable::string_int_(URL_PRESET.Read(41));
-			UI_Visual_ESP_Name = Variable::string_int_(URL_PRESET.Read(42));
-			UI_Visual_ESP_Drops = Variable::string_int_(URL_PRESET.Read(43));
-			UI_Visual_ESP_OutFOV = Variable::string_int_(URL_PRESET.Read(44));
-			UI_Visual_ESP_OutFOV_Size = Variable::string_int_(URL_PRESET.Read(45));
-			UI_Visual_ESP_OutFOV_Radius = Variable::string_int_(URL_PRESET.Read(46));
-			UI_Visual_ESP_CustomColor = Variable::string_int_(URL_PRESET.Read(47));
-			UI_Visual_ESP_CustomColor_Color = { Variable::string_int_(URL_PRESET.Read(48)),Variable::string_int_(URL_PRESET.Read(49)),Variable::string_int_(URL_PRESET.Read(50)),Variable::string_int_(URL_PRESET.Read(51)) };
-			UI_Visual_ESP_DrawDelay = Variable::string_int_(URL_PRESET.Read(52));
-			UI_Visual_Radar = Variable::string_int_(URL_PRESET.Read(53));
-			UI_Visual_Radar_FollowAngle = Variable::string_int_(URL_PRESET.Read(54));
-			UI_Visual_Radar_Range = Variable::string_float_(URL_PRESET.Read(55));
-			UI_Visual_Radar_Size = Variable::string_int_(URL_PRESET.Read(56));
-			UI_Visual_Radar_Alpha = Variable::string_int_(URL_PRESET.Read(57));
-			UI_Visual_Radar_Pos = { Variable::string_int_(URL_PRESET.Read(58)), Variable::string_int_(URL_PRESET.Read(59)) };
-			UI_Misc_BunnyHop = Variable::string_int_(URL_PRESET.Read(60));
-			UI_Misc_HitSound = Variable::string_int_(URL_PRESET.Read(61));
-			UI_Misc_HitSound_Tone = Variable::string_int_(URL_PRESET.Read(62));
-			UI_Misc_HitSound_Length = Variable::string_int_(URL_PRESET.Read(63));
-			UI_Visual_HitMark = Variable::string_int_(URL_PRESET.Read(64));
-			UI_Visual_HitMark_Damage = Variable::string_int_(URL_PRESET.Read(65));
-			UI_Visual_HitMark_Range = Variable::string_int_(URL_PRESET.Read(66));
-			UI_Visual_HitMark_Length = Variable::string_int_(URL_PRESET.Read(67));
-			UI_Misc_AutoKnife = Variable::string_int_(URL_PRESET.Read(68));
-			UI_Misc_AutoTaser = Variable::string_int_(URL_PRESET.Read(69));
-			UI_Misc_AutoKnife_Key = Variable::string_int_(URL_PRESET.Read(70));
-			UI_Misc_AutoTaser_Key = Variable::string_int_(URL_PRESET.Read(71));
-			UI_Misc_Watermark = Variable::string_int_(URL_PRESET.Read(72));
-			UI_Misc_SniperCrosshair = Variable::string_int_(URL_PRESET.Read(73));
-			UI_Misc_TeamCheck = Variable::string_int_(URL_PRESET.Read(74));
-			UI_Misc_LockGameWindow = Variable::string_int_(URL_PRESET.Read(75));
-			UI_Debug_ShowDebugWindow = Variable::string_int_(URL_PRESET.Read(76));
-			UI_Misc_Sonar = Variable::string_int_(URL_PRESET.Read(77));
-			UI_Misc_Sonar_Key = Variable::string_int_(URL_PRESET.Read(78));
-			UI_Misc_Sonar_Range_Far = Variable::string_int_(URL_PRESET.Read(79));
-			UI_Misc_Sonar_Range_Near = Variable::string_int_(URL_PRESET.Read(80));
-			UI_Setting_MenuKey = Variable::string_int_(URL_PRESET.Read(81));
-			UI_Setting_CustomColor = Variable::string_int_(URL_PRESET.Read(82));
-			UI_Setting_MainColor = { Variable::string_int_(URL_PRESET.Read(83)),Variable::string_int_(URL_PRESET.Read(84)),Variable::string_int_(URL_PRESET.Read(85)),Variable::string_int_(URL_PRESET.Read(86)) };
-			UI_Visual_HitMark_Color = { Variable::string_int_(URL_PRESET.Read(87)) ,Variable::string_int_(URL_PRESET.Read(88)) ,Variable::string_int_(URL_PRESET.Read(89)) };
-			UI_Visual_HitMark_Thickness = Variable::string_int_(URL_PRESET.Read(90));
-			UI_Legit_Triggerbot_ShootWhenAccurate = Variable::string_int_(URL_PRESET.Read(91));
-			UI_Misc_AntiAFKKick = Variable::string_int_(URL_PRESET.Read(92));
-			UI_Legit_MagnetAim = Variable::string_int_(URL_PRESET.Read(93));
-			UI_Legit_MagnetAim_Smooth = Variable::string_float_(URL_PRESET.Read(94));
-			UI_Legit_AdaptiveAimbot_InitialSmooth = Variable::string_float_(URL_PRESET.Read(95));
-			UI_Misc_SniperCrosshair_Size = Variable::string_int_(URL_PRESET.Read(96));
-			UI_Spoof_Spoof = Variable::string_int_(URL_PRESET.Read(97));
-			UI_Spoof_AimbotTeam = Variable::string_int_(URL_PRESET.Read(98));
-			UI_Spoof_AimbotTeam_Key = Variable::string_int_(URL_PRESET.Read(99));
-			UI_Spoof_AimbotTeam_Smooth = Variable::string_float_(URL_PRESET.Read(100));
-			UI_Spoof_IncreaseRecoil = Variable::string_int_(URL_PRESET.Read(101));
-			UI_Spoof_IncreaseRecoil_Value = Variable::string_int_(URL_PRESET.Read(102));
-			UI_Spoof_DropC4 = Variable::string_int_(URL_PRESET.Read(103));
-			UI_Spoof_FakeAntiAim = Variable::string_int_(URL_PRESET.Read(104));
-			UI_Spoof_FakeAntiAim_Key = Variable::string_int_(URL_PRESET.Read(105));
-			UI_Spoof_KillDropSniper = Variable::string_int_(URL_PRESET.Read(106));
-			UI_Setting_MenuAnimation = Variable::string_float_(URL_PRESET.Read(107));
-			UI_Visual_HitMark_KillEffect = Variable::string_int_(URL_PRESET.Read(108));
-			UI_Visual_HitMark_KillEffect_Quantity = Variable::string_int_(URL_PRESET.Read(109));
-			UI_Visual_HitMark_KillEffect_Range = Variable::string_int_(URL_PRESET.Read(110));
-			UI_Visual_ESP_Skeleton_Thickness = Variable::string_int_(URL_PRESET.Read(111));
-			UI_Misc_ByPassOBS = Variable::string_int_(URL_PRESET.Read(112));
-			UI_Misc_SavePerformance = Variable::string_int_(URL_PRESET.Read(113));
-			UI_Legit_Aimbot_AutoScope = Variable::string_int_(URL_PRESET.Read(114));
-			UI_Misc_NightMode = Variable::string_int_(URL_PRESET.Read(115));
-			UI_Misc_NightMode_Alpha = Variable::string_int_(URL_PRESET.Read(116));
-			UI_Spoof_LearnPlayer = Variable::string_int_(URL_PRESET.Read(117));
-			UI_Spoof_LearnPlayer_Key = Variable::string_int_(URL_PRESET.Read(118));
-			UI_Misc_AutoPeek = Variable::string_int_(URL_PRESET.Read(119));
-			UI_Misc_AutoPeek_Key = Variable::string_int_(URL_PRESET.Read(120));
-			UI_Spoof_FakeRageBot = Variable::string_int_(URL_PRESET.Read(121));
-			UI_Spoof_FakeRageBot_Key = Variable::string_int_(URL_PRESET.Read(122));
-			UI_Spoof_FakeRageBot_Target = Variable::string_int_(URL_PRESET.Read(123));
-			UI_Misc_QuickStop = Variable::string_int_(URL_PRESET.Read(124));
-			UI_Setting_MenuFont = URL_PRESET.Read(125);
-			UI_Setting_MenuFontSize = Variable::string_int_(URL_PRESET.Read(126));
-			UI_Misc_AutoKillCeasefire = Variable::string_int_(URL_PRESET.Read(127));
-			UI_Misc_CursorESP = Variable::string_int_(URL_PRESET.Read(128));
-			UI_Misc_CursorESP_Key = Variable::string_int_(URL_PRESET.Read(129));
-			UI_Legit_Armory_HitSiteParser = Variable::string_int_(URL_PRESET.Read(130));
-			UI_Visual_ESP_DrawAlpha = Variable::string_int_(URL_PRESET.Read(131));
-			UI_Legit_Armory_BodyAim_SHOTGUN = Variable::string_int_(URL_PRESET.Read(132));
-			UI_Legit_Armory_Range_SHOTGUN = Variable::string_int_(URL_PRESET.Read(133));
-			UI_Legit_Armory_Smooth_SHOTGUN = Variable::string_float_(URL_PRESET.Read(134));
-			UI_Legit_Armory_TriggerDistance_SHOTGUN = Variable::string_int_(URL_PRESET.Read(135));
-			UI_Legit_MagnetAim_Range = Variable::string_int_(URL_PRESET.Read(136));
-			UI_Legit_Backtracking_MinimumTime = Variable::string_int_(URL_PRESET.Read(137));
-			UI_Legit_RemoveRecoil_Sensitive = Variable::string_int_(URL_PRESET.Read(138));
-			UI_Visual_HitMark_CustomColor = Variable::string_int_(URL_PRESET.Read(139));
-			UI_Legit_Aimbot_AutoShootHitChance = Variable::string_int_(URL_PRESET.Read(140));
-			UI_Legit_MagnetAim_OnlyHeadLine = Variable::string_int_(URL_PRESET.Read(141));
-			UI_Misc_WalkingBot = Variable::string_int_(URL_PRESET.Read(142));
-			UI_Misc_WalkingBot_Map = Variable::string_int_(URL_PRESET.Read(143));
-			UI_Misc_MouseLowSensitivity = Variable::string_int_(URL_PRESET.Read(144));
-			UI_Spoof_StepOnHead = Variable::string_int_(URL_PRESET.Read(145));
-			URL_PRESET.Release();
+		private:uintptr_t m_PlayerPawn; public:PlayerPawn(uintptr_t dwPlayerPawn) noexcept { m_PlayerPawn = dwPlayerPawn; };
+			   uintptr_t Pawn() const noexcept { return m_PlayerPawn; }//人物地址
+			   short Health() const noexcept { return CS2_MEM.Read<short>(m_PlayerPawn + CS2_Offsets::m_iHealth); }//人物血量
+			   short Armor() const noexcept { return CS2_MEM.Read<short>(m_PlayerPawn + CS2_Offsets::m_ArmorValue); }//人物护甲
+			   short TeamNumber() const noexcept { return CS2_MEM.Read<short>(m_PlayerPawn + CS2_Offsets::m_iTeamNum); }//人物队伍
+			   short IDEntIndex() const noexcept { return CS2_MEM.Read<short>(m_PlayerPawn + CS2_Offsets::m_iIDEntIndex); }//人物瞄准的实体ID
+			   PlayerPawn IDEntIndex_Pawn() const noexcept//瞄准实体的人物Pawn
+			   {
+				   const auto Index = CS2_MEM.Read<short>(m_PlayerPawn + CS2_Offsets::m_iIDEntIndex);
+				   if (Index <= 10000)return Convert(EntityList(), Index); else return 0;
+			   }
+			   short Flags() const noexcept { return CS2_MEM.Read<short>(m_PlayerPawn + CS2_Offsets::m_fFlags); }//人物状态 (跳跃,蹲下等动作)
+			   short ShotsFired() const noexcept { return CS2_MEM.Read<short>(m_PlayerPawn + CS2_Offsets::m_iShotsFired); }//人物开枪子弹数量
+			   short Spotted() const noexcept { return CS2_MEM.Read<short>(m_PlayerPawn + CS2_Offsets::m_bSpotted); }//人物发现状态
+			   short Scoped() const noexcept { const auto Scoped = CS2_MEM.Read<short>(m_PlayerPawn + CS2_Offsets::m_bIsScoped); if (Scoped == 65536)return 0; else return Scoped; }//人物狙击枪开镜
+			   short ActiveWeapon(BOOL Type = 0) const noexcept//人物手持武器(类型,ID)
+			   {
+				   const auto ClippingWeapon = CS2_MEM.Read<short>(CS2_MEM.Read<uintptr_t>(m_PlayerPawn + CS2_Offsets::m_pClippingWeapon) + CS2_Offsets::m_iItemDefinitionIndex);
+				   if (Type)//武器类型 0:无效 1:手枪 2:连射枪 3:狙击枪 4:霰弹枪
+				   {
+					   switch (ClippingWeapon)
+					   {
+					   case 1: return 1;
+					   case 2: return 1;
+					   case 3: return 1;
+					   case 4: return 1;
+					   case 7: return 2;
+					   case 8: return 2;
+					   case 9: return 3;
+					   case 10: return 2;
+					   case 11: return 3;
+					   case 13: return 2;
+					   case 14: return 2;
+					   case 16: return 2;
+					   case 17: return 2;
+					   case 19: return 2;
+					   case 23: return 2;
+					   case 24: return 2;
+					   case 25: return 4;
+					   case 26: return 2;
+					   case 27: return 4;
+					   case 28: return 2;
+					   case 29: return 4;
+					   case 30: return 1;
+					   case 32: return 1;
+					   case 33: return 2;
+					   case 34: return 2;
+					   case 35: return 4;
+					   case 36: return 1;
+					   case 38: return 3;
+					   case 39: return 2;
+					   case 40: return 3;
+					   case 60: return 2;
+					   case 61: return 1;
+					   case 63: return 1;
+					   case 64: return 1;
+					   default: return 0;
+					   }
+				   }
+				   else return ClippingWeapon;
+			   }
+			   short ActiveWeaponDamage() const noexcept//人物手持武器命中胸部时预计伤害值 (如果目标只剩些返回值那些血量那么打身体一击毙命)
+			   {
+				   const auto ClippingWeapon = CS2_MEM.Read<short>(CS2_MEM.Read<uintptr_t>(m_PlayerPawn + CS2_Offsets::m_pClippingWeapon) + CS2_Offsets::m_iItemDefinitionIndex);
+				   switch (ClippingWeapon)
+				   {
+				   case 1: return 35;
+				   case 2: return 12;
+				   case 3: return 20;
+				   case 4: return 10;
+				   case 7: return 25;
+				   case 8: return 21;
+				   case 9: return 80;
+				   case 10: return 16;
+				   case 11: return 50;
+				   case 13: return 20;
+				   case 14: return 23;
+				   case 16: return 22;
+				   case 17: return 11;
+				   case 19: return 11;
+				   case 23: return 11;
+				   case 24: return 15;
+				   case 25: return 30;
+				   case 26: return 11;
+				   case 27: return 30;
+				   case 28: return 15;
+				   case 29: return 15;
+				   case 30: return 16;
+				   case 32: return 13;
+				   case 33: return 11;
+				   case 34: return 12;
+				   case 35: return 30;
+				   case 36: return 15;
+				   case 38: return 50;
+				   case 39: return 20;
+				   case 40: return 60;
+				   case 60: return 17;
+				   case 61: return 15;
+				   case 63: return 6;
+				   case 64: return 30;
+				   default: return 20;
+				   }
+			   }
+			   float MoveSpeed() const noexcept { const auto Velocity = CS2_MEM.Read<Variable::Vector3>(m_PlayerPawn + CS2_Offsets::m_vecVelocity); return hypot(Velocity.x, Velocity.y); }//人物移动速度
+			   string ActiveWeaponName(BOOL Use_WeaponBase = false, uintptr_t WeaponBase = 0) const noexcept//人物手持武器名称
+			   {
+				   auto ClippingWeapon = CS2_MEM.Read<short>(CS2_MEM.Read<uintptr_t>(m_PlayerPawn + CS2_Offsets::m_pClippingWeapon) + CS2_Offsets::m_iItemDefinitionIndex);
+				   if (Use_WeaponBase)ClippingWeapon = CS2_MEM.Read<short>(WeaponBase + CS2_Offsets::m_iItemDefinitionIndex);
+				   if (ClippingWeapon >= 500 && ClippingWeapon <= 600)return "KNIFE";
+				   switch (ClippingWeapon)
+				   {
+				   case 1: return "DEAGLE";
+				   case 2: return "DUAL BERETTAS";
+				   case 3: return "FN57";
+				   case 4: return "GLOCK";
+				   case 7: return "AK47";
+				   case 8: return "AUG";
+				   case 9: return "AWP";
+				   case 10: return "FAMAS";
+				   case 11: return "G3SG1";
+				   case 13: return "GALILAR";
+				   case 14: return "M249";
+				   case 16: return "M4A1";
+				   case 17: return "MAC10";
+				   case 19: return "P90";
+				   case 23: return "MP5";
+				   case 24: return "UMP45";
+				   case 25: return "XM1014";
+				   case 26: return "BIZON";
+				   case 27: return "MAG7";
+				   case 28: return "NEGEV";
+				   case 29: return "SAWED";
+				   case 30: return "TEC9";
+				   case 31: return "TASER";
+				   case 32: return "P2000";
+				   case 33: return "MP7";
+				   case 34: return "MP9";
+				   case 35: return "NOVA";
+				   case 36: return "P250";
+				   case 38: return "SCAR20";
+				   case 39: return "SG553";
+				   case 40: return "SSG08";
+				   case 42: return "KNIFE";
+				   case 43: return "FLASH";
+				   case 44: return "GRENADE";
+				   case 45: return "SMOKE";
+				   case 46: return "MOLOTOV";
+				   case 47: return "DECOY";
+				   case 48: return "INCGRNNADE";
+				   case 49: return "C4";
+				   case 59: return "KNIFE";
+				   case 60: return "M4A1-S";
+				   case 61: return "USP-S";
+				   case 63: return "CZ75";
+				   case 64: return "REVOLVER";
+				   default: return "NONE";
+				   }
+			   }
+			   string EntityName() const noexcept { return CS2_MEM.Read_str(CS2_MEM.Read<uintptr_t>(CS2_MEM.Read<uintptr_t>(m_PlayerPawn + 0x10) + 0x20)); }//实体名称(非人物)
+			   Variable::Vector3 Velocity() const noexcept { return CS2_MEM.Read<Variable::Vector3>(m_PlayerPawn + CS2_Offsets::m_vecVelocity); }//人物单方向移动速度
+			   Variable::Vector3 Origin() const noexcept { return CS2_MEM.Read<Variable::Vector3>(CS2_MEM.Read<uintptr_t>(m_PlayerPawn + CS2_Offsets::m_pGameSceneNode) + CS2_Offsets::m_vecOrigin); }//人物世界坐标
+			   Variable::Vector3 AimPunchAngle() const noexcept//人物手持武器后坐力
+			   {
+				   struct UtlVec { DWORD64 count; DWORD64 data; }; const auto PunchCache = CS2_MEM.Read<UtlVec>(m_PlayerPawn + CS2_Offsets::m_aimPunchCache);//后座缓存
+				   if (PunchCache.count > 0 && PunchCache.count < 0xFFFF)return CS2_MEM.Read<Variable::Vector3>(PunchCache.data + (PunchCache.count - 1) * sizeof(Variable::Vector3));
+			   }
+			   Variable::Vector3 ViewOffset() const noexcept { return CS2_MEM.Read<Variable::Vector3>(m_PlayerPawn + CS2_Offsets::m_vecViewOffset); }//人物朝向偏移
+			   Variable::Vector3 BonePos(short Bone_ID = 3) const noexcept//人物骨骼坐标
+			   {
+				   const auto BoneMatrix = CS2_MEM.Read<uintptr_t>(CS2_MEM.Read<uintptr_t>(m_PlayerPawn + CS2_Offsets::m_pGameSceneNode) + CS2_Offsets::m_dwBoneMatrix);
+				   return CS2_MEM.Read<Variable::Vector3>(BoneMatrix + Bone_ID * 0x20);
+			   }
+			   Variable::Vector3 ViewAngles() const noexcept { return CS2_MEM.Read<Variable::Vector3>(m_PlayerPawn + CS2_Offsets::m_angEyeAngles); }//人物朝向角度
+		};
+		PlayerPawn LocalPlayer() noexcept { return CS2_MEM.Read<uintptr_t>(Module_client + CS2_Offsets::dwLocalPlayerPawn); }//本地人物
+		uintptr_t LocalPlayerController() noexcept { return CS2_MEM.Read<uintptr_t>(Module_client + CS2_Offsets::dwLocalPlayerController); }//本地人物控制器
+		Variable::Vector3 ViewAngles() noexcept { return CS2_MEM.Read<Variable::Vector3>(Module_client + CS2_Offsets::dwViewAngles); }//本地人物朝向
+		Variable::view_matrix_t ViewMatrix() noexcept { return CS2_MEM.Read<Variable::view_matrix_t>(Module_client + CS2_Offsets::dwViewMatrix); }//本地人物视觉矩阵(用于制作ESP)
+	}
+	Base::PlayerPawn Global_LocalPlayer = NULL;//本地人物地址
+	namespace Advanced//进阶内存扩展函数
+	{
+		Base::PlayerPawn Traverse_Player(short i, BOOL ReturnPlayerController = false) noexcept//遍历人物Pawn
+		{
+			const auto Entitylist = Base::EntityList();
+			const auto PlayerController = Base::Convert(Entitylist, i);
+			if (ReturnPlayerController)return PlayerController;
+			return Base::Convert(Entitylist, CS2_MEM.Read<uint32_t>(PlayerController + CS2_Offsets::m_hPlayerPawn));
+		}
+		string LocalPlayer_Name() noexcept//本地人物名称
+		{
+			const auto LocalPlayerName = CS2_MEM.Read_str(Base::LocalPlayerController() + CS2_Offsets::m_iszPlayerName);
+			static string ReturnValue = "None"; if (LocalPlayerName != "")ReturnValue = LocalPlayerName;
+			return ReturnValue;
+		}
+		string Player_Name(short i) noexcept//通过ClassID获取名称
+		{
+			const auto PlayerController = Base::Convert(Base::EntityList(), i);
+			if (!PlayerController)return "None";
+			else return CS2_MEM.Read_str(PlayerController + CS2_Offsets::m_iszPlayerName);
+		}
+		BOOL Check_Enemy(Base::PlayerPawn PlayerPawn) noexcept { return (PlayerPawn.Pawn() != Global_LocalPlayer.Pawn() && PlayerPawn.Health() > 0 && (!Global_TeamCheck || Global_LocalPlayer.TeamNumber() != PlayerPawn.TeamNumber()) && PlayerPawn.TeamNumber() != 1); }//判断人物是否是敌人
+		BOOL Stop_Move(short TriggerValue = 65, BOOL Movement = true) noexcept//急停
+		{
+			const auto LocalVel = Global_LocalPlayer.Velocity();
+			if (hypot(LocalVel.x, LocalVel.y) <= TriggerValue)return true;//当精准则返回真
+			if (Movement)//停止移动 反之只返回是否精准
+			{
+				const auto LocalYaw = Base::ViewAngles().y;
+				const auto X = (LocalVel.x * cos(LocalYaw / 180 * 3.1415926) + LocalVel.y * sin(LocalYaw / 180 * 3.1415926));
+				const auto Y = (LocalVel.y * cos(LocalYaw / 180 * 3.1415926) - LocalVel.x * sin(LocalYaw / 180 * 3.1415926));
+				ExecuteCommand("-back"); ExecuteCommand("-forward"); ExecuteCommand("-right"); ExecuteCommand("-left");
+				if (X > 30) { ExecuteCommand("+back"); Sleep(1); ExecuteCommand("-back"); }
+				else if (X < -30) { ExecuteCommand("+forward"); Sleep(1); ExecuteCommand("-forward"); }
+				if (Y > 30) { ExecuteCommand("+right"); Sleep(1); ExecuteCommand("-right"); }
+				else if (Y < -30) { ExecuteCommand("+left"); Sleep(1); ExecuteCommand("-left"); }
+			}
+			return false;
+		}
+		short Local_RoundDamage(BOOL Return_Kill = false) noexcept//回合伤害和击杀数
+		{
+			const auto Local_RoundValue = CS2_MEM.Read<uintptr_t>(Base::LocalPlayerController() + CS2_Offsets::m_pActionTrackingServices);
+			if (Return_Kill)return CS2_MEM.Read<short>(Local_RoundValue + CS2_Offsets::m_iNumRoundKills);
+			else return CS2_MEM.Read<short>(Local_RoundValue + CS2_Offsets::m_unTotalRoundDamageDealt);
+		}
+		void Move_to_Angle(Variable::Vector3 Target_Angles = { 0,0,0 }, float Smooth = 40, float Offset = 0.3, short Traversals_Mum = 5) noexcept//本地人物将视角移动到指定坐标
+		{
+			for (int i = 0; i <= Traversals_Mum; ++i)
+			{
+				const auto LocalPlayer_Angle = Base::ViewAngles();//本地人物朝向
+				if (hypot(LocalPlayer_Angle.x - Target_Angles.x, LocalPlayer_Angle.y - Target_Angles.y) <= Offset)return;
+				System::Mouse_Move((-Target_Angles.y + LocalPlayer_Angle.y) * Smooth, (Target_Angles.x - LocalPlayer_Angle.x) * Smooth);
+				if (Traversals_Mum != 1)Sleep(1);
+			}
+		}
+		BOOL Move_to_Pos(Variable::Vector3 Target_Pos = { 0,0,0 }, float Edge = 8) noexcept//本地人物移动到指定世界坐标
+		{
+			const auto LocalPlayer_Pos = Global_LocalPlayer.Origin();//本地人物所处世界坐标
+			const auto Target_Distance = hypot(LocalPlayer_Pos.x - Target_Pos.x, LocalPlayer_Pos.y - Target_Pos.y);//计算与目标坐标的距离
+			if (Target_Distance <= Edge)return true;//达到边缘则不进行移动
+			auto Offset_Angle = Base::ViewAngles().y - Variable::Pos_Angle(LocalPlayer_Pos, Target_Pos); if (Offset_Angle < 0)Offset_Angle += 360;//角度偏移
+			if (Offset_Angle > 315 - 15 || Offset_Angle < 45 + 15)ExecuteCommand("+forward");
+			else ExecuteCommand("-forward");
+			if (Offset_Angle > 45 - 15 && Offset_Angle < 135 + 15)ExecuteCommand("+right");
+			else ExecuteCommand("-right");
+			if (Offset_Angle > 135 - 15 && Offset_Angle < 225 + 15)ExecuteCommand("+back");
+			else ExecuteCommand("-back");
+			if (Offset_Angle > 225 - 15 && Offset_Angle < 315 + 15)ExecuteCommand("+left");
+			else ExecuteCommand("-left");
+			if (Target_Distance <= Edge * 2)//降低移动速度
+			{
+				Sleep(1);//按键缓冲
+				ExecuteCommand("-forward");
+				ExecuteCommand("-right");
+				ExecuteCommand("-back");
+				ExecuteCommand("-left");//释放所有按键
+			}
+			return false;//未移动到目标坐标
+		}
+		vector<Variable::Vector3> MovingPath_Map(short MapID = 0) noexcept//地图移动路径
+		{
+			if (MapID == 0)return {//Dust2
+{266.2,2547.0,-115.4},
+{226.4,2465.9,-122.0},
+{170.2,2315.8,-119.0},
+{74.8,2192.1,-125.0},
+{-42.6,2156.8,-127.9},
+{-205.9,2152.3,-126.3},
+{-325.2,2216.1,-124.7},
+{-404.6,2314.9,-110.9},
+{-530.3,2376.9,-103.2},
+{-683.4,2382.6,-103.6},
+{-809.1,2382.5,-71.7},
+{-928.5,2395.2,-49.5},
+{-1049.6,2416.1,-0.9},
+{-1172.4,2393.7,25.2},
+{-1250.2,2308.1,9.3},
+{-1301.3,2231.5,1.9},
+{-1359.3,2162.3,2.1},
+{-1458.9,2110.0,1.1},
+{-1566.2,2068.7,-3.0},
+{-1681.3,2027.2,-6.1},
+{-1778.0,1991.2,-2.9},
+{-1881.9,1929.8,-0.4},
+{-1957.0,1838.3,20.5},
+{-1983.5,1733.0,31.5},
+{-1986.2,1617.7,31.4},
+{-1986.1,1508.2,31.6},
+{-1981.2,1390.7,28.5},
+{-1943.6,1287.4,30.4},
+{-1867.2,1204.9,32.1},
+{-1773.3,1151.4,32.1},
+{-1683.5,1071.4,31.4},
+{-1664.1,956.9,30.0},
+{-1665.3,836.9,31.1},
+{-1671.2,735.0,31.1},
+{-1693.7,622.9,31.6},
+{-1732.2,521.8,34.0},
+{-1785.6,415.4,1.9},
+{-1838.2,314.5,0.0},
+{-1870.9,214.5,3.6},
+{-1896.6,99.7,3.1},
+{-1918.0,-22.1,-0.5},
+{-1929.8,-133.8,4.7},
+{-1936.2,-241.3,29.2},
+{-1942.3,-361.4,61.2},
+{-1947.4,-472.3,90.9},
+{-1950.0,-583.6,119.7},
+{-1922.6,-696.4,124.8},
+{-1843.0,-782.4,117.7},
+{-1722.6,-837.1,114.9},
+{-1601.3,-869.1,116.4},
+{-1482.9,-883.6,116.8},
+{-1363.3,-895.1,116.7},
+{-1255.9,-904.4,117.0},
+{-1142.1,-911.3,118.7},
+{-1031.4,-916.8,120.5},
+{-926.5,-920.7,120.9},
+{-808.2,-922.2,120.7},
+{-694.1,-922.8,121.0},
+{-578.9,-923.0,121.0},
+{-468.8,-922.8,108.9},
+{-348.5,-922.5,83.4},
+{-239.1,-922.3,57.1},
+{-132.9,-920.1,29.9},
+{-26.4,-897.0,5.2},
+{67.8,-825.7,-8.4},
+{134.4,-736.2,-7.5},
+{198.7,-624.2,3.9},
+{253.0,-519.1,-1.3},
+{304.5,-407.4,0.3},
+{353.2,-300.5,2.3},
+{401.4,-194.7,-3.6},
+{451.3,-84.7,-5.3},
+{500.3,23.3,-4.9},
+{543.9,119.9,-4.6},
+{588.2,217.9,-0.7},
+{647.0,313.3,1.0},
+{681.3,411.5,0.8},
+{645.8,521.0,0.9},
+{606.6,633.9,1.1},
+{623.9,746.8,0.9},
+{709.4,812.1,0.1},
+{806.4,870.2,0.0},
+{930.8,900.5,0.5},
+{1051.9,900.2,-0.4},
+{1161.7,905.5,-0.4},
+{1259.6,947.3,-0.3},
+{1335.8,1036.4,-7.5},
+{1374.1,1137.1,-8.8},
+{1393.0,1247.6,-10.3},
+{1401.5,1389.7,-9.5},
+{1404.9,1519.4,-6.9},
+{1407.8,1629.7,-6.7},
+{1410.7,1738.5,-7.9},
+{1413.8,1852.3,-8.7},
+{1416.8,1962.4,-9.2},
+{1419.9,2076.3,-9.3},
+{1423.0,2191.2,-8.0},
+{1426.3,2315.3,6.6},
+{1429.2,2426.8,30.7},
+{1429.4,2542.1,59.9},
+{1427.9,2669.1,89.6},
+{1427.5,2781.9,110.2},
+{1423.2,2885.6,116.1},
+{1360.8,2975.6,121.4},
+{1250.2,2973.4,128.2},
+{1165.0,2902.9,127.9},
+{1101.7,2797.9,127.0},
+{1027.8,2705.1,96.0},
+{935.6,2651.4,96.1},
+{833.7,2607.4,94.8},
+{728.5,2564.8,94.5},
+{621.3,2523.5,96.0},
+{528.5,2486.8,96.2},
+{438.5,2412.5,95.5},
+{402.1,2300.4,95.7},
+{384.6,2178.3,95.9},
+{369.4,2056.8,95.5},
+{357.6,1950.0,96.0},
+{352.8,1829.2,95.6},
+{354.1,1716.9,72.1},
+{355.3,1601.8,3.4},
+{320.0,1489.6,1.3},
+{206.0,1430.5,-0.5},
+{101.6,1420.4,-0.4},
+{-20.7,1410.3,-0.5},
+{-123.1,1355.5,0.0},
+{-176.2,1248.0,0.3},
+{-187.1,1135.4,-0.6},
+{-186.6,1010.8,1.6},
+{-182.4,900.4,0.9},
+{-187.8,774.9,1.7},
+{-235.2,668.5,2.0},
+{-300.3,571.5,-1.8},
+{-351.0,471.9,-4.5},
+{-394.0,355.8,-1.7},
+{-416.0,252.1,-0.5},
+{-405.0,135.2,0.1},
+{-405.0,10.2,0.2},
+{-405.0,-108.9,-0.5},
+{-404.9,-222.8,0.7},
+{-395.1,-327.7,1.3},
+{-372.2,-449.7,9.0},
+{-285.4,-517.2,0.6},
+{-163.4,-542.5,0.7},
+{-49.1,-547.5,1.8},
+{70.2,-528.3,1.3},
+{167.4,-450.4,0.9},
+{226.2,-356.0,0.1},
+{274.1,-248.4,0.8},
+{286.4,-118.6,-1.3},
+{280.3,-4.3,0.0},
+{258.7,123.1,2.5},
+{207.2,229.9,9.0},
+{124.7,310.3,-0.2},
+{8.0,366.6,-1.4},
+{-95.9,403.7,-1.3},
+{-198.9,449.6,-1.3},
+{-291.8,533.4,-2.6},
+{-338.3,648.6,-0.4},
+{-357.8,785.8,-1.4},
+{-365.4,897.1,-30.9},
+{-372.4,1019.0,-57.9},
+{-378.2,1133.8,-89.9},
+{-383.3,1255.5,-118.2},
+{-387.6,1379.1,-126.4},
+{-391.9,1498.2,-126.3},
+{-398.4,1592.7,-126.4},
+{-466.6,1683.5,-124.8},
+{-497.1,1800.0,-121.5},
+{-503.1,1922.5,-121.7},
+{-512.4,2037.1,-121.4},
+{-561.5,2145.2,-120.1},
+{-653.6,2212.1,-120.9},
+{-786.4,2253.1,-106.6},
+{-895.4,2280.2,-74.6},
+{-1014.2,2299.2,-35.1},
+{-1143.5,2300.4,4.8},
+{-1244.8,2294.9,7.7},
+{-1291.2,2237.0,2.3},
+{-1351.5,2158.8,2.1},
+{-1461.0,2093.4,1.5},
+{-1582.4,2061.4,-3.7},
+{-1709.3,2018.7,-5.7},
+{-1812.0,1972.1,-1.7},
+{-1908.8,1900.9,0.1},
+{-1970.9,1800.8,33.0},
+{-1987.7,1689.3,31.5},
+{-1990.0,1569.4,31.5},
+{-1987.7,1448.7,30.3},
+{-1962.9,1328.2,28.9},
+{-1898.3,1226.4,31.8},
+{-1793.4,1169.0,32.3},
+{-1671.5,1141.7,31.0},
+{-1550.1,1123.4,34.8},
+{-1427.6,1107.1,36.0},
+{-1311.0,1095.2,34.6},
+{-1177.8,1107.4,-3.3},
+{-1105.2,1171.5,-53.6},
+{-1056.6,1282.4,-110.8},
+{-1021.6,1394.5,-112.8},
+{-914.9,1449.4,-112.4},
+{-795.3,1453.1,-112.1},
+{-671.1,1443.8,-113.6},
+{-555.6,1434.9,-112.7},
+{-430.6,1455.9,-126.5},
+{-365.5,1537.8,-126.3},
+{-397.2,1629.2,-126.4},
+{-470.0,1691.9,-124.5},
+{-472.0,1813.1,-124.0},
+{-437.6,1911.2,-126.3},
+{-368.0,2011.8,-127.1},
+{-280.1,2069.4,-127.5},
+{-176.4,2108.0,-126.2},
+{-65.1,2136.5,-126.9},
+{60.1,2180.8,-126.3},
+{144.8,2264.8,-125.4},
+{200.1,2368.8,-120.0},
+{238.8,2466.5,-122.0},
+{268.9,2547.0,-115.5}
+			};
+			else if (MapID == 1)return {//Mirage
+{1258.6,-164.2,-168.0},
+{1259.2,15.9,-168.0},
+{1268.2,163.0,-168.0},
+{1255.9,318.3,-232.0},
+{1168.1,432.8,-263.1},
+{1048.9,513.8,-262.6},
+{913.2,582.4,-248.2},
+{762.8,615.5,-156.5},
+{623.2,635.0,-136.0},
+{598.5,661.7,-136.0},
+{592.1,690.9,-136.0},
+{584.8,736.3,-136.0},
+{578.4,776.4,-136.0},
+{495.9,814.7,-136.0},
+{369.0,807.9,-136.0},
+{210.9,809.2,-136.0},
+{71.4,812.9,-136.0},
+{-48.9,812.8,-136.0},
+{-160.5,810.9,-135.8},
+{-250.5,762.2,-126.5},
+{-266.7,611.3,-77.3},
+{-381.5,552.0,-80.0},
+{-485.7,565.4,-80.5},
+{-624.0,574.8,-81.1},
+{-743.2,574.0,-81.9},
+{-865.1,571.3,-82.0},
+{-988.1,568.9,-80.0},
+{-1092.8,615.8,-80.0},
+{-1166.3,698.6,-80.0},
+{-1282.1,731.3,-80.0},
+{-1401.8,732.8,-65.5},
+{-1518.9,733.7,-48.0},
+{-1624.9,736.5,-48.0},
+{-1747.1,741.8,-48.0},
+{-1855.1,747.1,-48.0},
+{-1975.2,745.3,-48.0},
+{-2079.4,717.7,-44.0},
+{-2203.7,599.6,-147.1},
+{-2327.8,464.7,-168.0},
+{-2344.2,375.7,-168.0},
+{-2341.5,258.7,-168.0},
+{-2337.7,132.8,-168.0},
+{-2334.4,-6.1,-166.7},
+{-2334.0,-133.8,-164.3},
+{-2334.5,-259.1,-167.9},
+{-2334.5,-397.4,-168.0},
+{-2310.8,-516.4,-168.0},
+{-2209.3,-583.4,-168.0},
+{-2067.8,-596.9,-168.0},
+{-1921.0,-605.8,-168.0},
+{-1798.3,-617.4,-168.0},
+{-1672.2,-645.3,-168.0},
+{-1595.0,-738.6,-168.0},
+{-1592.2,-878.9,-171.4},
+{-1602.0,-1018.0,-210.0},
+{-1609.4,-1138.7,-239.5},
+{-1615.8,-1260.0,-260.8},
+{-1622.3,-1387.3,-264.9},
+{-1628.1,-1521.5,-264.1},
+{-1632.4,-1648.6,-264.3},
+{-1636.4,-1783.9,-266.6},
+{-1791.5,-1807.7,-264.0},
+{-1941.8,-1809.6,-280.7},
+{-1963.4,-1958.1,-285.2},
+{-1823.7,-1977.7,-264.9},
+{-1685.6,-1985.0,-267.8},
+{-1626.3,-2073.0,-260.7},
+{-1568.2,-2184.3,-252.6},
+{-1466.0,-2270.3,-242.2},
+{-1360.4,-2320.4,-217.9},
+{-1238.0,-2348.0,-191.6},
+{-1108.7,-2364.1,-168.0},
+{-988.6,-2369.4,-168.0},
+{-853.3,-2360.8,-169.1},
+{-721.2,-2319.1,-179.0},
+{-592.1,-2280.4,-176.7},
+{-464.1,-2247.1,-174.0},
+{-336.1,-2212.5,-171.4},
+{-227.2,-2174.4,-169.9},
+{-146.4,-2084.1,-168.0},
+{-143.9,-1966.1,-168.0},
+{-142.7,-1839.2,-168.0},
+{-100.5,-1725.1,-168.0},
+{-1.3,-1647.5,-168.0},
+{108.7,-1587.9,-172.4},
+{245.1,-1549.3,-176.0},
+{355.2,-1572.5,-189.6},
+{462.0,-1604.8,-243.0},
+{587.4,-1580.8,-264.0},
+{643.4,-1471.2,-263.9},
+{668.0,-1334.8,-263.5},
+{704.2,-1223.9,-260.0},
+{798.9,-1135.8,-260.5},
+{924.2,-1110.1,-263.6},
+{1064.3,-1083.5,-263.5},
+{1133.1,-998.7,-259.8},
+{1159.5,-878.2,-258.5},
+{1170.9,-766.7,-241.2},
+{1172.5,-643.2,-215.0},
+{1170.0,-526.7,-189.2},
+{1175.0,-418.0,-164.0},
+{1257.2,-362.9,-164.0},
+{1326.6,-454.4,-168.0},
+{1339.5,-571.5,-168.0},
+{1341.6,-688.6,-168.0},
+{1342.8,-822.8,-168.0},
+{1344.2,-935.6,-168.0},
+{1345.8,-1062.1,-168.0},
+{1346.2,-1182.8,-168.0},
+{1344.1,-1307.6,-168.0},
+{1290.4,-1422.3,-168.0},
+{1182.7,-1435.9,-168.0},
+{1074.6,-1437.0,-168.0},
+{969.4,-1510.6,-160.9},
+{969.6,-1629.6,-120.0},
+{972.0,-1752.3,-72.0},
+{968.5,-1877.2,-72.0},
+{962.3,-2003.9,-72.0},
+{945.6,-2123.2,-40.0},
+{875.4,-2241.7,-40.0},
+{776.8,-2285.1,-40.0},
+{656.5,-2292.8,-40.0},
+{532.7,-2295.0,-40.0},
+{393.8,-2299.7,-40.0},
+{279.2,-2304.3,-40.0},
+{160.1,-2308.1,-40.0},
+{54.5,-2263.9,-40.0},
+{43.5,-2153.6,-40.0},
+{33.6,-2038.9,-40.0},
+{-56.7,-1986.6,-40.0},
+{-185.7,-1923.7,-151.5},
+{-265.9,-1882.3,-168.0},
+{-364.2,-1829.8,-169.2},
+{-471.8,-1771.2,-176.2},
+{-579.9,-1699.8,-175.5},
+{-648.1,-1594.8,-168.0},
+{-670.4,-1464.3,-168.0},
+{-673.1,-1342.8,-168.0},
+{-673.1,-1221.2,-168.0},
+{-672.4,-1084.1,-189.9},
+{-671.5,-941.0,-216.0},
+{-670.5,-826.0,-264.0},
+{-613.5,-701.6,-269.3},
+{-475.8,-668.7,-272.6},
+{-344.4,-670.4,-267.5},
+{-209.0,-672.4,-243.6},
+{-94.4,-667.8,-217.2},
+{29.1,-631.4,-188.6},
+{128.8,-553.4,-168.0},
+{216.9,-439.1,-166.2},
+{272.6,-315.4,-166.7},
+{282.0,-190.1,-167.9},
+{283.7,-78.5,-178.6},
+{284.9,44.1,-212.5},
+{286.6,152.8,-241.8},
+{302.9,292.2,-262.9},
+{358.4,398.6,-264.2},
+{478.8,464.9,-261.7},
+{598.3,477.7,-258.3},
+{722.5,483.3,-255.3},
+{849.1,490.2,-252.8},
+{951.3,543.7,-253.6},
+{922.5,631.9,-247.3},
+{812.5,654.7,-189.6},
+{706.9,645.2,-136.0},
+{605.2,652.2,-136.0},
+{589.8,687.6,-136.0},
+{563.9,791.3,-136.0},
+{452.3,815.3,-136.0},
+{330.1,809.9,-136.0},
+{207.8,813.4,-136.0},
+{83.7,815.7,-136.0},
+{-47.5,811.8,-136.0},
+{-165.2,800.0,-135.6},
+{-271.8,731.8,-105.9},
+{-291.0,611.2,-77.5},
+{-299.5,487.1,-80.0},
+{-395.4,412.4,-92.9},
+{-530.8,413.5,-183.1},
+{-653.4,418.0,-224.0},
+{-768.6,416.6,-293.7},
+{-892.4,407.4,-368.0},
+{-998.7,357.7,-368.0},
+{-1024.3,270.7,-368.0},
+{-1023.8,155.3,-368.0},
+{-1019.5,40.2,-368.0},
+{-1017.1,-73.5,-368.0},
+{-1017.6,-193.4,-368.0},
+{-1018.5,-315.8,-368.0},
+{-1015.5,-426.5,-322.7},
+{-1003.2,-573.6,-288.0},
+{-896.3,-597.8,-264.0},
+{-787.3,-619.1,-265.1},
+{-714.2,-701.3,-267.6},
+{-668.5,-812.7,-264.0},
+{-657.4,-925.7,-221.1},
+{-656.9,-1046.2,-208.9},
+{-658.0,-1182.0,-168.0},
+{-660.2,-1295.1,-168.0},
+{-713.4,-1393.8,-168.0},
+{-826.1,-1432.2,-168.0},
+{-944.4,-1427.9,-168.0},
+{-1040.6,-1415.4,-166.2},
+{-1152.0,-1370.3,-166.5},
+{-1210.1,-1280.2,-168.0},
+{-1224.6,-1173.4,-168.0},
+{-1212.3,-1039.1,-168.0},
+{-1182.0,-912.9,-168.0},
+{-1164.0,-791.3,-168.0},
+{-1159.0,-655.0,-168.0},
+{-1154.5,-539.3,-168.0},
+{-1161.8,-612.6,-168.0},
+{-1157.2,-729.9,-168.0},
+{-1162.0,-857.5,-168.0},
+{-1184.0,-974.3,-168.0},
+{-1205.5,-1106.8,-168.0},
+{-1212.0,-1234.4,-168.0},
+{-1154.1,-1343.8,-167.7},
+{-1046.3,-1406.9,-166.2},
+{-920.1,-1435.0,-168.0},
+{-785.8,-1396.9,-168.0},
+{-691.0,-1314.0,-168.0},
+{-655.4,-1172.9,-168.0},
+{-661.8,-1050.1,-206.9},
+{-671.6,-927.0,-220.5},
+{-668.0,-814.4,-264.0},
+{-593.9,-715.8,-268.4},
+{-465.9,-671.2,-272.7},
+{-349.6,-658.8,-268.4},
+{-219.0,-647.5,-245.0},
+{-87.4,-625.4,-216.3},
+{31.0,-572.8,-184.5},
+{137.1,-490.3,-168.3},
+{252.4,-428.2,-165.2},
+{379.9,-456.2,-165.2},
+{435.3,-550.5,-160.0},
+{464.3,-675.2,-160.0},
+{458.8,-792.3,-160.0},
+{385.8,-876.5,-164.4},
+{261.4,-870.2,-164.5},
+{168.2,-797.1,-164.0},
+{133.2,-675.3,-169.8},
+{129.9,-558.6,-168.0},
+{161.2,-436.8,-167.0},
+{202.6,-311.3,-167.5},
+{232.0,-186.7,-167.6},
+{252.9,-49.2,-184.0},
+{270.3,77.7,-218.4},
+{287.4,193.9,-256.4},
+{325.0,317.4,-263.1},
+{400.4,414.4,-262.3},
+{510.4,474.3,-260.2},
+{639.9,496.9,-258.3},
+{764.6,500.8,-255.4},
+{910.0,493.4,-251.8},
+{1020.1,483.6,-260.2},
+{1145.7,466.7,-262.2},
+{1244.5,405.6,-262.5},
+{1269.5,272.0,-202.6},
+{1269.1,164.6,-168.0},
+{1267.0,41.6,-168.0},
+{1264.7,-89.6,-168.0},
+{1263.1,-191.1,-164.0},
+{1263.3,-323.3,-164.0},
+{1271.2,-455.5,-164.0},
+{1288.1,-575.8,-166.7}
+			};
+			else if (MapID == 2)return {//Inferno
+{2521.0,2017.8,140.0},
+{2466.6,2110.2,132.2},
+{2380.8,2271.9,132.6},
+{2311.3,2431.4,132.0},
+{2245.6,2599.6,133.0},
+{2188.8,2737.1,130.0},
+{2054.7,2821.0,124.0},
+{1884.0,2824.1,124.0},
+{1732.4,2816.6,124.0},
+{1561.5,2804.4,124.0},
+{1399.8,2800.0,124.0},
+{1272.2,2883.7,128.0},
+{1214.5,2995.9,128.0},
+{1200.4,3086.8,128.0},
+{1142.3,3178.1,128.0},
+{1045.2,3241.4,128.0},
+{974.8,3320.4,128.0},
+{902.2,3405.1,128.0},
+{812.6,3445.7,129.0},
+{702.7,3445.6,151.7},
+{596.5,3428.2,162.2},
+{512.0,3366.4,167.0},
+{472.6,3277.5,162.7},
+{455.2,3162.7,161.1},
+{450.7,3069.1,160.4},
+{419.8,2996.4,161.5},
+{325.7,2977.5,161.5},
+{238.2,2947.7,161.5},
+{161.1,2860.7,161.5},
+{153.7,2755.9,161.5},
+{197.8,2670.1,161.5},
+{275.6,2593.6,161.5},
+{373.3,2576.7,161.5},
+{464.9,2614.8,161.5},
+{546.5,2665.9,161.5},
+{653.5,2673.7,146.6},
+{729.9,2605.5,136.0},
+{766.5,2491.0,136.0},
+{771.0,2383.2,136.0},
+{768.3,2274.3,136.0},
+{764.2,2174.6,136.0},
+{735.9,2072.1,136.0},
+{652.7,2000.5,136.0},
+{552.4,1963.4,136.0},
+{451.0,1931.5,136.0},
+{360.8,1882.4,137.0},
+{301.7,1792.7,124.3},
+{258.1,1688.6,116.7},
+{219.2,1584.1,110.1},
+{186.9,1487.0,104.9},
+{158.2,1382.4,100.2},
+{138.9,1276.8,95.0},
+{131.5,1169.1,91.6},
+{128.0,1053.1,86.1},
+{113.3,955.1,82.0},
+{51.4,868.9,80.0},
+{-46.0,837.1,77.2},
+{-167.6,829.9,40.3},
+{-280.5,826.4,17.2},
+{-389.0,809.3,-10.8},
+{-486.8,766.0,-33.5},
+{-577.8,712.3,-32.9},
+{-672.4,650.9,-31.6},
+{-759.5,594.4,-31.3},
+{-849.6,550.8,-31.6},
+{-952.2,530.7,-40.6},
+{-1060.9,522.9,-58.8},
+{-1150.3,513.9,-62.3},
+{-1239.3,450.2,-64.0},
+{-1259.0,342.0,-64.0},
+{-1261.0,260.7,-64.0},
+{-1277.8,175.4,-64.0},
+{-1341.6,178.4,-64.0},
+{-1440.7,185.1,-64.0},
+{-1518.8,236.4,-64.0},
+{-1532.1,353.9,-64.0},
+{-1518.7,464.2,-64.0},
+{-1521.8,569.3,-64.0},
+{-1569.6,658.0,-64.0},
+{-1641.6,631.6,-64.0},
+{-1664.7,537.6,-64.0},
+{-1656.2,428.9,-64.0},
+{-1641.4,319.9,-64.0},
+{-1614.4,209.2,-64.0},
+{-1577.7,95.9,-64.0},
+{-1537.0,-3.8,-64.0},
+{-1481.3,-103.0,-64.0},
+{-1393.0,-144.7,-15.7},
+{-1282.3,-164.6,4.0},
+{-1223.2,-240.4,4.0},
+{-1162.4,-350.0,5.0},
+{-1071.5,-384.2,4.0},
+{-977.3,-386.5,4.0},
+{-887.3,-360.0,4.5},
+{-802.7,-306.7,-1.8},
+{-712.4,-247.9,-1.1},
+{-623.1,-210.4,5.5},
+{-509.4,-177.7,19.4},
+{-404.6,-153.9,22.0},
+{-290.7,-133.8,22.0},
+{-190.0,-121.1,22.0},
+{-79.1,-110.1,31.2},
+{28.4,-102.2,40.7},
+{128.6,-96.3,45.0},
+{232.4,-91.8,65.5},
+{346.7,-90.2,65.5},
+{444.1,-91.1,68.6},
+{558.6,-95.0,71.6},
+{671.3,-108.3,74.0},
+{780.1,-154.7,89.0},
+{846.8,-218.0,89.0},
+{895.5,-321.4,89.0},
+{900.6,-424.3,89.0},
+{878.7,-545.8,89.0},
+{808.3,-637.1,96.3},
+{707.1,-664.3,92.1},
+{591.7,-673.4,88.0},
+{497.5,-677.0,88.0},
+{389.7,-673.0,97.1},
+{319.3,-660.5,96.0},
+{303.2,-476.3,96.0},
+{192.1,-455.2,96.0},
+{107.4,-454.3,113.7},
+{1.3,-453.3,183.9},
+{-104.5,-452.3,192.0},
+{-210.0,-451.4,192.0},
+{-306.1,-450.2,192.0},
+{-387.4,-391.3,192.0},
+{-387.0,-288.5,194.5},
+{-385.3,-164.5,192.0},
+{-384.5,-46.1,192.0},
+{-383.9,66.4,192.0},
+{-383.2,197.9,192.0},
+{-382.6,294.7,192.0},
+{-296.7,303.4,192.5},
+{-206.2,307.1,192.0},
+{-100.5,312.4,192.0},
+{-8.2,315.8,192.0},
+{-28.2,187.4,201.0},
+{11.0,66.0,200.5},
+{-23.0,82.3,200.5},
+{-29.1,85.6,200.5},
+{-35.7,129.4,200.5},
+{-33.8,174.7,201.0},
+{-37.5,266.9,192.0},
+{-116.0,329.7,192.0},
+{-222.1,324.8,192.0},
+{-329.5,272.2,192.0},
+{-377.2,181.7,192.0},
+{-395.6,58.6,192.0},
+{-399.7,-62.0,192.0},
+{-399.4,-174.6,192.0},
+{-390.1,-278.4,194.5},
+{-338.3,-372.1,192.0},
+{-248.9,-431.4,192.0},
+{-126.7,-453.6,192.0},
+{-26.7,-455.4,192.0},
+{87.5,-455.9,126.8},
+{189.3,-457.0,96.0},
+{289.9,-460.3,96.0},
+{318.9,-575.6,96.0},
+{366.8,-680.6,97.1},
+{450.9,-675.8,88.0},
+{561.8,-664.4,88.0},
+{658.4,-656.3,89.5},
+{772.9,-649.8,95.4},
+{890.9,-645.8,89.0},
+{988.3,-644.2,97.5},
+{1115.2,-642.8,128.0},
+{1208.5,-628.6,128.0},
+{1222.5,-552.0,165.0},
+{1222.6,-473.3,216.9},
+{1223.5,-369.7,260.0},
+{1224.0,-298.6,260.0},
+{1296.0,-310.7,260.0},
+{1424.6,-312.5,256.0},
+{1542.8,-312.9,256.0},
+{1655.1,-316.3,256.0},
+{1785.7,-321.4,260.0},
+{1844.3,-294.1,261.0},
+{1868.9,-236.4,261.0},
+{1978.6,-186.5,256.0},
+{2068.1,-183.7,262.0},
+{2291.1,-171.7,102.7},
+{2290.0,-91.0,109.7},
+{2290.2,38.0,117.0},
+{2290.7,154.4,121.5},
+{2291.1,277.4,127.4},
+{2290.7,420.0,135.0},
+{2290.3,540.7,141.9},
+{2289.9,666.4,150.4},
+{2291.0,787.8,151.8},
+{2284.5,916.3,153.4},
+{2238.0,1022.8,161.6},
+{2133.5,1083.1,168.1},
+{2006.7,1103.6,169.4},
+{1881.6,1115.4,159.2},
+{1758.5,1120.0,159.6},
+{1633.8,1118.6,160.5},
+{1530.4,1108.6,162.8},
+{1445.0,1088.3,161.9},
+{1418.2,985.6,153.7},
+{1419.7,864.5,142.2},
+{1416.4,739.4,132.9},
+{1413.0,627.4,122.0},
+{1410.6,516.3,119.0},
+{1349.7,464.9,120.2},
+{1245.2,486.8,117.9},
+{1129.9,506.1,108.7},
+{1011.5,513.0,99.4},
+{908.2,472.4,96.0},
+{837.7,370.1,94.9},
+{816.9,265.8,92.1},
+{814.7,147.8,90.2},
+{822.6,34.9,86.7},
+{832.1,-81.8,89.0},
+{788.7,-162.3,89.0},
+{674.3,-142.1,79.9},
+{556.0,-120.8,71.1},
+{438.2,-105.9,68.5},
+{319.3,-103.9,65.5},
+{209.6,-104.7,59.3},
+{92.1,-104.8,44.1},
+{-25.1,-104.2,37.7},
+{-138.8,-103.2,24.0},
+{-264.1,-102.2,22.0},
+{-383.6,-101.2,22.0},
+{-517.8,-98.8,18.4},
+{-627.5,-93.4,5.0},
+{-738.8,-51.6,-2.5},
+{-775.7,62.8,-2.9},
+{-780.2,195.1,1.0},
+{-779.9,322.3,-5.7},
+{-772.8,427.7,-22.4},
+{-738.0,541.9,-29.9},
+{-671.3,627.7,-31.8},
+{-577.7,706.7,-33.1},
+{-480.1,775.9,-33.3},
+{-367.9,827.1,-5.1},
+{-249.0,842.1,21.4},
+{-134.2,841.4,54.3},
+{-22.2,831.1,80.0},
+{80.9,770.5,80.0},
+{160.0,675.6,81.0},
+{257.0,602.5,86.3},
+{362.9,574.7,85.3},
+{474.7,563.4,85.2},
+{594.0,553.0,91.2},
+{709.8,542.9,93.7},
+{822.3,533.3,96.0},
+{939.4,523.9,96.0},
+{1049.8,518.8,102.5},
+{1167.4,517.6,111.7},
+{1283.9,525.8,120.0},
+{1375.1,593.9,118.2},
+{1408.5,697.2,129.2},
+{1423.2,815.0,138.5},
+{1431.0,926.0,146.4},
+{1454.2,1043.5,157.4},
+{1541.9,1100.2,161.4},
+{1659.3,1127.8,160.8},
+{1756.7,1167.8,164.6},
+{1815.8,1250.9,169.0},
+{1829.1,1358.6,160.0},
+{1822.6,1478.1,160.0},
+{1817.5,1575.6,160.0},
+{1818.8,1664.0,160.0},
+{1891.3,1742.2,161.3},
+{2007.5,1768.9,161.0},
+{2108.8,1805.2,137.9},
+{2219.6,1870.0,136.7},
+{2324.8,1929.0,135.4},
+{2432.6,1973.6,136.1},
+{2521.3,2013.6,140.7}
+			};
+			else if (MapID == 3)return {//Ancient
+{-384.0,-2531.1,-153.9},
+{-352.7,-2425.8,-163.1},
+{-315.9,-2261.7,-163.3},
+{-298.2,-2120.9,-163.3},
+{-289.0,-2000.3,-169.2},
+{-281.9,-1886.7,-175.2},
+{-273.5,-1848.0,-175.2},
+{-197.7,-1841.3,-158.0},
+{-73.9,-1843.0,-160.0},
+{50.8,-1843.9,-160.0},
+{173.9,-1844.7,-160.0},
+{296.5,-1845.4,-160.0},
+{411.2,-1846.0,-160.0},
+{513.6,-1846.6,-164.4},
+{612.0,-1835.0,-159.7},
+{647.1,-1727.8,-131.5},
+{621.7,-1642.8,-68.5},
+{650.6,-1547.1,-47.0},
+{742.8,-1471.3,-2.0},
+{829.3,-1413.8,-1.0},
+{918.0,-1356.2,6.4},
+{998.5,-1288.7,1.0},
+{1062.4,-1184.3,1.0},
+{1083.5,-1080.6,1.0},
+{1085.0,-958.0,3.5},
+{1082.4,-853.2,3.2},
+{1156.9,-776.7,5.4},
+{1247.7,-777.5,3.9},
+{1312.5,-694.5,10.3},
+{1300.3,-592.3,29.3},
+{1277.7,-484.7,42.5},
+{1250.6,-369.7,77.3},
+{1211.0,-263.5,110.5},
+{1145.4,-176.7,121.9},
+{1078.0,-97.0,131.5},
+{1055.9,-38.5,134.0},
+{1039.8,78.2,130.9},
+{1069.9,204.2,134.0},
+{1141.7,286.5,124.9},
+{1230.9,370.1,122.2},
+{1264.6,487.1,122.8},
+{1275.3,610.7,124.8},
+{1268.7,728.4,120.7},
+{1211.9,820.8,116.0},
+{1101.1,850.5,114.2},
+{996.1,854.8,113.3},
+{870.8,854.4,108.4},
+{723.8,846.4,110.7},
+{700.3,748.2,119.1},
+{692.5,651.4,121.0},
+{686.9,537.2,125.8},
+{688.4,417.8,125.3},
+{790.3,308.3,124.1},
+{836.6,262.7,130.5},
+{719.3,213.3,134.0},
+{612.8,186.1,140.9},
+{501.3,129.6,152.7},
+{466.0,23.9,152.7},
+{444.2,-85.6,152.7},
+{442.3,-194.1,162.0},
+{455.1,-309.9,188.9},
+{462.4,-431.4,183.6},
+{399.7,-465.1,182.0},
+{293.2,-468.6,172.0},
+{198.2,-470.3,172.0},
+{193.2,-541.6,172.0},
+{190.0,-658.2,154.0},
+{188.7,-771.5,153.0},
+{143.1,-842.7,153.0},
+{33.8,-822.2,153.0},
+{-96.6,-803.4,153.0},
+{-49.0,-798.3,153.0},
+{87.4,-827.0,153.0},
+{215.7,-838.8,153.0},
+{337.0,-838.2,145.3},
+{462.5,-832.3,125.8},
+{586.3,-825.4,107.3},
+{703.6,-818.6,78.8},
+{842.4,-810.6,46.7},
+{960.5,-802.0,9.4},
+{1078.4,-781.2,5.5},
+{1200.0,-725.9,9.3},
+{1247.0,-625.4,29.0},
+{1237.9,-479.7,43.1},
+{1221.9,-355.9,82.4},
+{1178.0,-239.0,113.1},
+{1116.8,-139.7,130.5},
+{1044.1,-31.9,134.0},
+{982.5,56.9,130.9},
+{914.6,152.1,130.0},
+{840.7,242.2,132.5},
+{751.7,350.1,126.2},
+{711.4,460.7,127.7},
+{687.6,579.0,123.3},
+{665.2,700.6,117.6},
+{628.3,846.3,113.6},
+{477.7,869.9,112.8},
+{358.7,868.0,105.6},
+{233.4,860.1,98.8},
+{121.7,829.0,82.5},
+{11.4,758.0,74.0},
+{-109.7,742.8,81.0},
+{-246.7,763.7,77.7},
+{-324.1,785.0,78.0},
+{-429.3,788.2,105.0},
+{-512.5,706.4,132.4},
+{-527.7,577.6,162.0},
+{-522.9,440.1,160.0},
+{-517.4,302.9,161.2},
+{-514.4,170.3,163.0},
+{-513.9,59.8,119.2},
+{-515.9,-79.6,74.5},
+{-517.9,-200.4,56.0},
+{-520.6,-326.0,55.6},
+{-523.4,-453.9,38.8},
+{-525.9,-578.2,33.7},
+{-547.1,-711.0,32.0},
+{-659.6,-753.7,32.0},
+{-786.8,-775.5,36.2},
+{-925.5,-798.4,33.7},
+{-1040.9,-815.5,34.2},
+{-1142.2,-886.7,34.8},
+{-1161.3,-992.4,38.0},
+{-1179.3,-1088.7,8.9},
+{-1269.8,-1104.7,-3.1},
+{-1395.6,-1103.8,-8.9},
+{-1528.6,-1092.1,-3.4},
+{-1641.4,-1028.7,-8.2},
+{-1713.6,-935.5,-13.1},
+{-1749.6,-825.0,26.2},
+{-1766.7,-704.6,72.0},
+{-1779.8,-560.1,75.0},
+{-1784.6,-429.2,72.0},
+{-1786.5,-296.6,72.0},
+{-1788.0,-179.5,72.3},
+{-1790.3,-60.1,83.0},
+{-1793.7,67.8,72.0},
+{-1795.8,147.8,72.9},
+{-1910.7,139.5,72.0},
+{-2014.6,143.8,72.0},
+{-2067.2,181.7,72.0},
+{-2053.7,281.2,88.0},
+{-2037.9,406.2,75.0},
+{-2024.2,522.3,61.4},
+{-2010.3,643.0,52.0},
+{-1920.7,693.1,52.0},
+{-1777.8,682.5,52.0},
+{-1654.0,674.5,58.3},
+{-1534.2,668.4,60.4},
+{-1420.3,646.6,67.7},
+{-1375.1,536.2,73.0},
+{-1365.4,394.8,93.0},
+{-1365.2,266.8,87.0},
+{-1361.0,143.2,87.0},
+{-1318.5,21.4,103.0},
+{-1229.4,-57.4,106.0},
+{-1133.6,-123.3,103.0},
+{-1023.6,-159.8,106.0},
+{-898.7,-168.8,94.4},
+{-776.6,-170.2,69.6},
+{-665.7,-169.5,57.5},
+{-561.2,-138.7,56.1},
+{-523.6,-21.3,105.1},
+{-518.9,102.6,141.5},
+{-521.0,215.3,163.0},
+{-524.9,336.2,160.0},
+{-530.2,458.2,160.0},
+{-536.9,585.0,162.0},
+{-535.5,690.8,138.1},
+{-514.4,787.2,103.5},
+{-459.8,795.7,103.5},
+{-353.9,790.2,88.4},
+{-259.4,843.7,77.7},
+{-238.2,963.2,81.0},
+{-237.4,1080.1,60.0},
+{-238.8,1189.7,58.5},
+{-255.8,1319.2,26.1},
+{-321.8,1352.1,24.5},
+{-435.4,1387.5,25.4},
+{-567.0,1398.8,23.0},
+{-700.9,1401.1,74.0},
+{-831.9,1402.2,72.0},
+{-959.9,1403.3,72.0},
+{-1084.1,1401.9,73.1},
+{-1203.3,1393.9,102.0},
+{-1312.1,1349.8,97.3},
+{-1370.6,1261.0,97.3},
+{-1444.3,1175.5,97.3},
+{-1567.6,1154.2,99.0},
+{-1675.9,1144.0,61.1},
+{-1723.2,1103.2,52.0},
+{-1675.5,1003.5,52.0},
+{-1597.4,913.4,52.6},
+{-1483.4,903.3,54.0},
+{-1358.0,912.1,54.0},
+{-1232.6,925.2,56.0},
+{-1138.0,983.7,55.7},
+{-1080.4,1087.2,68.0},
+{-978.0,1112.1,66.1},
+{-864.8,1110.5,69.3},
+{-750.1,1108.0,67.3},
+{-623.2,1105.8,64.3},
+{-510.3,1104.1,64.0},
+{-395.8,1099.5,62.7},
+{-283.7,1049.5,69.3},
+{-232.9,952.4,81.0},
+{-184.5,829.6,77.7},
+{-95.3,757.5,81.0},
+{13.2,767.4,74.0},
+{129.2,813.9,84.7},
+{245.0,848.0,99.7},
+{363.0,868.4,105.9},
+{484.6,874.5,112.6},
+{591.2,851.4,113.9},
+{672.8,765.6,115.8},
+{696.5,650.4,121.3},
+{698.7,527.6,127.1},
+{699.0,406.1,126.1},
+{698.2,296.2,124.1},
+{695.6,197.0,134.0},
+{634.2,185.2,133.1},
+{532.7,180.0,154.4},
+{450.0,116.7,152.7},
+{433.7,-8.4,152.7},
+{432.3,-122.0,152.7},
+{444.8,-234.9,162.0},
+{463.9,-357.2,189.0},
+{414.6,-466.3,182.0},
+{312.0,-519.4,172.0},
+{229.7,-595.9,172.0},
+{191.6,-702.3,153.0},
+{133.5,-801.5,153.0},
+{18.0,-827.4,153.0},
+{-103.3,-821.6,153.0},
+{-224.9,-814.5,164.0},
+{-344.8,-810.1,139.6},
+{-449.7,-806.5,42.2},
+{-560.4,-804.7,32.0},
+{-683.6,-804.1,32.0},
+{-806.1,-804.5,37.0},
+{-930.1,-807.0,33.6},
+{-1041.7,-813.2,34.2},
+{-1150.7,-827.3,35.4},
+{-1177.3,-912.3,35.2},
+{-1169.5,-1040.5,15.1},
+{-1160.8,-1171.3,-8.2},
+{-1154.5,-1296.2,-22.9},
+{-1149.3,-1413.8,-23.3},
+{-1088.1,-1535.6,-25.1},
+{-978.3,-1596.5,-46.3},
+{-856.8,-1648.8,-83.8},
+{-746.1,-1703.1,-126.9},
+{-678.6,-1803.7,-156.1},
+{-677.9,-1923.0,-170.6},
+{-677.7,-2032.7,-168.0},
+{-657.8,-2149.8,-156.0},
+{-595.2,-2226.7,-163.3},
+{-485.9,-2218.8,-163.3},
+{-368.8,-2216.1,-163.3},
+{-334.8,-2269.3,-163.3},
+{-345.8,-2386.0,-163.3},
+{-368.7,-2519.4,-154.7},
+{-384.0,-2531.1,-153.9}
+			};
+			else if (MapID == 4)return {//Anubis
+{-310.0,-1723.0,2.0},
+{-443.7,-1620.4,2.0},
+{-563.1,-1524.8,2.0},
+{-677.8,-1434.9,2.0},
+{-785.1,-1351.2,31.1},
+{-886.4,-1271.2,45.1},
+{-983.7,-1182.5,64.0},
+{-1077.2,-1071.8,64.0},
+{-1069.5,-969.3,64.0},
+{-984.3,-876.2,64.0},
+{-932.2,-761.7,64.0},
+{-939.5,-635.6,65.2},
+{-989.1,-513.5,18.2},
+{-1057.9,-397.1,0.0},
+{-1132.1,-274.5,2.0},
+{-1214.1,-155.1,2.0},
+{-1311.0,-49.8,-0.6},
+{-1420.4,2.4,2.0},
+{-1538.6,51.9,1.7},
+{-1610.7,135.4,0.6},
+{-1625.9,265.0,0.1},
+{-1555.0,382.7,0.0},
+{-1475.7,470.0,0.0},
+{-1400.5,550.4,0.0},
+{-1321.0,641.2,0.0},
+{-1246.4,752.8,0.0},
+{-1218.3,886.5,0.0},
+{-1217.0,983.3,0.0},
+{-1220.5,1105.4,0.2},
+{-1224.7,1234.2,-31.0},
+{-1228.6,1355.3,-31.0},
+{-1230.2,1454.7,-31.0},
+{-1171.5,1485.1,-31.0},
+{-1049.8,1509.3,-31.0},
+{-919.9,1526.7,-31.0},
+{-825.0,1558.0,-31.0},
+{-799.2,1631.6,-31.0},
+{-792.9,1748.9,-1.3},
+{-794.3,1878.8,16.1},
+{-795.8,2000.1,16.1},
+{-797.3,2136.4,16.1},
+{-784.8,2262.3,5.6},
+{-715.3,2373.1,-32.0},
+{-610.6,2459.8,-53.5},
+{-504.3,2538.8,-95.0},
+{-393.8,2597.7,-95.0},
+{-269.5,2629.1,-95.0},
+{-135.6,2640.5,-95.0},
+{-1.2,2644.3,-96.0},
+{119.8,2644.5,-142.8},
+{247.4,2637.7,-151.1},
+{260.7,2572.2,-162.0},
+{278.3,2437.4,-166.1},
+{328.3,2292.4,-150.0},
+{356.2,2190.5,-126.3},
+{391.8,2096.5,-120.0},
+{464.7,2033.4,-93.3},
+{571.5,1983.5,-39.0},
+{678.3,1947.4,-38.0},
+{772.5,1960.9,-40.0},
+{829.3,2042.2,-40.0},
+{885.8,2124.7,-40.0},
+{962.9,2196.5,-40.0},
+{1016.2,2145.8,-38.0},
+{1069.1,2078.0,-46.9},
+{1152.2,2014.0,-192.0},
+{1193.9,2030.7,-192.0},
+{1256.3,2024.2,-192.0},
+{1341.3,1985.8,-172.2},
+{1401.3,1923.0,-150.6},
+{1453.4,1839.0,-152.0},
+{1508.0,1734.9,-152.0},
+{1560.4,1637.1,-152.0},
+{1619.4,1535.3,-152.0},
+{1662.2,1438.1,-152.0},
+{1675.3,1320.8,-152.0},
+{1665.4,1213.5,-152.0},
+{1649.1,1106.1,-152.0},
+{1610.8,988.2,-150.9},
+{1528.5,914.4,-152.0},
+{1418.6,889.1,-152.0},
+{1312.6,876.9,-152.0},
+{1213.2,831.3,-152.0},
+{1150.0,745.7,-150.1},
+{1109.6,690.2,-166.5},
+{1043.0,591.7,-188.8},
+{1020.5,556.9,-178.4},
+{974.0,530.0,-168.5},
+{898.6,490.2,-152.4},
+{880.9,481.2,-148.7},
+{846.3,463.0,-141.3},
+{802.4,404.9,-149.0},
+{792.8,318.7,-146.0},
+{790.0,201.9,-146.0},
+{789.4,88.4,-146.2},
+{788.9,-34.6,-120.9},
+{792.0,-147.6,-96.0},
+{815.3,-246.7,-60.5},
+{896.2,-320.7,-32.0},
+{1010.6,-359.1,-32.0},
+{1127.3,-372.0,-32.0},
+{1233.7,-357.0,-32.0},
+{1335.2,-321.3,-32.0},
+{1393.9,-281.9,-32.0},
+{1407.5,-198.8,-30.5},
+{1408.8,-85.6,-6.4},
+{1410.7,35.3,0.0},
+{1414.4,172.9,0.0},
+{1413.0,294.1,0.0},
+{1402.2,420.2,0.0},
+{1387.0,515.7,0.0},
+{1345.7,559.2,0.0},
+{1290.5,553.3,2.0},
+{1160.5,545.6,-95.1},
+{1117.6,448.5,-149.0},
+{1119.4,390.6,-149.5},
+{1142.0,343.6,-152.0},
+{1167.4,319.9,-146.0},
+{1208.5,311.2,-146.0},
+{1219.1,262.9,-146.0},
+{1214.8,188.1,-146.0},
+{1174.4,140.4,-146.0},
+{1122.3,136.0,-149.0},
+{1033.5,136.0,-149.0},
+{943.0,136.0,-149.0},
+{869.5,136.0,-149.0},
+{782.9,125.4,-146.0},
+{673.0,89.1,-152.0},
+{549.6,63.5,-152.0},
+{426.9,68.5,-152.0},
+{305.5,83.8,-152.0},
+{180.4,99.5,-151.3},
+{67.1,108.6,-149.0},
+{-52.8,112.6,-149.0},
+{-164.4,112.4,-149.0},
+{-278.8,111.8,-131.8},
+{-388.8,111.2,-120.0},
+{-504.7,110.5,-119.7},
+{-624.3,129.6,-96.0},
+{-710.2,198.2,-89.1},
+{-734.2,254.6,-56.0},
+{-762.6,318.1,-56.0},
+{-815.0,327.2,-56.0},
+{-915.3,341.7,-46.8},
+{-1006.6,407.5,-18.1},
+{-1012.6,468.1,1.0},
+{-961.4,559.0,-4.0},
+{-902.1,661.6,-4.0},
+{-901.7,774.0,19.5},
+{-913.3,885.1,35.0},
+{-916.5,1010.3,35.0},
+{-908.5,1124.5,35.0},
+{-860.9,1141.2,36.0},
+{-751.1,1139.2,32.0},
+{-643.4,1134.2,32.0},
+{-517.2,1130.2,57.0},
+{-397.7,1130.0,60.0},
+{-286.4,1137.9,60.0},
+{-213.1,1165.9,66.0},
+{-211.5,1279.2,66.0},
+{-214.2,1398.7,57.1},
+{-214.7,1529.3,27.0},
+{-213.6,1648.3,27.0},
+{-212.2,1769.3,27.0},
+{-210.6,1895.9,24.6},
+{-208.9,2016.7,24.0},
+{-207.1,2140.5,24.0},
+{-205.5,2249.3,24.0},
+{-213.0,2347.7,24.0},
+{-311.6,2309.3,24.0},
+{-411.6,2247.5,24.0},
+{-523.7,2168.1,22.0},
+{-628.7,2092.2,16.1},
+{-643.3,2042.7,16.1},
+{-537.3,2034.3,20.1},
+{-411.5,2029.6,20.8},
+{-304.0,2024.6,34.0},
+{-217.4,2019.8,24.0},
+{-216.0,1985.1,24.0},
+{-218.4,1866.2,26.9},
+{-218.4,1755.6,27.0},
+{-205.2,1641.5,27.0},
+{-125.6,1572.8,27.0},
+{-7.7,1567.1,-5.1},
+{96.1,1574.0,-32.0},
+{219.6,1546.4,-32.0},
+{265.1,1451.8,-29.4},
+{263.5,1321.9,-30.9},
+{253.3,1194.6,-31.8},
+{241.3,1065.5,-32.0},
+{223.7,940.7,-31.9},
+{156.3,867.6,-29.3},
+{45.8,842.7,2.0},
+{-54.8,809.8,0.3},
+{-85.7,709.8,0.3},
+{-86.9,595.5,0.3},
+{-88.1,478.4,0.3},
+{-89.9,357.3,0.3},
+{-91.8,237.8,0.2},
+{-93.7,116.2,0.2},
+{-95.6,-6.3,0.3},
+{-97.2,-110.7,0.2},
+{-83.1,-218.4,0.1},
+{-2.9,-294.4,0.3},
+{95.0,-373.8,0.3},
+{192.5,-450.4,0.3},
+{296.8,-532.5,-9.4},
+{395.7,-596.2,-12.0},
+{493.9,-666.1,-11.8},
+{550.5,-765.2,-2.0},
+{575.6,-884.1,-11.6},
+{585.8,-1006.1,-12.0},
+{591.7,-1124.9,-12.0},
+{584.9,-1246.1,-12.0},
+{542.3,-1347.3,-0.7},
+{455.4,-1425.3,2.0},
+{339.5,-1469.7,-12.0},
+{214.3,-1486.6,-12.0},
+{92.8,-1494.4,-12.0},
+{-31.5,-1501.4,-12.0},
+{-160.8,-1511.1,-12.0},
+{-277.6,-1546.0,-12.0},
+{-318.9,-1724.0,2.0}
+			};
+			else if (MapID == 5)return {//Overpass
+{-1418.9,-3493.1,316.0},
+{-1400.9,-3436.2,301.5},
+{-1344.7,-3332.2,282.9},
+{-1275.8,-3229.0,262.9},
+{-1202.8,-3126.1,242.5},
+{-1125.1,-3026.6,221.9},
+{-1046.4,-2938.4,202.5},
+{-952.1,-2848.7,181.1},
+{-856.9,-2767.3,164.0},
+{-759.1,-2695.2,162.8},
+{-664.4,-2638.1,158.1},
+{-585.5,-2554.4,154.5},
+{-562.1,-2451.4,152.0},
+{-544.9,-2334.4,150.3},
+{-512.9,-2230.7,148.8},
+{-442.7,-2137.4,148.9},
+{-341.3,-2087.2,148.9},
+{-244.0,-2025.3,148.7},
+{-258.3,-1996.9,148.6},
+{-341.9,-1949.5,148.6},
+{-458.8,-1909.3,148.4},
+{-545.4,-1851.7,148.9},
+{-622.2,-1745.9,149.4},
+{-670.6,-1644.1,151.9},
+{-691.6,-1520.7,148.8},
+{-666.1,-1403.3,148.9},
+{-602.5,-1337.9,148.2},
+{-496.1,-1296.6,137.8},
+{-414.8,-1276.5,71.2},
+{-315.5,-1266.9,21.0},
+{-209.5,-1253.8,31.8},
+{-192.2,-1196.6,38.1},
+{-211.8,-1082.2,26.5},
+{-271.6,-973.8,17.7},
+{-355.2,-880.8,28.4},
+{-431.1,-802.3,25.6},
+{-509.0,-701.2,19.5},
+{-530.8,-593.6,13.9},
+{-530.0,-483.1,18.5},
+{-526.5,-362.5,18.0},
+{-522.8,-247.9,15.5},
+{-533.8,-129.8,11.1},
+{-588.1,-19.6,10.9},
+{-670.8,85.8,29.5},
+{-762.9,177.7,74.0},
+{-862.1,253.1,100.0},
+{-962.7,264.9,100.0},
+{-1028.5,194.2,103.5},
+{-1057.3,95.1,103.5},
+{-1052.1,-18.9,103.5},
+{-1054.2,-118.9,103.5},
+{-1123.5,-215.5,103.5},
+{-1232.2,-234.4,105.6},
+{-1346.8,-225.6,115.0},
+{-1461.7,-210.6,135.0},
+{-1578.6,-194.9,132.0},
+{-1682.7,-181.2,132.0},
+{-1784.2,-158.0,132.0},
+{-1858.4,-79.5,132.0},
+{-1898.1,30.8,132.0},
+{-1950.7,132.9,132.0},
+{-2023.3,192.0,132.0},
+{-2102.7,241.8,132.0},
+{-2113.6,296.2,132.0},
+{-2053.5,398.8,108.0},
+{-1967.7,494.8,108.0},
+{-1893.8,579.6,108.0},
+{-1833.7,685.6,132.0},
+{-1799.6,805.5,132.0},
+{-1782.4,910.6,166.1},
+{-1774.4,1020.8,239.5},
+{-1774.9,1125.8,309.4},
+{-1789.0,1227.5,356.5},
+{-1831.4,1292.0,357.2},
+{-1936.9,1280.3,356.0},
+{-2051.9,1268.9,360.0},
+{-2169.3,1266.0,360.0},
+{-2289.2,1278.3,360.0},
+{-2373.8,1352.1,360.0},
+{-2407.6,1455.4,360.0},
+{-2473.8,1544.9,360.0},
+{-2579.2,1594.1,366.0},
+{-2664.5,1537.0,402.8},
+{-2669.0,1441.3,466.4},
+{-2607.6,1346.1,484.0},
+{-2517.7,1299.2,484.0},
+{-2462.0,1238.8,484.0},
+{-2488.5,1141.3,484.0},
+{-2513.3,1026.0,484.0},
+{-2554.3,923.8,476.0},
+{-2651.7,859.1,476.5},
+{-2749.1,818.4,484.0},
+{-2845.7,749.8,484.0},
+{-2925.6,656.4,484.0},
+{-2993.1,563.0,484.0},
+{-3050.9,480.1,484.0},
+{-3119.6,372.8,484.0},
+{-3176.5,278.9,488.4},
+{-3234.2,181.3,517.5},
+{-3292.0,83.2,520.1},
+{-3367.4,-14.2,522.5},
+{-3454.2,-85.4,522.3},
+{-3550.0,-156.2,520.1},
+{-3639.6,-224.0,517.7},
+{-3720.9,-311.2,517.5},
+{-3741.4,-417.1,513.2},
+{-3729.8,-536.5,501.3},
+{-3700.4,-662.3,495.6},
+{-3682.9,-774.5,495.9},
+{-3678.1,-891.3,496.0},
+{-3673.0,-1016.8,493.0},
+{-3657.2,-1130.0,490.0},
+{-3655.2,-1253.7,491.2},
+{-3676.4,-1359.7,496.5},
+{-3713.5,-1487.0,497.0},
+{-3728.8,-1610.7,488.2},
+{-3720.1,-1718.0,485.0},
+{-3687.7,-1838.2,483.6},
+{-3650.3,-1943.4,483.4},
+{-3604.7,-2051.4,482.2},
+{-3540.8,-2144.8,480.7},
+{-3443.5,-2222.1,479.1},
+{-3338.1,-2254.9,476.6},
+{-3210.8,-2282.0,475.0},
+{-3100.6,-2322.6,478.0},
+{-2976.0,-2383.8,476.5},
+{-2865.1,-2438.9,476.5},
+{-2752.8,-2486.3,478.1},
+{-2634.6,-2526.1,481.5},
+{-2515.8,-2553.8,483.8},
+{-2391.1,-2565.5,483.5},
+{-2270.6,-2565.9,480.9},
+{-2169.7,-2563.5,477.7},
+{-2061.0,-2560.7,456.4},
+{-1958.4,-2557.6,436.1},
+{-1934.9,-2520.2,432.5},
+{-1920.7,-2410.6,433.2},
+{-1916.1,-2285.5,433.4},
+{-1960.6,-2176.4,447.0},
+{-2057.3,-2101.4,477.0},
+{-2165.5,-2032.9,477.0},
+{-2283.8,-1945.7,476.1},
+{-2382.6,-1869.5,476.1},
+{-2469.6,-1820.3,476.1},
+{-2597.4,-1831.5,476.1},
+{-2681.9,-1902.9,476.1},
+{-2756.7,-1983.3,476.1},
+{-2877.5,-2028.5,476.0},
+{-2989.6,-1981.7,476.0},
+{-3055.6,-1887.8,502.9},
+{-3093.6,-1793.0,518.6},
+{-3117.8,-1726.5,523.4},
+{-3083.2,-1768.1,519.7},
+{-3015.5,-1853.9,506.7},
+{-2937.4,-1947.9,476.0},
+{-2830.0,-1979.6,478.0},
+{-2726.7,-1919.9,476.1},
+{-2663.2,-1813.1,476.1},
+{-2683.5,-1693.9,478.8},
+{-2713.4,-1573.8,443.8},
+{-2703.9,-1459.5,438.2},
+{-2635.4,-1347.3,438.1},
+{-2535.1,-1306.3,438.0},
+{-2413.5,-1296.9,437.8},
+{-2296.2,-1300.6,436.0},
+{-2160.7,-1304.2,391.2},
+{-2062.1,-1301.9,325.5},
+{-1956.5,-1251.9,255.0},
+{-1931.7,-1133.8,218.6},
+{-1954.3,-1002.1,132.0},
+{-1939.9,-966.5,132.0},
+{-1830.6,-957.3,132.0},
+{-1755.6,-1052.8,100.0},
+{-1761.8,-1188.4,100.0},
+{-1775.5,-1312.6,100.0},
+{-1792.4,-1440.7,100.0},
+{-1822.9,-1543.2,100.0},
+{-1869.6,-1652.9,100.0},
+{-1875.5,-1764.1,100.0},
+{-1812.1,-1858.8,100.0},
+{-1712.7,-1869.3,100.0},
+{-1721.5,-1842.2,100.0},
+{-1787.0,-1745.6,100.0},
+{-1803.7,-1627.5,100.0},
+{-1797.5,-1518.5,100.0},
+{-1786.5,-1384.8,100.0},
+{-1772.4,-1257.8,100.0},
+{-1757.1,-1137.4,100.0},
+{-1750.4,-1024.1,100.0},
+{-1815.9,-946.9,124.0},
+{-1905.3,-998.4,132.0},
+{-1905.1,-1110.1,202.8},
+{-1902.3,-1232.9,244.0},
+{-1967.1,-1307.6,262.1},
+{-2077.5,-1312.4,335.7},
+{-2193.3,-1304.7,412.9},
+{-2330.0,-1303.2,436.0},
+{-2442.4,-1319.5,438.5},
+{-2560.4,-1280.4,438.2},
+{-2622.0,-1167.5,437.9},
+{-2655.3,-1055.8,436.6},
+{-2698.2,-944.3,436.0},
+{-2804.4,-913.9,436.0},
+{-2922.9,-925.4,464.6},
+{-3048.4,-931.8,484.3},
+{-3155.1,-909.3,492.0},
+{-3269.1,-863.7,492.0},
+{-3375.8,-815.8,492.0},
+{-3484.4,-765.7,492.0},
+{-3576.2,-706.0,492.9},
+{-3646.7,-619.3,496.0},
+{-3693.9,-510.4,503.5},
+{-3693.2,-386.6,516.2},
+{-3639.4,-278.2,519.3},
+{-3554.6,-185.2,519.7},
+{-3430.2,-49.6,522.5},
+{-3395.5,-7.4,522.5},
+{-3348.6,39.2,522.5},
+{-3288.9,115.7,519.1},
+{-3246.9,186.4,517.5},
+{-3193.0,267.6,493.6},
+{-3148.2,332.4,484.0},
+{-3096.2,421.8,484.0},
+{-3058.6,491.0,484.0},
+{-2999.0,594.7,484.0},
+{-2946.8,662.2,484.0},
+{-2920.6,668.2,484.0},
+{-2815.9,646.0,484.0},
+{-2713.0,606.0,484.0},
+{-2618.9,529.2,484.0},
+{-2565.5,427.2,485.0},
+{-2551.6,301.8,464.7},
+{-2531.7,168.2,437.9},
+{-2463.8,65.0,437.0},
+{-2380.6,-25.4,431.4},
+{-2307.7,-121.2,394.7},
+{-2262.4,-238.6,390.1},
+{-2236.0,-358.6,390.2},
+{-2225.3,-470.4,390.2},
+{-2225.7,-593.1,390.3},
+{-2236.6,-711.8,390.9},
+{-2255.3,-821.7,391.8},
+{-2284.5,-933.1,394.7},
+{-2337.3,-1033.0,409.3},
+{-2426.0,-1119.6,437.7},
+{-2526.8,-1152.0,438.1},
+{-2624.9,-1105.4,437.4},
+{-2666.8,-994.6,436.0},
+{-2605.8,-912.5,436.0},
+{-2525.2,-846.5,436.0},
+{-2479.6,-729.1,436.0},
+{-2477.8,-614.3,436.0},
+{-2481.5,-496.4,436.0},
+{-2486.7,-369.6,436.0},
+{-2512.9,-250.7,436.0},
+{-2588.2,-171.7,436.0},
+{-2660.3,-78.9,436.1},
+{-2663.8,34.9,436.9},
+{-2622.6,149.4,437.7},
+{-2570.0,254.7,449.4},
+{-2490.2,355.7,484.9},
+{-2418.5,448.2,484.0},
+{-2354.3,544.4,484.0},
+{-2282.2,646.5,476.5},
+{-2194.2,724.6,476.0},
+{-2096.6,789.9,480.2},
+{-2004.1,868.3,484.0},
+{-1921.9,1005.2,484.0},
+{-1864.2,1109.7,468.9},
+{-1824.4,1181.6,374.5},
+{-1780.9,1175.0,342.2},
+{-1757.2,1065.4,269.2},
+{-1761.2,938.3,184.5},
+{-1781.7,823.6,132.0},
+{-1819.8,721.6,132.0},
+{-1879.1,624.9,108.0},
+{-1950.9,525.5,108.0},
+{-2011.9,440.3,108.0},
+{-2072.7,329.8,132.0},
+{-2066.1,213.2,132.0},
+{-1958.9,134.3,132.0},
+{-1922.5,49.9,132.0},
+{-1920.6,-63.5,132.0},
+{-1925.0,-177.8,132.0},
+{-1937.3,-302.9,132.0},
+{-1949.8,-423.8,132.0},
+{-1953.6,-534.3,132.0},
+{-1885.0,-591.8,132.0},
+{-1848.7,-507.8,132.0},
+{-1853.6,-394.2,132.0},
+{-1846.8,-267.8,132.0},
+{-1758.5,-200.6,132.0},
+{-1639.8,-199.3,132.0},
+{-1525.3,-205.4,132.0},
+{-1407.8,-209.3,128.2},
+{-1277.8,-212.5,106.9},
+{-1165.7,-214.9,103.6},
+{-1050.2,-221.9,103.5},
+{-960.5,-286.7,100.0},
+{-953.3,-401.7,100.0},
+{-985.2,-509.4,100.0},
+{-1073.8,-568.0,100.0},
+{-1191.0,-557.8,51.6},
+{-1300.3,-582.5,25.7},
+{-1342.1,-690.2,10.4},
+{-1328.1,-820.4,15.8},
+{-1288.7,-925.7,13.3},
+{-1181.4,-962.1,5.4},
+{-1053.6,-968.0,4.0},
+{-934.5,-964.5,24.3},
+{-817.4,-953.9,23.3},
+{-706.7,-945.9,21.7},
+{-594.1,-966.0,25.7},
+{-541.5,-1065.1,33.5},
+{-561.4,-1176.3,84.2},
+{-594.4,-1290.1,140.0},
+{-645.4,-1397.2,148.4},
+{-680.6,-1515.1,149.0},
+{-659.6,-1621.9,150.3},
+{-623.9,-1722.0,150.5},
+{-576.2,-1844.6,148.5},
+{-533.8,-1951.2,148.4},
+{-510.2,-2066.7,148.7},
+{-536.3,-2182.0,148.6},
+{-582.4,-2286.3,149.4},
+{-642.9,-2387.4,150.2},
+{-719.6,-2485.8,154.6},
+{-809.4,-2585.1,161.1},
+{-891.9,-2655.7,164.0},
+{-993.6,-2725.5,171.6},
+{-1097.3,-2793.0,191.5},
+{-1195.6,-2861.6,210.9},
+{-1280.9,-2931.2,228.9},
+{-1372.5,-3010.7,248.8},
+{-1467.5,-3095.2,269.7},
+{-1547.7,-3169.2,287.6},
+{-1604.6,-3272.6,306.4},
+{-1537.9,-3364.7,311.4},
+{-1460.5,-3449.3,311.9},
+{-1413.8,-3488.0,316.0}
+			};
+			else MapID = 0;//防止崩溃
 		}
 	}
-	//----------------------------------------------------------------------------------------------
-	namespace Debug_Control_Var//测试调试用的控件变量 (按钮 滑条 选择框 按键选择框 控制台控件)
+	void ReLoad(BOOL Timeout = false) noexcept//刷新CS2进程地址和模块地址和有效实体
 	{
-		int SelectPlayer; string SystemCommand; BOOL SendSystemCommand, ClearCommand;
-		BOOL Checkbox_1, Checkbox_2;
-		int KeySelector_1, KeySelector_2, Slider_1;
-		float Slider_2;
-		BOOL Button_1, Button_2;
-		int Checkbox_Quantity = 1; vector<BOOL> Checkbox_Value(100);
-	}
-}
-using namespace Control_Var;
-void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义选项)
-{
-	System::Log("Load Thread: Thread_Menu()");
-	GUI_VAR.Window_Create(1010, 940, "Shitware - Menu", true);//创建置顶GUI绘制窗口
-	const auto LanguageID = System::Get_DefaultLanguage();//获取系统默认语言
-	while (LanguageID == 0x804 || LanguageID == 0x404 || LanguageID == 0xC04)//中文版菜单 (字符串一定要加上UTT不然会乱码)
-	{
-		Window::Set_LimitWindowShow(GUI_VAR.Window_HWND(), UI_Misc_ByPassOBS);//绕过OBS
-		UI_Setting_MenuFont = "微软雅黑"; UI_Setting_MenuFontSize = 18;//中文字体
-		static int UI_Panel = 0;//大区块选择
-		static Variable::Vector2 GUI_WindowSize = { 0,0 };//窗体大小(用于开关动画)
-		if (!Menu_Open)GUI_WindowSize = { 0,0 };//关闭窗体时
-		GUI_VAR.Window_SetSize(Variable::Animation_Vec2<class CLASS_MenuState_Animation_>(GUI_WindowSize, UI_Setting_MenuAnimation));//菜单窗口大小动画 (弹出, 关闭, 切换大区块)
-		if (!GUI_VAR.Window_Move() && Menu_Open)//不在移动窗口时绘制GUI
+		if (System::Sleep_Tick<class CLASS_CS2_SDK_Timeout_Reload>(1000) || Timeout)
 		{
-			if (System::Get_Key_Onest(0x7B))break;//F12开启英文菜单
-			if (UI_Setting_CustomColor)//自定义颜色(单色)
+			CS2_MEM = { "cs2.exe" };CS2_HWND = CS2_MEM.Get_ProcessHWND();
+			Module_client = CS2_MEM.Get_Module("client.dll");Module_engine = CS2_MEM.Get_Module("engine.dll");Module_server = CS2_MEM.Get_Module("server.dll");Global_LocalPlayer = Base::LocalPlayer();
+			if (System::Sleep_Tick<class CLASS_CS2_SDK_Offsets_Timeout_Reload>(5000) || Timeout)//自动更新偏移量延迟 (减少流量使用)
 			{
-				GUI_VAR.Global_Set_EasyGUI_Color(UI_Setting_MainColor);//设置主题颜色
-				GUI_VAR.GUI_BackGround(4);//自定义颜色背景主题
-			}
-			else GUI_VAR.GUI_BackGround(3);//默认(彩虹)
-			GUI_VAR.GUI_Block(20, 20, 40, "", 110, false); GUI_VAR.In_DrawString(36, 35, "Shitware", GUI_IO.GUIColor.Min_Bri(200), "Verdana", 25);//Rensen标志
-			GUI_VAR.GUI_Block_Panel<class CLASS_Block_Panel>(20, 70, 110, GUI_VAR.Window_GetSize().y - 90, "", { "合法UTT","视觉UTT","杂项UTT","设置UTT" }, UI_Panel, 25);//大体区块选择
-			if (UI_Panel == 0)//Legit
-			{
-				const auto Block_Aimbot = GUI_VAR.GUI_Block(150, 30, 370, "瞄准机器人UTT");
-				GUI_VAR.GUI_Checkbox(Block_Aimbot, 1, "启用UTT", UI_Legit_Aimbot);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Aimbot_1>(Block_Aimbot, 1, UI_Legit_Aimbot_Key);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 2, "判断墙体UTT", UI_Legit_Aimbot_JudgingWall);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 3, "自动压枪UTT", UI_Legit_Aimbot_RemoveRecoil);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 4, "瞄准时触发UTT", UI_Legit_Aimbot_TriggerOnAim);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 5, "自动开火UTT", UI_Legit_Aimbot_AutoShoot, { 255,150,150 });
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 40,Block_Aimbot.y }, 6, "自动急停UTT", UI_Legit_Aimbot_AutoStop, { 255,150,150 });
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 40,Block_Aimbot.y }, 7, "自动开镜UTT", UI_Legit_Aimbot_AutoScope, { 255,150,150 });
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Aimbot_2>({ Block_Aimbot.x + 20,Block_Aimbot.y }, 8, "自动开火延迟UTT", 0, 500, UI_Legit_Aimbot_AutoShootDelay, "ms", { 255,150,150 });
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Aimbot_3>({ Block_Aimbot.x + 20,Block_Aimbot.y }, 9, "自动开火命中几率UTT", 0, 100, UI_Legit_Aimbot_AutoShootHitChance, "%", { 255,150,150 });
-				GUI_VAR.GUI_Checkbox(Block_Aimbot, 10, "自适应自瞄 (左键触发)UTT", UI_Legit_AdaptiveAimbot, { 200,200,150 });
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Aimbot_4>(Block_Aimbot, 11, "初始平滑度UTT", 0, 20, UI_Legit_AdaptiveAimbot_InitialSmooth, "", { 200,200,150 });
-				const auto Block_Armory = GUI_VAR.GUI_Block(150, 420, 490, "瞄准机器人各武器设置UTT");
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 1, "显示范围圆圈UTT", UI_Legit_Armory_ShowAimbotRange);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 2, "打击点解析器UTT", UI_Legit_Armory_HitSiteParser);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 3, "[手枪] 只打胸部 (反之头部)UTT", UI_Legit_Armory_BodyAim_PISTOL);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_1>({ Block_Armory.x - 10,Block_Armory.y }, 4, "[手枪] 范围UTT", 0, 100, UI_Legit_Armory_Range_PISTOL, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_2>({ Block_Armory.x - 10,Block_Armory.y }, 5, "[手枪] 平滑度UTT", 0, 40, UI_Legit_Armory_Smooth_PISTOL);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 6, "[步枪] 只打胸部 (反之头部)UTT", UI_Legit_Armory_BodyAim_RIFLE);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_3>({ Block_Armory.x - 10,Block_Armory.y }, 7, "[步枪] 范围UTT", 0, 100, UI_Legit_Armory_Range_RIFLE, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_4>({ Block_Armory.x - 10,Block_Armory.y }, 8, "[步枪] 平滑度UTT", 0, 40, UI_Legit_Armory_Smooth_RIFLE);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 9, "[狙击枪] 只打胸部 (反之头部)UTT", UI_Legit_Armory_BodyAim_SNIPER);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_5>({ Block_Armory.x - 10,Block_Armory.y }, 10, "[狙击枪] 范围UTT", 0, 100, UI_Legit_Armory_Range_SNIPER, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_6>({ Block_Armory.x - 10,Block_Armory.y }, 11, "[狙击枪] 平滑度UTT", 0, 40, UI_Legit_Armory_Smooth_SNIPER);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 12, "[霰弹枪] 只打胸部 (反之头部)UTT", UI_Legit_Armory_BodyAim_SHOTGUN);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_7>({ Block_Armory.x - 10,Block_Armory.y }, 13, "[霰弹枪] 范围UTT", 0, 100, UI_Legit_Armory_Range_SHOTGUN, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_8>({ Block_Armory.x - 10,Block_Armory.y }, 14, "[霰弹枪] 平滑度UTT", 0, 40, UI_Legit_Armory_Smooth_SHOTGUN);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_9>({ Block_Armory.x - 10,Block_Armory.y }, 15, "[霰弹枪] 触发距离UTT", 100, 2000, UI_Legit_Armory_TriggerDistance_SHOTGUN);
-				const auto Block_Triggerbot = GUI_VAR.GUI_Block(580, 30, 190, "自动扳机UTT");
-				GUI_VAR.GUI_Checkbox(Block_Triggerbot, 1, "启用UTT", UI_Legit_Triggerbot);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Triggerbot_1>(Block_Triggerbot, 1, UI_Legit_Triggerbot_Key);
-				GUI_VAR.GUI_Checkbox({ Block_Triggerbot.x + 20,Block_Triggerbot.y }, 2, "任何目标 (包括掉落的武器和实体)UTT", UI_Legit_Triggerbot_AnyTarget);
-				GUI_VAR.GUI_Checkbox({ Block_Triggerbot.x + 20,Block_Triggerbot.y }, 3, "精准时开火UTT", UI_Legit_Triggerbot_ShootWhenAccurate);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Triggerbot_2>(Block_Triggerbot, 4, "开火延迟UTT", 1, 500, UI_Legit_Triggerbot_ShootDelay, "ms");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Triggerbot_3>(Block_Triggerbot, 5, "开火时长UTT", 1, 1000, UI_Legit_Triggerbot_ShootDuration, "ms");
-				const auto Block_PreciseAim = GUI_VAR.GUI_Block(580, 240, 130, "精确瞄准UTT");
-				GUI_VAR.GUI_Checkbox(Block_PreciseAim, 1, "启用UTT", UI_Legit_PreciseAim);
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_PreciseAim_1>(Block_PreciseAim, 2, "默认游戏灵敏度UTT", 0, 0.022, UI_Legit_PreciseAim_DefaultSensitivity);
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_PreciseAim_2>(Block_PreciseAim, 3, "触发时游戏灵敏度UTT", 0, 0.015, UI_Legit_PreciseAim_EnableSensitivity);
-				const auto Block_RemoveRecoil = GUI_VAR.GUI_Block(580, 390, 160, "自动压枪UTT");
-				GUI_VAR.GUI_Checkbox(Block_RemoveRecoil, 1, "启用UTT", UI_Legit_RemoveRecoil);
-				GUI_VAR.GUI_Checkbox({ Block_RemoveRecoil.x + 20,Block_RemoveRecoil.y }, 2, "只进行水平修复UTT", UI_Legit_RemoveRecoil_HorizontalRepair);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_RemoveRecoil_1>(Block_RemoveRecoil, 3, "开始子弹UTT", 1, 15, UI_Legit_RemoveRecoil_StartBullet);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_RemoveRecoil_2>(Block_RemoveRecoil, 4, "对应的游戏灵敏度UTT", 0, 100, UI_Legit_RemoveRecoil_Sensitive, "%");
-				const auto Block_MagnetAim = GUI_VAR.GUI_Block(580, 570, 160, "磁吸瞄准UTT");
-				GUI_VAR.GUI_Checkbox(Block_MagnetAim, 1, "启用UTT", UI_Legit_MagnetAim);
-				GUI_VAR.GUI_Checkbox({ Block_MagnetAim.x + 20,Block_MagnetAim.y }, 2, "只磁吸头线UTT", UI_Legit_MagnetAim_OnlyHeadLine);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_MagnetAim_1>(Block_MagnetAim, 3, "范围UTT", 0, 100, UI_Legit_MagnetAim_Range, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_MagnetAim_2>(Block_MagnetAim, 4, "平滑度UTT", 0, 10, UI_Legit_MagnetAim_Smooth);
-				const auto Block_Backtracking = GUI_VAR.GUI_Block(580, 750, 130, "回溯UTT");
-				GUI_VAR.GUI_Checkbox(Block_Backtracking, 1, "开启UTT", UI_Legit_Backtracking);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Backtracking_1>(Block_Backtracking, 2, "最小延迟UTT", 0, 500, UI_Legit_Backtracking_MinimumTime, "ms");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Backtracking_2>(Block_Backtracking, 3, "最大延迟UTT", UI_Legit_Backtracking_MinimumTime, 1000, UI_Legit_Backtracking_MaximumTime, "ms");
-				GUI_WindowSize = { 1010,940 };
-			}
-			else if (UI_Panel == 1)//Visual
-			{
-				const auto Block_ESP = GUI_VAR.GUI_Block(150, 30, 550, "透视UTT");
-				GUI_VAR.GUI_Checkbox(Block_ESP, 1, "启用UTT", UI_Visual_ESP);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_ESP_1>(Block_ESP, 1, UI_Visual_ESP_Key);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 2, "方框UTT", UI_Visual_ESP_Box);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 3, "血条UTT", UI_Visual_ESP_Health);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 4, "武器UTT", UI_Visual_ESP_ActiveWeapon);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 5, "射线UTT", UI_Visual_ESP_Line);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 6, "骨骼UTT", UI_Visual_ESP_Skeleton);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_ESP_2>(Block_ESP, 7, "粗细UTT", 1, 10, UI_Visual_ESP_Skeleton_Thickness, "px");
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 8, "头点UTT", UI_Visual_ESP_HeadDot);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 9, "状态UTT", UI_Visual_ESP_State);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 10, "名称UTT", UI_Visual_ESP_Name);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 11, "掉落物UTT", UI_Visual_ESP_Drops);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 12, "视角外指针UTT", UI_Visual_ESP_OutFOV);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_ESP_3>(Block_ESP, 13, "大小UTT", 20, 100, UI_Visual_ESP_OutFOV_Size, "px");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_ESP_4>(Block_ESP, 14, "范围UTT", 0, 100, UI_Visual_ESP_OutFOV_Radius, "%");
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 15, "自定义颜色UTT", UI_Visual_ESP_CustomColor);
-				GUI_VAR.GUI_ColorSelector(Block_ESP, 15, UI_Visual_ESP_CustomColor_Color);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_ESP_5>(Block_ESP, 16, "透明度UTT", -1, 255, UI_Visual_ESP_DrawAlpha);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_ESP_6>(Block_ESP, 17, "绘制延迟UTT", 0, 30, UI_Visual_ESP_DrawDelay, "ms");
-				const auto Block_Hitmark = GUI_VAR.GUI_Block(580, 30, 310, "命中标记UTT");
-				GUI_VAR.GUI_Checkbox(Block_Hitmark, 1, "启用UTT", UI_Visual_HitMark);
-				GUI_VAR.GUI_Checkbox({ Block_Hitmark.x + 20,Block_Hitmark.y }, 2, "自定义颜色UTT", UI_Visual_HitMark_CustomColor);
-				GUI_VAR.GUI_ColorSelector(Block_Hitmark, 2, UI_Visual_HitMark_Color);
-				GUI_VAR.GUI_Checkbox({ Block_Hitmark.x + 20,Block_Hitmark.y }, 3, "显示伤害UTT", UI_Visual_HitMark_Damage);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Hitmark_1>(Block_Hitmark, 4, "范围UTT", 3, 100, UI_Visual_HitMark_Range, "px");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Hitmark_2>(Block_Hitmark, 5, "长度UTT", 3, 100, UI_Visual_HitMark_Length, "px");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Hitmark_3>(Block_Hitmark, 6, "粗细UTT", 1, 10, UI_Visual_HitMark_Thickness, "px");
-				GUI_VAR.GUI_Checkbox({ Block_Hitmark.x + 20,Block_Hitmark.y }, 7, "3D闪电效果UTT", UI_Visual_HitMark_KillEffect);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Hitmark_4>(Block_Hitmark, 8, "数量UTT", 10, 500, UI_Visual_HitMark_KillEffect_Quantity);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Hitmark_5>(Block_Hitmark, 9, "范围UTT", 10, 500, UI_Visual_HitMark_KillEffect_Range);
-				const auto Block_Radar = GUI_VAR.GUI_Block(580, 360, 190, "雷达UTT");
-				GUI_VAR.GUI_Checkbox(Block_Radar, 1, "启用UTT", UI_Visual_Radar);
-				GUI_VAR.GUI_Checkbox({ Block_Radar.x + 20,Block_Radar.y }, 2, "固定朝向角度UTT", UI_Visual_Radar_FollowAngle);
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Radar_1>(Block_Radar, 3, "范围UTT", 0.2, 40, UI_Visual_Radar_Range);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Radar_2>(Block_Radar, 4, "大小UTT", 150, 800, UI_Visual_Radar_Size, "px");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Radar_3>(Block_Radar, 5, "透明度UTT", 0, 255, UI_Visual_Radar_Alpha);
-				GUI_WindowSize = { 1010,610 };
-			}
-			else if (UI_Panel == 2)//Misc
-			{
-				const auto Block_Misc = GUI_VAR.GUI_Block(150, 30, 810, "杂项UTT");
-				GUI_VAR.GUI_Checkbox(Block_Misc, 1, "连跳UTT", UI_Misc_BunnyHop);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 2, "命中音效UTT", UI_Misc_HitSound);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_1>(Block_Misc, 3, "音调UTT", 10, 5000, UI_Misc_HitSound_Tone);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_2>(Block_Misc, 4, "音长UTT", 10, 100, UI_Misc_HitSound_Length);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 5, "声呐UTT", UI_Misc_Sonar);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Misc_3>(Block_Misc, 5, UI_Misc_Sonar_Key);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_4>(Block_Misc, 6, "远UTT", 500, 1000, UI_Misc_Sonar_Range_Far);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_5>(Block_Misc, 7, "近UTT", 0, 500, UI_Misc_Sonar_Range_Near);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 8, "自动刀UTT", UI_Misc_AutoKnife);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Misc_6>(Block_Misc, 8, UI_Misc_AutoKnife_Key);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 9, "自动电击枪UTT", UI_Misc_AutoTaser);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Misc_7>(Block_Misc, 9, UI_Misc_AutoTaser_Key);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 10, "水印UTT", UI_Misc_Watermark);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 11, "狙击枪准星UTT", UI_Misc_SniperCrosshair);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_8>(Block_Misc, 12, "大小UTT", 10, 80, UI_Misc_SniperCrosshair_Size, "px");
-				GUI_VAR.GUI_Checkbox(Block_Misc, 13, "防止挂机踢出UTT", UI_Misc_AntiAFKKick);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 14, "锁定游戏窗口最前端UTT", UI_Misc_LockGameWindow);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 15, "绕过OBS捕捉UTT", UI_Misc_ByPassOBS);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 16, "性能节省UTT", UI_Misc_SavePerformance, { 255,150,150 });
-				GUI_VAR.GUI_Checkbox(Block_Misc, 17, "夜晚模式UTT", UI_Misc_NightMode);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_9>(Block_Misc, 18, "透明度UTT", 30, 200, UI_Misc_NightMode_Alpha);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 19, "自动PEEKUTT", UI_Misc_AutoPeek);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Misc_10>(Block_Misc, 19, UI_Misc_AutoPeek_Key);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 20, "自动急停UTT", UI_Misc_QuickStop);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 21, "击杀自动停火UTT", UI_Misc_AutoKillCeasefire);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 22, "光标透视UTT", UI_Misc_CursorESP);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Misc_11>(Block_Misc, 22, UI_Misc_CursorESP_Key);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 23, "自动行走机器人UTT", UI_Misc_WalkingBot);
-				string MapName = "";
-				if (UI_Misc_WalkingBot_Map == 0)MapName = "Dust2"; else if (UI_Misc_WalkingBot_Map == 1)MapName = "Mirage";
-				else if (UI_Misc_WalkingBot_Map == 2)MapName = "Inferno"; else if (UI_Misc_WalkingBot_Map == 3)MapName = "Ancient";
-				else if (UI_Misc_WalkingBot_Map == 4)MapName = "Anubis"; else if (UI_Misc_WalkingBot_Map == 5)MapName = "Overpass";
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_12>(Block_Misc, 24, "地图: UTT" + MapName, 0, 5, UI_Misc_WalkingBot_Map);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 25, "鼠标低灵敏 (游戏灵敏度过高时使用)UTT", UI_Misc_MouseLowSensitivity, { 255,150,150 });
-				GUI_VAR.GUI_Checkbox(Block_Misc, 26, "判断队友UTT", UI_Misc_TeamCheck, { 200,200,150 });
-				const auto Block_Resolution = GUI_VAR.GUI_Block(580, 30, 190, "屏幕像素UTT");
-				static BOOL Reslution_3840, Reslution_2560, Reslution_1920, Reslution_1280, Reslution_960;
-				GUI_VAR.GUI_Button(Block_Resolution, 1, "3840 * 2160", Reslution_3840, 78); if (Reslution_2560)Window::Set_Resolution(3840, 2160);
-				GUI_VAR.GUI_Button(Block_Resolution, 2, "2560 * 1440", Reslution_2560, 78); if (Reslution_2560)Window::Set_Resolution(2560, 1440);
-				GUI_VAR.GUI_Button(Block_Resolution, 3, "1920 * 1080", Reslution_1920, 78); if (Reslution_1920)Window::Set_Resolution(1920, 1080);
-				GUI_VAR.GUI_Button(Block_Resolution, 4, "1280 * 1024", Reslution_1280, 78); if (Reslution_1280)Window::Set_Resolution(1280, 1024);
-				GUI_VAR.GUI_Button(Block_Resolution, 5, "1280 * 960", Reslution_960, 83); if (Reslution_960)Window::Set_Resolution(1280, 960);
-				const auto Block_CloudPreset = GUI_VAR.GUI_Block(580, 240, 180, "云端预设UTT");
-				static BOOL Load_CloudPreset; static int SelectedCloudPreset = 0; GUI_VAR.GUI_Button(Block_CloudPreset, 1, "加载选定预设UTT", Load_CloudPreset, 70);
-				GUI_VAR.GUI_List<class CLASS_Block_CloudPreset_1>(Block_CloudPreset, 2, { "合法UTT","暴力UTT","合法 - 无视觉UTT","跑图机器人UTT" }, SelectedCloudPreset);
-				if (Load_CloudPreset)//加载Github上的云预设
+				System::URL_READ URL_OFFSETS = { "Cache_CS2_Offsets" };
+				if (URL_OFFSETS.StoreMem("https://github.com/shitwareofc/shitware/blob/main/Cloud%20Files/Offsets.ofs?raw=true"))//自动更新偏移量 Github更新有十分钟延迟 中国用户需要挂梯子
 				{
-					const auto Preset_ID = SelectedCloudPreset;//防止套用的预设套写变量
-					if (SelectedCloudPreset == 0)LoadCloudPreset("Legit");
-					else if (SelectedCloudPreset == 1)LoadCloudPreset("Legit2");
-					else if (SelectedCloudPreset == 2)LoadCloudPreset("Legit3");
-					else if (SelectedCloudPreset == 3)LoadCloudPreset("Legit4");
-					SelectedCloudPreset = 0;//归位选择
+					CS2_Offsets::Offsets_Date = URL_OFFSETS.Read(1); CS2_Offsets::Offsets_Date.erase(0, 2);//偏移更新日期 删除注释符号
+					CS2_Offsets::Offsets_Date = "[" + CS2_Offsets::Offsets_Date + "]";//加上括号
+					CS2_Offsets::dwLocalPlayerController = Variable::string_uint_(URL_OFFSETS.Read(4));
+					CS2_Offsets::dwLocalPlayerPawn = Variable::string_uint_(URL_OFFSETS.Read(6));
+					CS2_Offsets::dwEntityList = Variable::string_uint_(URL_OFFSETS.Read(8));
+					CS2_Offsets::dwViewAngles = Variable::string_uint_(URL_OFFSETS.Read(10));
+					CS2_Offsets::dwViewMatrix = Variable::string_uint_(URL_OFFSETS.Read(12));
+					CS2_Offsets::m_hPlayerPawn = Variable::string_uint_(URL_OFFSETS.Read(14));
+					CS2_Offsets::m_iTeamNum = Variable::string_uint_(URL_OFFSETS.Read(16));
+					CS2_Offsets::m_ArmorValue = Variable::string_uint_(URL_OFFSETS.Read(18));
+					CS2_Offsets::m_iHealth = Variable::string_uint_(URL_OFFSETS.Read(20));
+					CS2_Offsets::m_iIDEntIndex = Variable::string_uint_(URL_OFFSETS.Read(22));
+					CS2_Offsets::m_fFlags = Variable::string_uint_(URL_OFFSETS.Read(24));
+					CS2_Offsets::m_iShotsFired = Variable::string_uint_(URL_OFFSETS.Read(26));
+					CS2_Offsets::m_vecVelocity = Variable::string_uint_(URL_OFFSETS.Read(28));
+					CS2_Offsets::m_bSpotted = Variable::string_uint_(URL_OFFSETS.Read(30));
+					CS2_Offsets::m_bIsScoped = Variable::string_uint_(URL_OFFSETS.Read(32));
+					CS2_Offsets::m_pClippingWeapon = Variable::string_uint_(URL_OFFSETS.Read(34));
+					CS2_Offsets::m_pGameSceneNode = Variable::string_uint_(URL_OFFSETS.Read(36));
+					CS2_Offsets::m_vecOrigin = Variable::string_uint_(URL_OFFSETS.Read(38));
+					CS2_Offsets::m_aimPunchCache = Variable::string_uint_(URL_OFFSETS.Read(40));
+					CS2_Offsets::m_vecViewOffset = Variable::string_uint_(URL_OFFSETS.Read(42));
+					CS2_Offsets::m_dwBoneMatrix = Variable::string_uint_(URL_OFFSETS.Read(44));
+					CS2_Offsets::m_iszPlayerName = Variable::string_uint_(URL_OFFSETS.Read(46));
+					CS2_Offsets::m_pActionTrackingServices = Variable::string_uint_(URL_OFFSETS.Read(48));
+					CS2_Offsets::m_iNumRoundKills = Variable::string_uint_(URL_OFFSETS.Read(50));
+					CS2_Offsets::m_unTotalRoundDamageDealt = Variable::string_uint_(URL_OFFSETS.Read(52));
+					CS2_Offsets::m_iItemDefinitionIndex = Variable::string_uint_(URL_OFFSETS.Read(54));
+					CS2_Offsets::m_angEyeAngles = Variable::string_uint_(URL_OFFSETS.Read(56));
+					URL_OFFSETS.Release();//释放文件
 				}
-				auto Block_Spoof = GUI_VAR.GUI_Block(580, 440, 400, "恶搞UTT");
-				GUI_VAR.GUI_Checkbox(Block_Spoof, 1, "启用UTT", UI_Spoof_Spoof, { 200,200,150 });
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 2, "瞄准队友UTT", UI_Spoof_AimbotTeam);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Spoof_1>(Block_Spoof, 2, UI_Spoof_AimbotTeam_Key);
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Spoof_2>({ Block_Spoof.x + 20,Block_Spoof.y }, 3, "平滑度UTT", 0, 20, UI_Spoof_AimbotTeam_Smooth);
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 4, "增大后坐力UTT", UI_Spoof_IncreaseRecoil);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Spoof_3>({ Block_Spoof.x + 20,Block_Spoof.y }, 5, "后座量UTT", 50, 1000, UI_Spoof_IncreaseRecoil_Value, "px");
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 6, "自动丢弃C4UTT", UI_Spoof_DropC4);
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 7, "假反瞄准UTT", UI_Spoof_FakeAntiAim);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Spoof_4>(Block_Spoof, 7, UI_Spoof_FakeAntiAim_Key);
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 8, "击杀丢弃狙击枪UTT", UI_Spoof_KillDropSniper);
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 9, "学习最近的玩家UTT", UI_Spoof_LearnPlayer);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Spoof_5>(Block_Spoof, 9, UI_Spoof_LearnPlayer_Key);
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 10, "假愤怒机器人UTT", UI_Spoof_FakeRageBot);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Spoof_6>(Block_Spoof, 10, UI_Spoof_FakeRageBot_Key);
-				auto FakeRageBot_SliderString = "目标: UTT" + Advanced::Player_Name(UI_Spoof_FakeRageBot_Target);
-				if (!UI_Spoof_FakeRageBot_Target)FakeRageBot_SliderString = "目标: 任何目标UTT";
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Spoof_7>({ Block_Spoof.x + 20,Block_Spoof.y }, 11, FakeRageBot_SliderString, 0, 64, UI_Spoof_FakeRageBot_Target);
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 12, "踩头时自动跟随UTT", UI_Spoof_StepOnHead);
-				GUI_WindowSize = { 1010,870 };
-			}
-			else if (UI_Panel == 3)//Setting
-			{
-				const auto Block_About = GUI_VAR.GUI_Block(150, 30, 220, "关于UTT");
-				GUI_VAR.GUI_Text(Block_About, 1, "Shitware", GUI_IO.GUIColor);
-				GUI_VAR.GUI_Text({ Block_About.x + 47,Block_About.y }, 1, "for Counter-Strike 2UTT", { 100,100,100 });
-				GUI_VAR.GUI_Text(Block_About, 2, "版本: UTT" + Variable::Float_Precision(Rensen_Version), { 100,100,100 });
-				GUI_VAR.GUI_Text(Block_About, 3, "发布日期: UTT" + Rensen_ReleaseDate, { 100,100,100 });
-				GUI_VAR.GUI_Text(Block_About, 4, "作者: https://www.dfg.com.br/user/no_sht/listings", { 100,100,100 });
-				GUI_VAR.GUI_Text(Block_About, 5, "交流QQ群: 486214313UTT", { 100,100,100 });
-				GUI_VAR.GUI_Text(Block_About, 6, "中国内地用户检查更新时需要使用VPN (确保可以连接Github)UTT", { 100,100,100 });
-				static BOOL OpenGithubURL, OpenQQGroupChat;
-				GUI_VAR.GUI_Button_Small({ Block_About.x + 10,Block_About.y }, 4, OpenGithubURL);
-				GUI_VAR.GUI_Button_Small({ Block_About.x + 10,Block_About.y }, 5, OpenQQGroupChat);
-				if (OpenGithubURL)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开作者Github主题页面
-				if (OpenQQGroupChat)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开QQ加入群聊链接
-				const auto Block_Menu = GUI_VAR.GUI_Block(150, 270, 250, "菜单UTT");
-				GUI_VAR.GUI_Text(Block_Menu, 1, "菜单按键UTT");
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Menu_1>(Block_Menu, 1, UI_Setting_MenuKey);
-				GUI_VAR.GUI_Checkbox(Block_Menu, 2, "自定义菜单主题色UTT", UI_Setting_CustomColor);
-				GUI_VAR.GUI_ColorSelector_a(Block_Menu, 2, UI_Setting_MainColor);
-				if (UI_Setting_MainColor.a < 100)UI_Setting_MainColor.a = 100;
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Menu_2>(Block_Menu, 3, "菜单动画平滑度UTT", 1, 10, UI_Setting_MenuAnimation);
-				static BOOL StartCS, QuitCS;
-				if (CS2_HWND)GUI_VAR.GUI_Button(Block_Menu, 4, "关闭 CSUTT", QuitCS, 90);
-				else GUI_VAR.GUI_Button(Block_Menu, 4, "打开 CSUTT", StartCS, 90);
-				if (StartCS && CS2_MEM.Get_ProcessHWND() == 0)if (CS2_MEM.Get_ProcessHWND() == 0)System::Open_Website("steam://rungameid/730");//启动CS
-				if (QuitCS && CS2_MEM.Get_ProcessHWND() != 0)Window::Kill_Window(CS2_MEM.Get_ProcessHWND());//关闭CS
-				static BOOL GithubRepositories; GUI_VAR.GUI_Button(Block_Menu, 5, "Github 项目链接UTT", GithubRepositories, 70);
-				if (GithubRepositories)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开Github项目地址
-				static BOOL RestartMenu; GUI_VAR.GUI_Button(Block_Menu, 6, "重启菜单UTT", RestartMenu, 90);
-				if (RestartMenu) { GUI_VAR.Window_SetTitle("Shitware - Restarting"); System::Self_Restart(); }//重启菜单
-				static BOOL UnloadMenu; GUI_VAR.GUI_Button(Block_Menu, 7, "关闭菜单UTT", UnloadMenu, 90);
-				if (UnloadMenu)exit(0);//关闭菜单
-				const auto Block_Presets = GUI_VAR.GUI_Block(580, 30, 490, "本地预设UTT", 320);
-				static int SelectedPresetID = 0; static vector<string> FileList = System::Traversal_FindFile(Preset_Folder + "\\*", ".cfg", true, "UTT"); static string CreatePresetName; static BOOL Create, Load, Save, Delete;
-				GUI_VAR.GUI_List<class CLASS_Block_Presets_1>(Block_Presets, 1, FileList, SelectedPresetID, 11);
-				GUI_VAR.GUI_Button(Block_Presets, 11, "加载UTT", Load, 95); if (Load && SelectedPresetID != -1)LoadPreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
-				GUI_VAR.GUI_Button(Block_Presets, 12, "保存UTT", Save, 95); if (Save && SelectedPresetID != -1)SavePreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
-				GUI_VAR.GUI_InputText<class CLASS_Block_Presets_2>(Block_Presets, 13, CreatePresetName, "创建预设名称UTT");
-				GUI_VAR.GUI_Button(Block_Presets, 14, "创建UTT", Create, 95); if (Create) { CreatePreset(CreatePresetName); CreatePresetName = ""; }
-				GUI_VAR.GUI_Button(Block_Presets, 15, "删除UTT", Delete, 95); if (Delete && SelectedPresetID != -1)DeletePreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
-				if (Create || Load || Save || Delete)FileList = System::Traversal_FindFile(Preset_Folder + "\\*", ".cfg", true, "UTT");//刷新文件列表
-				GUI_WindowSize = { 930,550 };
-			}
-			GUI_VAR.Draw_GUI(Debug_Control_Var::Checkbox_2);//最终绘制GUI画板
-			if (UI_Misc_SavePerformance)Sleep(5);//节省电脑占用性能
-		}
-	}
-	while (true)//默认英文版菜单
-	{
-		Window::Set_LimitWindowShow(GUI_VAR.Window_HWND(), UI_Misc_ByPassOBS);//绕过OBS
-		static int UI_Panel = 0;//大区块选择
-		static Variable::Vector2 GUI_WindowSize = { 0,0 };//窗体大小(用于开关动画)
-		if (!Menu_Open)GUI_WindowSize = { 0,0 };//关闭窗体时
-		GUI_VAR.Window_SetSize(Variable::Animation_Vec2<class CLASS_MenuState_Animation_>(GUI_WindowSize, UI_Setting_MenuAnimation));//菜单窗口大小动画 (弹出, 关闭, 切换大区块)
-		if (!GUI_VAR.Window_Move() && Menu_Open)//不在移动窗口时绘制GUI
-		{
-			if (UI_Setting_CustomColor)//自定义颜色(单色)
-			{
-				GUI_VAR.Global_Set_EasyGUI_Color(UI_Setting_MainColor);//设置主题颜色
-				GUI_VAR.GUI_BackGround(4);//自定义颜色背景主题
-			}
-			else GUI_VAR.GUI_BackGround(3);//默认(彩虹)
-			GUI_VAR.GUI_Block(20, 20, 40, "", 110, false); GUI_VAR.In_DrawString(30, 35, "Shitware", GUI_IO.GUIColor.Min_Bri(200), "Verdana", 25);//Rensen标志
-			GUI_VAR.GUI_Block_Panel<class CLASS_Block_Panel>(20, 70, 110, GUI_VAR.Window_GetSize().y - 90, "", { "Legit","Visual","Misc","Infolist","Setting" }, UI_Panel, 25);//大体区块选择
-			if (UI_Panel == 0)//Legit
-			{
-				const auto Block_Aimbot = GUI_VAR.GUI_Block(150, 30, 370, "Aim bot");
-				GUI_VAR.GUI_Checkbox(Block_Aimbot, 1, "Enabled", UI_Legit_Aimbot);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Aimbot_1>(Block_Aimbot, 1, UI_Legit_Aimbot_Key);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 2, "Judging wall", UI_Legit_Aimbot_JudgingWall);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 3, "Remove recoil", UI_Legit_Aimbot_RemoveRecoil);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 4, "Trigger on aiming", UI_Legit_Aimbot_TriggerOnAim);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 5, "Auto shoot", UI_Legit_Aimbot_AutoShoot, { 255,150,150 });
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 40,Block_Aimbot.y }, 6, "Auto stop", UI_Legit_Aimbot_AutoStop, { 255,150,150 });
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 40,Block_Aimbot.y }, 7, "Auto scope", UI_Legit_Aimbot_AutoScope, { 255,150,150 });
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Aimbot_2>({ Block_Aimbot.x + 20,Block_Aimbot.y }, 8, "Auto shoot delay", 0, 500, UI_Legit_Aimbot_AutoShootDelay, "ms", { 255,150,150 });
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Aimbot_3>({ Block_Aimbot.x + 20,Block_Aimbot.y }, 9, "Auto shoot hit chance", 0, 100, UI_Legit_Aimbot_AutoShootHitChance, "%", { 255,150,150 });
-				GUI_VAR.GUI_Checkbox(Block_Aimbot, 10, "Adaptive aimbot", UI_Legit_AdaptiveAimbot, { 200,200,150 });
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Aimbot_4>(Block_Aimbot, 11, "Initial smooth", 0, 20, UI_Legit_AdaptiveAimbot_InitialSmooth, "", { 200,200,150 });
-				const auto Block_Armory = GUI_VAR.GUI_Block(150, 420, 490, "Armory");
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 1, "Show range", UI_Legit_Armory_ShowAimbotRange);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 2, "Hit site parser", UI_Legit_Armory_HitSiteParser);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 3, "[PISTOL] Body aim (else head)", UI_Legit_Armory_BodyAim_PISTOL);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_1>({ Block_Armory.x - 10,Block_Armory.y }, 4, "[PISTOL] Range", 0, 100, UI_Legit_Armory_Range_PISTOL, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_2>({ Block_Armory.x - 10,Block_Armory.y }, 5, "[PISTOL] Smooth", 0, 40, UI_Legit_Armory_Smooth_PISTOL);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 6, "[RIFLE] Body aim (else head)", UI_Legit_Armory_BodyAim_RIFLE);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_3>({ Block_Armory.x - 10,Block_Armory.y }, 7, "[RIFLE] Range", 0, 100, UI_Legit_Armory_Range_RIFLE, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_4>({ Block_Armory.x - 10,Block_Armory.y }, 8, "[RIFLE] Smooth", 0, 40, UI_Legit_Armory_Smooth_RIFLE);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 9, "[SNIPER] Body aim (else head)", UI_Legit_Armory_BodyAim_SNIPER);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_5>({ Block_Armory.x - 10,Block_Armory.y }, 10, "[SNIPER] Range", 0, 100, UI_Legit_Armory_Range_SNIPER, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_6>({ Block_Armory.x - 10,Block_Armory.y }, 11, "[SNIPER] Smooth", 0, 40, UI_Legit_Armory_Smooth_SNIPER);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 12, "[SHOTGUN] Body aim (else head)", UI_Legit_Armory_BodyAim_SHOTGUN);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_7>({ Block_Armory.x - 10,Block_Armory.y }, 13, "[SHOTGUN] Range", 0, 100, UI_Legit_Armory_Range_SHOTGUN, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_8>({ Block_Armory.x - 10,Block_Armory.y }, 14, "[SHOTGUN] Smooth", 0, 40, UI_Legit_Armory_Smooth_SHOTGUN);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_9>({ Block_Armory.x - 10,Block_Armory.y }, 15, "[SHOTGUN] trigger distance", 100, 2000, UI_Legit_Armory_TriggerDistance_SHOTGUN);
-				const auto Block_Triggerbot = GUI_VAR.GUI_Block(580, 30, 190, "Trigger bot");
-				GUI_VAR.GUI_Checkbox(Block_Triggerbot, 1, "Enabled", UI_Legit_Triggerbot);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Triggerbot_1>(Block_Triggerbot, 1, UI_Legit_Triggerbot_Key);
-				GUI_VAR.GUI_Checkbox({ Block_Triggerbot.x + 20,Block_Triggerbot.y }, 2, "Any target", UI_Legit_Triggerbot_AnyTarget);
-				GUI_VAR.GUI_Checkbox({ Block_Triggerbot.x + 20,Block_Triggerbot.y }, 3, "Shoot when accurate", UI_Legit_Triggerbot_ShootWhenAccurate);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Triggerbot_2>(Block_Triggerbot, 4, "Shoot delay", 1, 500, UI_Legit_Triggerbot_ShootDelay, "ms");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Triggerbot_3>(Block_Triggerbot, 5, "Shoot duration", 1, 1000, UI_Legit_Triggerbot_ShootDuration, "ms");
-				const auto Block_PreciseAim = GUI_VAR.GUI_Block(580, 240, 130, "Precise aim");
-				GUI_VAR.GUI_Checkbox(Block_PreciseAim, 1, "Enabled", UI_Legit_PreciseAim);
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_PreciseAim_1>(Block_PreciseAim, 2, "Default sensitivity", 0, 0.022, UI_Legit_PreciseAim_DefaultSensitivity);
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_PreciseAim_2>(Block_PreciseAim, 3, "Enable sensitivity", 0, 0.015, UI_Legit_PreciseAim_EnableSensitivity);
-				const auto Block_RemoveRecoil = GUI_VAR.GUI_Block(580, 390, 160, "Remove recoil");
-				GUI_VAR.GUI_Checkbox(Block_RemoveRecoil, 1, "Enabled", UI_Legit_RemoveRecoil);
-				GUI_VAR.GUI_Checkbox({ Block_RemoveRecoil.x + 20,Block_RemoveRecoil.y }, 2, "Only horizontal repair", UI_Legit_RemoveRecoil_HorizontalRepair);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_RemoveRecoil_1>(Block_RemoveRecoil, 3, "Start bullet", 1, 15, UI_Legit_RemoveRecoil_StartBullet);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_RemoveRecoil_2>(Block_RemoveRecoil, 4, "Sensitive", 0, 100, UI_Legit_RemoveRecoil_Sensitive, "%");
-				const auto Block_MagnetAim = GUI_VAR.GUI_Block(580, 570, 160, "Magnet aim");
-				GUI_VAR.GUI_Checkbox(Block_MagnetAim, 1, "Enabled", UI_Legit_MagnetAim);
-				GUI_VAR.GUI_Checkbox({ Block_MagnetAim.x + 20,Block_MagnetAim.y }, 2, "Only aim headline", UI_Legit_MagnetAim_OnlyHeadLine);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_MagnetAim_1>(Block_MagnetAim, 3, "Range", 0, 100, UI_Legit_MagnetAim_Range, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_MagnetAim_2>(Block_MagnetAim, 4, "Smooth", 0, 10, UI_Legit_MagnetAim_Smooth);
-				const auto Block_Backtracking = GUI_VAR.GUI_Block(580, 750, 130, "Back tracking");
-				GUI_VAR.GUI_Checkbox(Block_Backtracking, 1, "Enabled", UI_Legit_Backtracking);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Backtracking_1>(Block_Backtracking, 2, "Minimum time", 0, 500, UI_Legit_Backtracking_MinimumTime, "ms");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Backtracking_2>(Block_Backtracking, 3, "Maximum time", UI_Legit_Backtracking_MinimumTime, 1000, UI_Legit_Backtracking_MaximumTime, "ms");
-				GUI_VAR.GUI_Tips(Block_Aimbot, 1, "Help you quickly aim at the target.");
-				GUI_VAR.GUI_Tips({ Block_Aimbot.x + 10,Block_Aimbot.y }, 5, "Prefer Ragebot.", 0, { 255,150,150 });
-				GUI_VAR.GUI_Tips({ Block_Aimbot.x + 20,Block_Aimbot.y }, 9, "Chance of hitting the target. (Affects shooting speed)", 0, { 255,150,150 });
-				GUI_VAR.GUI_Tips(Block_Aimbot, 10, "More biological than normal aimbot.", 0, { 200,200,150 });
-				GUI_VAR.GUI_Tips(Block_Triggerbot, 1, "Shoot when aiming at the enemy.");
-				GUI_VAR.GUI_Tips(Block_PreciseAim, 1, "Reduce the sensitivity of the reticle when aiming at the enemy.");
-				GUI_VAR.GUI_Tips({ Block_RemoveRecoil.x + 10,Block_RemoveRecoil.y }, 2, "Operations that only return landscape.");
-				GUI_VAR.GUI_Tips({ Block_RemoveRecoil.x + 10,Block_RemoveRecoil.y }, 4, "Corresponding game sensitivity value.");
-				GUI_VAR.GUI_Tips(Block_MagnetAim, 1, "Slow aiming without triggering key conditions.");
-				GUI_VAR.GUI_Tips(Block_Backtracking, 1, "Take advantage of network latency to have a bigger hitbox.");
-				GUI_WindowSize = { 1010,940 };
-			}
-			else if (UI_Panel == 1)//Visual
-			{
-				const auto Block_ESP = GUI_VAR.GUI_Block(150, 30, 550, "Extra sensory perception");
-				GUI_VAR.GUI_Checkbox(Block_ESP, 1, "Enabled", UI_Visual_ESP);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_ESP_1>(Block_ESP, 1, UI_Visual_ESP_Key);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 2, "Box", UI_Visual_ESP_Box);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 3, "Health bar", UI_Visual_ESP_Health);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 4, "Weapon text", UI_Visual_ESP_ActiveWeapon);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 5, "Line", UI_Visual_ESP_Line);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 6, "Skeleton", UI_Visual_ESP_Skeleton);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_ESP_2>(Block_ESP, 7, "Thickness", 1, 10, UI_Visual_ESP_Skeleton_Thickness, "px");
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 8, "Head dot", UI_Visual_ESP_HeadDot);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 9, "State", UI_Visual_ESP_State);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 10, "Name", UI_Visual_ESP_Name);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 11, "Drops", UI_Visual_ESP_Drops);
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 12, "Out of FOV arrow", UI_Visual_ESP_OutFOV);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_ESP_3>(Block_ESP, 13, "Size", 20, 100, UI_Visual_ESP_OutFOV_Size, "px");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_ESP_4>(Block_ESP, 14, "Radius", 0, 100, UI_Visual_ESP_OutFOV_Radius, "%");
-				GUI_VAR.GUI_Checkbox({ Block_ESP.x + 20,Block_ESP.y }, 15, "Custom color", UI_Visual_ESP_CustomColor);
-				GUI_VAR.GUI_ColorSelector(Block_ESP, 15, UI_Visual_ESP_CustomColor_Color);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_ESP_5>(Block_ESP, 16, "Draw alpha", -1, 255, UI_Visual_ESP_DrawAlpha);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_ESP_6>(Block_ESP, 17, "Draw delay", 0, 30, UI_Visual_ESP_DrawDelay, "ms");
-				const auto Block_Hitmark = GUI_VAR.GUI_Block(580, 30, 310, "Hit mark");
-				GUI_VAR.GUI_Checkbox(Block_Hitmark, 1, "Enabled", UI_Visual_HitMark);
-				GUI_VAR.GUI_Checkbox({ Block_Hitmark.x + 20,Block_Hitmark.y }, 2, "Custom color", UI_Visual_HitMark_CustomColor);
-				GUI_VAR.GUI_ColorSelector(Block_Hitmark, 2, UI_Visual_HitMark_Color);
-				GUI_VAR.GUI_Checkbox({ Block_Hitmark.x + 20,Block_Hitmark.y }, 3, "Show damage", UI_Visual_HitMark_Damage);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Hitmark_1>(Block_Hitmark, 4, "Range", 3, 100, UI_Visual_HitMark_Range, "px");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Hitmark_2>(Block_Hitmark, 5, "Length", 3, 100, UI_Visual_HitMark_Length, "px");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Hitmark_3>(Block_Hitmark, 6, "Thickness", 1, 10, UI_Visual_HitMark_Thickness, "px");
-				GUI_VAR.GUI_Checkbox({ Block_Hitmark.x + 20,Block_Hitmark.y }, 7, "Lightning effect", UI_Visual_HitMark_KillEffect);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Hitmark_4>(Block_Hitmark, 8, "Quantity", 10, 500, UI_Visual_HitMark_KillEffect_Quantity);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Hitmark_5>(Block_Hitmark, 9, "Range", 10, 500, UI_Visual_HitMark_KillEffect_Range);
-				const auto Block_Radar = GUI_VAR.GUI_Block(580, 360, 190, "Radar");
-				GUI_VAR.GUI_Checkbox(Block_Radar, 1, "Enabled", UI_Visual_Radar);
-				GUI_VAR.GUI_Checkbox({ Block_Radar.x + 20,Block_Radar.y }, 2, "Follow angle", UI_Visual_Radar_FollowAngle);
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Radar_1>(Block_Radar, 3, "Range", 0.2, 40, UI_Visual_Radar_Range);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Radar_2>(Block_Radar, 4, "Size", 150, 800, UI_Visual_Radar_Size, "px");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Radar_3>(Block_Radar, 5, "Alpha", 0, 255, UI_Visual_Radar_Alpha);
-				GUI_VAR.GUI_Tips(Block_ESP, 1, "Learn enemy coordinates through walls. (Full screen cannot be used)");
-				GUI_VAR.GUI_Tips({ Block_ESP.x + 10,Block_ESP.y }, 16, "-1: Draw ESP when gunfire occurs.");
-				GUI_VAR.GUI_Tips(Block_Hitmark, 1, "Effect that triggers when hitting the player. (Full screen cannot be used)");
-				GUI_VAR.GUI_Tips(Block_Radar, 1, "Exterior window radar. (Full screen cannot be used)");
-				GUI_WindowSize = { 1010,610 };
-			}
-			else if (UI_Panel == 2)//Misc
-			{
-				const auto Block_Misc = GUI_VAR.GUI_Block(150, 30, 810, "Miscellaneous");
-				GUI_VAR.GUI_Checkbox(Block_Misc, 1, "Bunny hop", UI_Misc_BunnyHop);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 2, "Hit sound", UI_Misc_HitSound);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_1>(Block_Misc, 3, "Tone", 10, 5000, UI_Misc_HitSound_Tone);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_2>(Block_Misc, 4, "Length", 10, 100, UI_Misc_HitSound_Length);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 5, "Sonar", UI_Misc_Sonar);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Misc_3>(Block_Misc, 5, UI_Misc_Sonar_Key);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_4>(Block_Misc, 6, "Range far", 500, 1000, UI_Misc_Sonar_Range_Far);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_5>(Block_Misc, 7, "Range near", 0, 500, UI_Misc_Sonar_Range_Near);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 8, "Knife bot", UI_Misc_AutoKnife);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Misc_6>(Block_Misc, 8, UI_Misc_AutoKnife_Key);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 9, "Taser bot", UI_Misc_AutoTaser);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Misc_7>(Block_Misc, 9, UI_Misc_AutoTaser_Key);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 10, "Water mark", UI_Misc_Watermark);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 11, "Sniper crosshair", UI_Misc_SniperCrosshair);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_8>(Block_Misc, 12, "Size", 10, 80, UI_Misc_SniperCrosshair_Size, "px");
-				GUI_VAR.GUI_Checkbox(Block_Misc, 13, "Anti AFK kick", UI_Misc_AntiAFKKick);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 14, "Lock game window", UI_Misc_LockGameWindow);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 15, "Hide from OBS", UI_Misc_ByPassOBS);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 16, "Save performance", UI_Misc_SavePerformance, { 255,150,150 });
-				GUI_VAR.GUI_Checkbox(Block_Misc, 17, "Night mode", UI_Misc_NightMode);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_9>(Block_Misc, 18, "Alpha", 30, 200, UI_Misc_NightMode_Alpha);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 19, "Auto peek", UI_Misc_AutoPeek);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Misc_10>(Block_Misc, 19, UI_Misc_AutoPeek_Key);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 20, "Quick stop", UI_Misc_QuickStop);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 21, "Auto kill ceasefire", UI_Misc_AutoKillCeasefire);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 22, "Cursor ESP", UI_Misc_CursorESP);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Misc_11>(Block_Misc, 22, UI_Misc_CursorESP_Key);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 23, "Walking bot", UI_Misc_WalkingBot);
-				static string MapName = "";
-				if (UI_Misc_WalkingBot_Map == 0)MapName = "Dust2"; else if (UI_Misc_WalkingBot_Map == 1)MapName = "Mirage";
-				else if (UI_Misc_WalkingBot_Map == 2)MapName = "Inferno"; else if (UI_Misc_WalkingBot_Map == 3)MapName = "Ancient";
-				else if (UI_Misc_WalkingBot_Map == 4)MapName = "Anubis"; else if (UI_Misc_WalkingBot_Map == 5)MapName = "Overpass";
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Misc_12>(Block_Misc, 24, "Map: " + MapName, 0, 5, UI_Misc_WalkingBot_Map);
-				GUI_VAR.GUI_Checkbox(Block_Misc, 25, "Mouse low sensitivity", UI_Misc_MouseLowSensitivity, { 255,150,150 });
-				GUI_VAR.GUI_Checkbox(Block_Misc, 26, "Global team check", UI_Misc_TeamCheck, { 200,200,150 });
-				const auto Block_Resolution = GUI_VAR.GUI_Block(580, 30, 190, "Screen resolution");
-				static BOOL Reslution_3840, Reslution_2560, Reslution_1920, Reslution_1280, Reslution_960;
-				GUI_VAR.GUI_Button(Block_Resolution, 1, "3840 * 2160", Reslution_3840, 78); if (Reslution_2560)Window::Set_Resolution(3840, 2160);
-				GUI_VAR.GUI_Button(Block_Resolution, 2, "2560 * 1440", Reslution_2560, 78); if (Reslution_2560)Window::Set_Resolution(2560, 1440);
-				GUI_VAR.GUI_Button(Block_Resolution, 3, "1920 * 1080", Reslution_1920, 78); if (Reslution_1920)Window::Set_Resolution(1920, 1080);
-				GUI_VAR.GUI_Button(Block_Resolution, 4, "1280 * 1024", Reslution_1280, 78); if (Reslution_1280)Window::Set_Resolution(1280, 1024);
-				GUI_VAR.GUI_Button(Block_Resolution, 5, "1280 * 960", Reslution_960, 83); if (Reslution_960)Window::Set_Resolution(1280, 960);
-				const auto Block_CloudPreset = GUI_VAR.GUI_Block(580, 240, 180, "Cloud preset");
-				static BOOL Load_CloudPreset; static int SelectedCloudPreset = 0; GUI_VAR.GUI_Button(Block_CloudPreset, 1, "Load preset", Load_CloudPreset, 80);
-				GUI_VAR.GUI_List<class CLASS_Block_CloudPreset_1>(Block_CloudPreset, 2, { "Legit","Legit2","Legit3","Legit4" }, SelectedCloudPreset);
-				if (Load_CloudPreset)//加载Github上的云预设
+				if (!Timeout)//报错项
 				{
-					const auto Preset_ID = SelectedCloudPreset;//防止套用的预设套写变量
-					if (SelectedCloudPreset == 0)LoadCloudPreset("Legit");
-					else if (SelectedCloudPreset == 1)LoadCloudPreset("Legit2");
-					else if (SelectedCloudPreset == 2)LoadCloudPreset("Legit3");
-					else if (SelectedCloudPreset == 3)LoadCloudPreset("Legit4");
-					SelectedCloudPreset = 0;//归位选择
-				}
-				const auto Block_Spoof = GUI_VAR.GUI_Block(580, 440, 400, "Spoof");
-				GUI_VAR.GUI_Checkbox(Block_Spoof, 1, "Enabled", UI_Spoof_Spoof, { 200,200,150 });
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 2, "Aim at teammate", UI_Spoof_AimbotTeam);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Spoof_1>(Block_Spoof, 2, UI_Spoof_AimbotTeam_Key);
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Spoof_2>({ Block_Spoof.x + 20,Block_Spoof.y }, 3, "Smooth", 0, 20, UI_Spoof_AimbotTeam_Smooth);
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 4, "Increase recoil", UI_Spoof_IncreaseRecoil);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Spoof_3>({ Block_Spoof.x + 20,Block_Spoof.y }, 5, "Strength", 50, 1000, UI_Spoof_IncreaseRecoil_Value, "px");
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 6, "Unable to pick up C4", UI_Spoof_DropC4);
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 7, "Fake anti aim", UI_Spoof_FakeAntiAim);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Spoof_4>(Block_Spoof, 7, UI_Spoof_FakeAntiAim_Key);
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 8, "Kill drop sniper", UI_Spoof_KillDropSniper);
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 9, "Learn player", UI_Spoof_LearnPlayer);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Spoof_5>(Block_Spoof, 9, UI_Spoof_LearnPlayer_Key);
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 10, "Fake ragebot", UI_Spoof_FakeRageBot);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Spoof_6>(Block_Spoof, 10, UI_Spoof_FakeRageBot_Key);
-				auto FakeRageBot_SliderString = "Target: " + Advanced::Player_Name(UI_Spoof_FakeRageBot_Target);
-				if (!UI_Spoof_FakeRageBot_Target)FakeRageBot_SliderString = "Target: Any target";
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Spoof_7>({ Block_Spoof.x + 20,Block_Spoof.y }, 11, FakeRageBot_SliderString, 0, 64, UI_Spoof_FakeRageBot_Target);
-				GUI_VAR.GUI_Checkbox({ Block_Spoof.x + 20,Block_Spoof.y }, 12, "Step on head", UI_Spoof_StepOnHead);
-				GUI_VAR.GUI_Tips(Block_Misc, 2, "Play sound when hitting player.");
-				GUI_VAR.GUI_Tips(Block_Misc, 5, "Makes a subtle sound when approaching an enemy.");
-				GUI_VAR.GUI_Tips(Block_Misc, 8, "Auto attack when conditions such as distance and blood volume are met.");
-				GUI_VAR.GUI_Tips(Block_Misc, 14, "Lock the game window to the front.");
-				GUI_VAR.GUI_Tips(Block_Misc, 16, "Reduce the load on the CPU.", 0, { 255,150,150 });
-				GUI_VAR.GUI_Tips(Block_Misc, 17, "Reduce screen brightness.");
-				GUI_VAR.GUI_Tips(Block_Misc, 19, "Return to coordinates when shooting.");
-				GUI_VAR.GUI_Tips(Block_Misc, 22, "Implement ESP by modifying cursor coordinates.");
-				GUI_VAR.GUI_Tips(Block_Misc, 23, "Automatically walk along the map.");
-				GUI_VAR.GUI_Tips(Block_Misc, 25, "Use when the game sensitivity is too high.", 0, { 255,150,150 });
-				GUI_VAR.GUI_Tips({ Block_Resolution.x + 10,Block_Resolution.y }, 1, "Flexible switching of window resolution.");
-				GUI_VAR.GUI_Tips({ Block_CloudPreset.x + 10,Block_CloudPreset.y }, 1, "Load parameter files stored in Github.");
-				GUI_VAR.GUI_Tips(Block_Spoof, 1, "Prank local player. (global switch)", 0, { 200,200,150 });
-				GUI_VAR.GUI_Tips({ Block_Spoof.x + 10,Block_Spoof.y }, 2, "Aimbot for teammate.", 0, { 200,200,150 });
-				GUI_VAR.GUI_Tips({ Block_Spoof.x + 10,Block_Spoof.y }, 4, "Enhanced upward deflection of firearms.", 0, { 200,200,150 });
-				GUI_VAR.GUI_Tips({ Block_Spoof.x + 10,Block_Spoof.y }, 6, "Drop it when picking up C4.", 0, { 200,200,150 });
-				GUI_VAR.GUI_Tips({ Block_Spoof.x + 10,Block_Spoof.y }, 7, "Rotate view......", 0, { 200,200,150 });
-				GUI_VAR.GUI_Tips({ Block_Spoof.x + 10,Block_Spoof.y }, 8, "Drop the weapon when killing an enemy with a sniper rifle.", 0, { 200,200,150 });
-				GUI_VAR.GUI_Tips({ Block_Spoof.x + 10,Block_Spoof.y }, 9, "Learn recent player actions.", 0, { 200,200,150 });
-				GUI_VAR.GUI_Tips({ Block_Spoof.x + 10,Block_Spoof.y }, 10, "Mimic Ragebot silent aim.", 0, { 200,200,150 });
-				GUI_VAR.GUI_Tips({ Block_Spoof.x + 10,Block_Spoof.y }, 12, "Automatically follow other players when above their heads.", 0, { 200,200,150 });
-				GUI_WindowSize = { 1010,870 };
-			}
-			else if (UI_Panel == 3)//List
-			{
-				const auto Block_PlayerList = GUI_VAR.GUI_Block(150, 30, GUI_VAR.Window_GetSize().y - 60, "Player list", 330);
-				static BOOL ReloadList = false; static vector<string> PlayerNameList = {}; static string PlayerName = "";
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_PlayerList_1>(Block_PlayerList, 1, "Player ID", 0, 64, Debug_Control_Var::SelectPlayer);
-				GUI_VAR.GUI_Button_Small({ Block_PlayerList.x + 10,Block_PlayerList.y }, 1, ReloadList);
-				if (ReloadList || System::Sleep_Tick<class CLASS_DEBUG_AUTO_RELOAD_PLAYERLIST_>(5000)) { ReLoad(true); PlayerNameList = {}; for (short i = 0; i <= 64; ++i)PlayerNameList.push_back(Advanced::Player_Name(i)); }//刷新玩家列表页面
-				GUI_VAR.GUI_InputText<class CLASS_Block_PlayerList_2>(Block_PlayerList, 2, PlayerName, "Search player name");
-				if (PlayerName != "" && PlayerName != "None") { for (short i = 0; i <= 64; ++i)if (PlayerName == Advanced::Player_Name(i))Debug_Control_Var::SelectPlayer = i; }//人物名称搜索
-				GUI_VAR.GUI_List<class CLASS_Block_PlayerList_3>(Block_PlayerList, 3, PlayerNameList, Debug_Control_Var::SelectPlayer, 27);
-				GUI_VAR.GUI_Tips({ Block_PlayerList.x + 12,Block_PlayerList.y }, 1, "Reload player list.");
-				GUI_VAR.GUI_Tips({ Block_PlayerList.x + 12,Block_PlayerList.y }, 2, "Search player name.");
-				const auto Block_Info = GUI_VAR.GUI_Block(510, 30, 490, "Info", 330);
-				const auto Player_Pawn = Advanced::Traverse_Player(Debug_Control_Var::SelectPlayer);
-				Variable::Vector4 Debug_PawnColor = { 0,0,0 };//人物数据地址绘制颜色
-				if (Player_Pawn.Pawn() == Global_LocalPlayer.Pawn())Debug_PawnColor = { 100,100,255 };//自身
-				else if (Player_Pawn.TeamNumber() == Global_LocalPlayer.TeamNumber())Debug_PawnColor = { 0,255,0 };//同队
-				else if (Player_Pawn.TeamNumber() != Global_LocalPlayer.TeamNumber())Debug_PawnColor = { 255,0,0 };//不同队
-				if (Player_Pawn.Health() == 0)Debug_PawnColor = { 150,150,150 };//无效或是死亡
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 1, "client.dll -> " + Variable::Hex_String(Module_client));
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 2, "Pawn -> " + Variable::Hex_String(Player_Pawn.Pawn()), Debug_PawnColor);
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 3, "Name: " + Advanced::Player_Name(Debug_Control_Var::SelectPlayer));
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 4, "Health: " + to_string(Player_Pawn.Health()));
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 5, "Armor: " + to_string(Player_Pawn.Armor()));
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 6, "TeamNum: " + to_string(Player_Pawn.TeamNumber()));
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 7, "IDEntIndex: " + to_string(Player_Pawn.IDEntIndex()));
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 8, "Flags: " + to_string(Player_Pawn.Flags()));
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 9, "ShotsFired: " + to_string(Player_Pawn.ShotsFired()));
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 10, "MoveSpeed: " + to_string(Player_Pawn.MoveSpeed()));
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 11, "Spotted: " + to_string(Player_Pawn.Spotted()));
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 12, "Scoped: " + to_string(Player_Pawn.Scoped()));
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 13, "ActiveWeapon: " + Player_Pawn.ActiveWeaponName() + " (" + to_string(Player_Pawn.ActiveWeapon()) + ")");
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 14, "Origin: ");
-				auto PlayerOrigin = Player_Pawn.Origin(); GUI_VAR.GUI_PosSelector({ Block_Info.x - 100,Block_Info.y }, 14, PlayerOrigin);
-				GUI_VAR.GUI_Text({ Block_Info.x - 20,Block_Info.y }, 15, "Angle: ");
-				auto PlayerViewAngle = Player_Pawn.ViewAngles(); GUI_VAR.GUI_PosSelector({ Block_Info.x - 100,Block_Info.y }, 15, PlayerViewAngle);
-				GUI_VAR.GUI_Tips({ Block_Info.x + 3,Block_Info.y }, 1, "Cloud offsets date: " + CS2_Offsets::Offsets_Date);
-				const auto Block_Offsets = GUI_VAR.GUI_Block(870, 30, GUI_VAR.Window_GetSize().y - 60, "Offsets", 330);
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 1, "Update date: " + CS2_Offsets::Offsets_Date);
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 2, "dwLocalPlayerController = " + Variable::Hex_String(CS2_Offsets::dwLocalPlayerController));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 3, "dwLocalPlayerPawn = " + Variable::Hex_String(CS2_Offsets::dwLocalPlayerPawn));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 4, "dwEntityList = " + Variable::Hex_String(CS2_Offsets::dwEntityList));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 5, "dwViewAngles = " + Variable::Hex_String(CS2_Offsets::dwViewAngles));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 6, "dwViewMatrix = " + Variable::Hex_String(CS2_Offsets::dwViewMatrix));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 7, "m_hPlayerPawn = " + Variable::Hex_String(CS2_Offsets::m_hPlayerPawn));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 8, "m_iTeamNum = " + Variable::Hex_String(CS2_Offsets::m_iTeamNum));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 9, "m_ArmorValue = " + Variable::Hex_String(CS2_Offsets::m_ArmorValue));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 10, "m_iHealth = " + Variable::Hex_String(CS2_Offsets::m_iHealth));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 11, "m_iIDEntIndex = " + Variable::Hex_String(CS2_Offsets::m_iIDEntIndex));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 12, "m_fFlags = " + Variable::Hex_String(CS2_Offsets::m_fFlags));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 13, "m_iShotsFired = " + Variable::Hex_String(CS2_Offsets::m_iShotsFired));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 14, "m_vecVelocity = " + Variable::Hex_String(CS2_Offsets::m_vecVelocity));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 15, "m_bSpotted = " + Variable::Hex_String(CS2_Offsets::m_bSpotted));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 16, "m_bIsScoped = " + Variable::Hex_String(CS2_Offsets::m_bIsScoped));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 17, "m_pClippingWeapon = " + Variable::Hex_String(CS2_Offsets::m_pClippingWeapon));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 18, "m_pGameSceneNode = " + Variable::Hex_String(CS2_Offsets::m_pGameSceneNode));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 19, "m_vecOrigin = " + Variable::Hex_String(CS2_Offsets::m_vecOrigin));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 20, "m_aimPunchCache = " + Variable::Hex_String(CS2_Offsets::m_aimPunchCache));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 21, "m_vecViewOffset = " + Variable::Hex_String(CS2_Offsets::m_vecViewOffset));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 22, "m_dwBoneMatrix = " + Variable::Hex_String(CS2_Offsets::m_dwBoneMatrix));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 23, "m_iszPlayerName = " + Variable::Hex_String(CS2_Offsets::m_iszPlayerName));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 24, "m_pActionTrackingServices = " + Variable::Hex_String(CS2_Offsets::m_pActionTrackingServices));
-				GUI_VAR.GUI_Text({ Block_Offsets.x - 20,Block_Offsets.y }, 25, "m_iNumRoundKills = " + Variable::Hex_String(CS2_Offsets::m_iNumRoundKills));
-				//-----------------------------------------------------------------------------------------------------------------------------测试控件-------
-				const auto Block_DebugControl = GUI_VAR.GUI_Block(510, 540, 280, "Debug control", 330);
-				GUI_VAR.GUI_Checkbox(Block_DebugControl, 1, "Show console window", UI_Debug_ShowDebugWindow);
-				GUI_VAR.GUI_Button_Small({ Block_DebugControl.x - 2,Block_DebugControl.y }, 1, Debug_Control_Var::ClearCommand);
-				GUI_VAR.GUI_InputText<class CLASS_Block_DebugControl_1>({ Block_DebugControl.x - 15,Block_DebugControl.y }, 2, Debug_Control_Var::SystemCommand, "Command ex./add checkbox");
-				GUI_VAR.GUI_Button_Small({ Block_DebugControl.x - 2,Block_DebugControl.y }, 2, Debug_Control_Var::SendSystemCommand);
-				GUI_VAR.GUI_Checkbox(Block_DebugControl, 3, "Checkbox 1", Debug_Control_Var::Checkbox_1);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_DebugControl_2>({ Block_DebugControl.x - 70,Block_DebugControl.y }, 3, Debug_Control_Var::KeySelector_1);
-				GUI_VAR.GUI_Checkbox(Block_DebugControl, 4, "Checkbox 2", Debug_Control_Var::Checkbox_2);
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_DebugControl_3>({ Block_DebugControl.x - 70,Block_DebugControl.y }, 4, Debug_Control_Var::KeySelector_2);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_DebugControl_4>({ Block_DebugControl.x - 15,Block_DebugControl.y }, 5, "Slider int", -100, 100, Debug_Control_Var::Slider_1);
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_DebugControl_5>({ Block_DebugControl.x - 15,Block_DebugControl.y }, 6, "Slider float", -50, 50, Debug_Control_Var::Slider_2);
-				GUI_VAR.GUI_Button({ Block_DebugControl.x - 15,Block_DebugControl.y }, 7, "Button 1", Debug_Control_Var::Button_1);
-				GUI_VAR.GUI_Button({ Block_DebugControl.x - 15,Block_DebugControl.y }, 8, "Button 2", Debug_Control_Var::Button_2);
-				GUI_VAR.GUI_Tips(Block_DebugControl, 1, "Clear console.");
-				GUI_VAR.GUI_Tips(Block_DebugControl, 2, "Send command to system.");
-				GUI_VAR.GUI_Tips(Block_DebugControl, 3, "GUI Draw FPS: " + to_string(GUI_VAR.Window_FPS() + System::Rand_Number(0, 1)) + "." + to_string(System::Rand_Number(100, 999)) + "  (" + to_string(GUI_VAR.Window_FPS()) + ")");//绘制GUI绘制帧数
-				if (Debug_Control_Var::ClearCommand)system("cls");//清除控制台
-				if (Debug_Control_Var::SendSystemCommand && Debug_Control_Var::SystemCommand != "")//向系统发送指令
-				{
-					cout << Debug_Control_Var::SystemCommand << endl;//打印控制台
-					if (Variable::String_Find(Debug_Control_Var::SystemCommand, "/"))//检测是否是命令
-					{
-						auto Last_Send_STR = Debug_Control_Var::SystemCommand; Last_Send_STR.erase(0, 1);//擦除/
-						const auto Return_String = Variable::String_Lower(Last_Send_STR);//转换小写 (自定义命令只支持小写判断)
-						if (Return_String == "add checkbox")++Debug_Control_Var::Checkbox_Quantity;
-						else system(Last_Send_STR.c_str());
-					}
-					else System::Log("Error: Invalid command Please add / in front of", true);//报错提示
-					Debug_Control_Var::SystemCommand = "";//重置输入
-				}
-				GUI_WindowSize = { 1230,850 };
-			}
-			else if (UI_Panel == 4)//Setting
-			{
-				const auto Block_About = GUI_VAR.GUI_Block(150, 30, 160, "About");
-				GUI_VAR.GUI_Text(Block_About, 1, "Shitware", GUI_IO.GUIColor);
-				GUI_VAR.GUI_Text({ Block_About.x + 47,Block_About.y }, 1, "for Counter-Strike 2", { 100,100,100 });
-				GUI_VAR.GUI_Text(Block_About, 2, "Version: " + Variable::Float_Precision(Rensen_Version), { 100,100,100 });
-				GUI_VAR.GUI_Text(Block_About, 3, "Release date: " + Rensen_ReleaseDate, { 100,100,100 });
-				GUI_VAR.GUI_Text(Block_About, 4, "Author: nety.com", { 100,100,100 });
-				static BOOL OpenGithubURL; GUI_VAR.GUI_Button_Small({ Block_About.x + 10,Block_About.y }, 4, OpenGithubURL);
-				if (OpenGithubURL)System::Open_Website("nety.com");//打开作者Github主题页面
-				GUI_VAR.GUI_Tips({ Block_About.x + 10,Block_About.y }, 1, "No ban record!", 0, GUI_IO.GUIColor);
-				const auto Block_Menu = GUI_VAR.GUI_Block(150, 210, 310, "Menu");
-				GUI_VAR.GUI_Text(Block_Menu, 1, "Menu key");
-				GUI_VAR.GUI_KeySelector<class CLASS_Block_Menu_1>(Block_Menu, 1, UI_Setting_MenuKey);
-				GUI_VAR.GUI_Checkbox(Block_Menu, 2, "Menu color", UI_Setting_CustomColor);
-				GUI_VAR.GUI_ColorSelector_a(Block_Menu, 2, UI_Setting_MainColor);
-				if (UI_Setting_MainColor.a < 100)UI_Setting_MainColor.a = 100;
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Menu_2>(Block_Menu, 3, "Menu animation smooth", 1, 10, UI_Setting_MenuAnimation);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Menu_3>(Block_Menu, 4, "Menu font size", 0, 40, UI_Setting_MenuFontSize, "px");
-				GUI_VAR.GUI_InputText<class CLASS_Block_Menu_4>(Block_Menu, 5, UI_Setting_MenuFont, "Custom menu font");
-				static BOOL StartCS, QuitCS;
-				if (CS2_HWND)GUI_VAR.GUI_Button(Block_Menu, 6, "Quit CS", QuitCS, 90);
-				else GUI_VAR.GUI_Button(Block_Menu, 6, "Start CS", StartCS, 85);
-				if (StartCS && CS2_MEM.Get_ProcessHWND() == 0)if (CS2_MEM.Get_ProcessHWND() == 0)System::Open_Website("steam://rungameid/730");//启动CS
-				if (QuitCS && CS2_MEM.Get_ProcessHWND() != 0)Window::Kill_Window(CS2_MEM.Get_ProcessHWND());//关闭CS
-				static BOOL GithubRepositories; GUI_VAR.GUI_Button(Block_Menu, 7, "Store repositories", GithubRepositories, 60);
-				if (GithubRepositories)System::Open_Website("nety.com");//打开Github项目地址
-				static BOOL RestartMenu; GUI_VAR.GUI_Button(Block_Menu, 8, "Restart menu", RestartMenu, 75);
-				if (RestartMenu) { GUI_VAR.Window_SetTitle("Shitware - Restarting"); System::Self_Restart(); }//重启菜单
-				static BOOL UnloadMenu; GUI_VAR.GUI_Button(Block_Menu, 9, "Unload", UnloadMenu, 95);
-				if (UnloadMenu)exit(0);//关闭菜单
-				const auto Block_Presets = GUI_VAR.GUI_Block(580, 30, 490, "Local presets", 320);
-				static int SelectedPresetID = 0; static vector<string> FileList = System::Traversal_FindFile(Preset_Folder + "\\*", ".cfg", true, "UTT"); static string CreatePresetName; static BOOL Create, Load, Save, Delete;
-				GUI_VAR.GUI_List<class CLASS_Block_Presets_1>(Block_Presets, 1, FileList, SelectedPresetID, 11);
-				GUI_VAR.GUI_Button(Block_Presets, 11, "Load", Load, 95); if (Load && SelectedPresetID != -1)LoadPreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
-				GUI_VAR.GUI_Button(Block_Presets, 12, "Save", Save, 95); if (Save && SelectedPresetID != -1)SavePreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
-				GUI_VAR.GUI_InputText<class CLASS_Block_Presets_2>(Block_Presets, 13, CreatePresetName, "Create preset name");
-				GUI_VAR.GUI_Button(Block_Presets, 14, "Create", Create, 90); if (Create) { CreatePreset(CreatePresetName); CreatePresetName = ""; }
-				GUI_VAR.GUI_Button(Block_Presets, 15, "Delete", Delete, 92); if (Delete && SelectedPresetID != -1)DeletePreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
-				if (Create || Load || Save || Delete)FileList = System::Traversal_FindFile(Preset_Folder + "\\*", ".cfg", true, "UTT");//刷新文件列表
-				GUI_VAR.GUI_Tips({ Block_Presets.x + 10,Block_Presets.y }, 1, "Customize and save your presets.");
-				GUI_WindowSize = { 930,550 };
-			}
-			GUI_VAR.Draw_GUI(Debug_Control_Var::Checkbox_2);//最终绘制GUI画板
-			if (UI_Misc_SavePerformance)Sleep(5);//节省电脑占用性能
-		}
-	}
-}
-void Thread_Misc() noexcept//杂项线程 (一些菜单事件处理和杂项功能)
-{
-	System::Log("Load Thread: Thread_Misc()");
-	Window::Windows Window_Watermark; Window_Watermark.Create_RenderBlock_Alpha(Window::Get_Resolution().x, 50, "Shitware - Watermark");//创建水印透明窗口
-	Window::Render Window_Watermark_Render; Window_Watermark_Render.CreatePaint(Window_Watermark.Get_HWND(), 0, 0, Window::Get_Resolution().x, 50);//创建水印绘制画板
-	Window::Windows Window_NightMode; Window_NightMode.Create_RenderBlock(Window::Get_Resolution().x, Window::Get_Resolution().y, "Shitware - NightMode");//夜晚模式窗口
-	Window_Watermark.Show_Window();//将水印修改为最前端绘制覆盖窗口
-	ReLoad(true);//刷新CS2_SDK内存数据 (快速初始化)
-	while (true)
-	{
-		ReLoad();//刷新CS2_SDK内存数据
-		Global_TeamCheck = UI_Misc_TeamCheck;//队伍判断(文件跨越修改变量)
-		if (UI_Misc_LockGameWindow && !Menu_Open)SetForegroundWindow(CS2_HWND);//锁定CS窗口到最前端
-		if (UI_Debug_ShowDebugWindow)//显示调试控制台窗口
-		{
-			Window::Show_ConsoleWindow();//显示控制台
-			Window::Set_Topmost_Status(GetConsoleWindow(), true);//将控制台窗口改为最前端
-		}
-		else Window::Hide_ConsoleWindow();//隐藏控制台
-		//----------------------------------------------------------------------------------------------------------------------------------------
-		if (UI_Misc_Watermark)//水印
-		{
-			Window::Set_LimitWindowShow(Window_Watermark.Get_HWND(), UI_Misc_ByPassOBS);//绕过OBS
-			Window_Watermark.Set_WindowPos(0, 0);//水印窗口默认坐标
-			if (System::Sleep_Tick<class CLASS_WaterMark_WindowReload_Delay_>(200))//降低CPU占用
-			{
-				Window_Watermark.Set_WindowTitle(System::Rand_String(10));//随机水印窗口标题
-				static string WaterMark_String = "";
-				short WaterMark_String_Size = strlen(WaterMark_String.c_str()) * 4.85;
-				if (!CS2_HWND)WaterMark_String = "Shitware | CS not found | " + System::Get_UserName() + " | " + System::Time_String();
-				else { WaterMark_String = "Shitware | " + Advanced::LocalPlayer_Name() + " | " + System::Time_String(); WaterMark_String_Size = strlen(WaterMark_String.c_str()) * 5.2; }
-				const Variable::Vector2 Watermark_Pos = { Window::Get_Resolution().x - WaterMark_String_Size - 10,10 };
-				Window_Watermark_Render.Render_SolidRect(0, 0, 9999, 9999, { 0,0,0 });
-				Window_Watermark_Render.RenderA_SolidRect(Watermark_Pos.x, Watermark_Pos.y, WaterMark_String_Size, 15, { 1,1,1,130 });
-				if (UI_Setting_CustomColor)
-				{
-					Window_Watermark_Render.RenderA_GradientRect(Watermark_Pos.x, Watermark_Pos.y, WaterMark_String_Size / 2, 1, GUI_IO.GUIColor.D_Alpha(255) / 1.5, GUI_IO.GUIColor.D_Alpha(255));
-					Window_Watermark_Render.RenderA_GradientRect(Watermark_Pos.x + WaterMark_String_Size / 2, Watermark_Pos.y, WaterMark_String_Size / 2, 1, GUI_IO.GUIColor.D_Alpha(255), GUI_IO.GUIColor.D_Alpha(255) / 1.5);
-				}
-				else {
-					Window_Watermark_Render.RenderA_GradientRect(Watermark_Pos.x, Watermark_Pos.y, WaterMark_String_Size / 2, 1, { GUI_IO.GUIColor_Rainbow[0], GUI_IO.GUIColor_Rainbow[1], GUI_IO.GUIColor_Rainbow[2],255 }, { GUI_IO.GUIColor_Rainbow[3], GUI_IO.GUIColor_Rainbow[4], GUI_IO.GUIColor_Rainbow[5],255 });
-					Window_Watermark_Render.RenderA_GradientRect(Watermark_Pos.x + WaterMark_String_Size / 2, Watermark_Pos.y, WaterMark_String_Size / 2, 1, { GUI_IO.GUIColor_Rainbow[3], GUI_IO.GUIColor_Rainbow[4], GUI_IO.GUIColor_Rainbow[5],255 }, { GUI_IO.GUIColor_Rainbow[6], GUI_IO.GUIColor_Rainbow[7], GUI_IO.GUIColor_Rainbow[8],255 });
-				}
-				Window_Watermark_Render.Render_String_UTT(Watermark_Pos.x + 4, Watermark_Pos.y + 2, WaterMark_String, "Small Fonts", 12, { 255,255,255 }, false);
-				if (Menu_Open)//菜单开启时绘制调试信息
-				{
-					Window_Watermark_Render.RenderA_SmpStr(2, 2, "Release " + Rensen_ReleaseDate, GUI_IO.GUIColor.D_Alpha(200).Min_Bri(200), { 1,0,0,150 });//编译日期绘制
-					Window_Watermark_Render.RenderA_SmpStr(2, 2 + 14, "Offsets " + CS2_Offsets::Offsets_Date, GUI_IO.GUIColor.D_Alpha(200).Min_Bri(200), { 1,0,0,150 });//云偏移更新日期绘制
-				}
-				Window_Watermark_Render.DrawPaint(true);//最终绘制
-			}
-		}
-		else Window_Watermark.Set_WindowPos(99999, 99999);//将窗口移至边界外来代替隐藏窗口
-		//----------------------------------------------------------------------------------------------------------------------------------------
-		static auto NightMode_Alpha = 0; const auto NightMode_Alpha_Ani = Variable::Animation<class CLASS_NightMode_Window_AlphaAnimation_>(NightMode_Alpha, 5);//夜晚模式透明度动画
-		if (UI_Misc_NightMode && (Global_IsShowWindow || Menu_Open))
-		{
-			Window::Set_LimitWindowShow(Window_NightMode.Get_HWND(), UI_Misc_ByPassOBS);//绕过OBS
-			Variable::Vector4 BackGround_Color = { 0,0,10 }; if (Menu_Open)BackGround_Color = GUI_IO.GUIColor / 10;//菜单外部背景色
-			Window_NightMode.BackGround_Color(Variable::Animation_Vec4<class CLASS_NIGHTMODE_BACKGROUNDCOLOR_ANI_>(BackGround_Color));//绘制颜色背景板
-			if (System::Sleep_Tick<class CLASS_NightMode_Window_Sleep_>(500))//降低CPU占用 (窗口标题,消息循环)
-			{
-				Window_NightMode.Set_WindowTitle(System::Rand_String(10));//随机夜晚模式窗口标题
-				Window_NightMode.Fix_inWhile();//夜晚模式消息循环
-			}
-			NightMode_Alpha = UI_Misc_NightMode_Alpha;
-		}
-		else NightMode_Alpha = 0;
-		if (NightMode_Alpha_Ani <= 0)MoveWindow(Window_NightMode.Get_HWND(), 0, 0, 0, 0, true);//透明度等于0的时候隐藏窗口
-		else MoveWindow(Window_NightMode.Get_HWND(), 0, 0, Window::Get_Resolution().x, Window::Get_Resolution().y, true);//放大窗口
-		Window_NightMode.Set_WindowAlpha(NightMode_Alpha_Ani);//夜晚模式修改透明度
-		//----------------------------------------------------------------------------------------------------------------------------------------
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health())//一些杂项功能
-		{
-			const auto Local_Pos = Global_LocalPlayer.Origin();//本地人物坐标
-			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();//本地人物手持武器ID
-			//----------------------------------------------------------------------------------------------------------------------------------------
-			if (UI_Misc_HitSound)//击打音效
-			{
-				static auto OldDamage = 0; static auto OldKill = 0;
-				const auto Damage = Advanced::Local_RoundDamage();//伤害
-				const auto Kill = Advanced::Local_RoundDamage(true);//击杀
-				if (Damage != OldDamage)//当伤害或是击杀值变化则返回
-				{
-					if (Kill > OldKill)Beep(UI_Misc_HitSound_Tone * 2, UI_Misc_HitSound_Length);//Kill
-					else if (Damage > OldDamage)Beep(UI_Misc_HitSound_Tone, UI_Misc_HitSound_Length);//Hit
-					OldDamage = Damage; OldKill = Kill;
+					if (!CS2_HWND)System::Log("Error: CS2 process not found", true);//未启动CS时报错
+					if (CS2_Offsets::Offsets_Date == "[0000-00-00 00:00]")System::Log("Error: Unable to obtain cloud offset", true);//无法获取偏移量时报错
 				}
 			}
-			//----------------------------------------------------------------------------------------------------------------------------------------
-			if (UI_Misc_AutoKnife && (!UI_Misc_AutoKnife_Key || System::Get_Key(UI_Misc_AutoKnife_Key)) && (Local_ActiveWeaponID == 42 || Local_ActiveWeaponID == 59 || Local_ActiveWeaponID >= 500))//自动刀
+			Global_ValidClassID = {};//遍历前刷新有效实体ID
+			for (short i = 0; i <= 64; ++i)//最大人数64
 			{
-				for (short i = 0; i < Global_ValidClassID.size(); ++i)
-				{
-					const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);
-					if (!Advanced::Check_Enemy(PlayerPawn))continue;//多点检测
-					const auto Player_Pos = PlayerPawn.Origin();//敌人坐标
-					const auto Angle = Variable::CalculateAngle(Local_Pos + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(3), Base::ViewAngles());
-					if (Variable::Coor_Dis_3D(Local_Pos, Player_Pos) <= 70 && hypot(Angle.x, Angle.y) <= 40)//判断距离(世界坐标, 本地人物视角)
-					{
-						if ((PlayerPawn.Health() <= 55 && PlayerPawn.Health() > 30) || Variable::Dif_Value_Ran<float>(Base::ViewAngles().y, PlayerPawn.ViewAngles().y, 50))//血量判断重刀还是轻刀
-						{
-							ExecuteCommand("+attack2"); Sleep(1); ExecuteCommand("-attack2");
-						}
-						else { ExecuteCommand("+attack"); Sleep(1); ExecuteCommand("-attack"); }
-						Sleep(1); ExecuteCommand("+lookatweapon"); Sleep(1); ExecuteCommand("-lookatweapon");
-					}
-				}
-			}
-			//----------------------------------------------------------------------------------------------------------------------------------------
-			if (UI_Misc_AutoTaser && (!UI_Misc_AutoTaser_Key || System::Get_Key(UI_Misc_AutoTaser_Key)) && Local_ActiveWeaponID == 31)//自动电击枪
-			{
-				for (short i = 0; i < Global_ValidClassID.size(); ++i)
-				{
-					const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);
-					if (!Advanced::Check_Enemy(PlayerPawn))continue;//多点检测
-					const auto Player_Pos = PlayerPawn.Origin();//敌人坐标
-					if (Variable::Coor_Dis_3D(Local_Pos, Player_Pos) <= 130 && PlayerPawn.Pawn() == Global_LocalPlayer.IDEntIndex_Pawn().Pawn())//判断距离 && 瞄准
-					{
-						ExecuteCommand("+attack"); Sleep(1); ExecuteCommand("-attack");
-					}
-				}
-			}
-			//----------------------------------------------------------------------------------------------------------------------------------------
-			if (UI_Misc_AntiAFKKick && System::Sleep_Tick<class CLASS_MISC_ANTIAFKKICK_>(5000)) { System::Mouse_Move(1, 0); Sleep(1); System::Mouse_Move(-1, 0); }//防止挂机踢出游戏脚本
-			//----------------------------------------------------------------------------------------------------------------------------------------
-			if (UI_Misc_QuickStop && (!UI_Misc_AutoPeek || !System::Get_Key(UI_Misc_AutoPeek_Key)) && !UI_Misc_WalkingBot)//自动快速急停
-			{
-				const auto Trigger_Value = 20;//急停终止速度
-				if (!(System::Get_Key(0x57) || System::Get_Key(0x41) || System::Get_Key(0x44) || System::Get_Key(0x53) || System::Get_Key(VK_SPACE)) && Global_LocalPlayer.MoveSpeed() > Trigger_Value && Global_LocalPlayer.Flags() & (1 << 0))
-				{
-					for (int i = 0; i <= 3; ++i)//遍历 (为了精准急停)
-					{
-						if (Global_LocalPlayer.MoveSpeed() <= Trigger_Value)continue;//每次遍历都检查速度
-						const auto LocalVel = Global_LocalPlayer.Velocity();
-						const auto LocalYaw = Base::ViewAngles().y;
-						const auto X = (LocalVel.x * cos(LocalYaw / 180 * 3.1415926) + LocalVel.y * sin(LocalYaw / 180 * 3.1415926));
-						const auto Y = (LocalVel.y * cos(LocalYaw / 180 * 3.1415926) - LocalVel.x * sin(LocalYaw / 180 * 3.1415926));
-						if (X > Trigger_Value) { ExecuteCommand("+back"); Sleep(1); ExecuteCommand("-back"); }
-						else if (X < -Trigger_Value) { ExecuteCommand("+forward"); Sleep(1); ExecuteCommand("-forward"); }
-						if (Y > Trigger_Value) { ExecuteCommand("+right"); Sleep(1); ExecuteCommand("-right"); }
-						else if (Y < -Trigger_Value) { ExecuteCommand("+left"); Sleep(1); ExecuteCommand("-left"); }
-					}
-				}
-			}
-			//----------------------------------------------------------------------------------------------------------------------------------------
-			if (UI_Misc_AutoKillCeasefire)//击杀时自动停止开火
-			{
-				static auto OldKill = 0; const auto Kill = Advanced::Local_RoundDamage(true);//击杀
-				if (OldKill != Kill) { if (Kill > OldKill)ExecuteCommand("-attack"); OldKill = Kill; }//当击杀值变化则返回停止开火
-			}
-			//----------------------------------------------------------------------------------------------------------------------------------------
-			if (UI_Misc_CursorESP && System::Get_Key(UI_Misc_CursorESP_Key))//鼠标光标透视 (为了支持全屏模式透视)
-			{
-				const auto Local_ViewMatrix = Base::ViewMatrix();//本地人物视角矩阵
-				const auto CS_Scr_Res = Window::Get_WindowResolution(CS2_HWND);//游戏窗口大小
-				for (short i = 0; i < Global_ValidClassID.size(); ++i)//人物ID遍历
-				{
-					const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
-					if (!Advanced::Check_Enemy(PlayerPawn))continue;//多点检测
-					const auto PlayerPos_Scr = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, PlayerPawn.BonePos(4), Local_ViewMatrix);//躯干屏幕坐标
-					if (PlayerPos_Scr.x < 0 || PlayerPos_Scr.x > CS_Scr_Res.r)continue;//检测指定坐标是否在屏幕内
-					System::Set_MousePos({ (int)PlayerPos_Scr.x + CS_Scr_Res.b,(int)PlayerPos_Scr.y + CS_Scr_Res.a });//最终修改光标坐标鼠标坐标
-					Sleep(5);//光标停留更久
-				}
-			}
-			//----------------------------------------------------------------------------------------------------------------------------------------
-			if (UI_Spoof_Spoof)//恶搞功能
-			{
-				//--------------------------------------
-				if (UI_Spoof_AimbotTeam && System::Get_Key(UI_Spoof_AimbotTeam_Key))//瞄准队友
-				{
-					struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; }; AimPlayerFOV Target = {};//记录变量和变量结构体 (寻找与准星距离最近的人物)
-					for (short i = 0; i < Global_ValidClassID.size(); ++i)//遍历所有实体 找到符合条件的人物Pawn 并且找到2D准星距离最近的实体
-					{
-						const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
-						if (PlayerPawn.Pawn() == Global_LocalPlayer.Pawn() || !PlayerPawn.Health() || PlayerPawn.TeamNumber() != Global_LocalPlayer.TeamNumber())continue;//检查是否队友
-
-						const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Base::ViewAngles() + Global_LocalPlayer.AimPunchAngle() * 2);
-						const auto Fov = hypot(NeedAngle.x, NeedAngle.y);//圆圈范围计算
-						if (Fov < Target.MinFov)//范围判断
-						{
-							Target.Pawn = PlayerPawn;//刷新PlayerPawn
-							Target.MinFov = Fov;//刷新最短Fov
-							Target.AimAngle = NeedAngle;//刷新最终瞄准的Angle
-						}
-					}
-					if (Target.MinFov <= 10)System::Mouse_Move(-Target.AimAngle.y * (30 - UI_Spoof_AimbotTeam_Smooth), Target.AimAngle.x * (30 - UI_Spoof_AimbotTeam_Smooth));//触发瞄准目标
-				}
-				//--------------------------------------
-				if (UI_Spoof_IncreaseRecoil && System::Get_ValueBigger<int, class CLASS_MISC_Spoof_IncreaseRecoil_>(Global_LocalPlayer.ShotsFired()))System::Mouse_Move(0, -1 * UI_Spoof_IncreaseRecoil_Value);//加强后坐力
-				//--------------------------------------
-				if (UI_Spoof_DropC4 && Global_LocalPlayer.ActiveWeapon() == 49)ExecuteCommand("drop");//无法拾取C4
-				//--------------------------------------
-				if (UI_Spoof_FakeAntiAim && System::Get_Key(UI_Spoof_FakeAntiAim_Key))Advanced::Move_to_Angle(9999, 9999);//陀螺
-				//--------------------------------------
-				if (UI_Spoof_KillDropSniper)//丢枪狙
-				{
-					static auto OldKill = 0; const auto Kill = Advanced::Local_RoundDamage(true);//击杀
-					if (Kill > OldKill && Global_LocalPlayer.ActiveWeapon(true) == 3 && Global_LocalPlayer.ShotsFired() == 1)ExecuteCommand("drop");//丢弃武器
-					if (Kill != OldKill)OldKill = Kill;
-				}
-				//--------------------------------------
-				static BOOL IS_LearnPlayer = false;//释放按键判断变量
-				if (UI_Spoof_LearnPlayer && System::Get_Key(UI_Spoof_LearnPlayer_Key))//模仿最近玩家
-				{
-					IS_LearnPlayer = true; struct RecPla { Base::PlayerPawn Pawn = 0; int Dis = 99999; }; RecPla RecentPlayer;//最近的玩家结构体变量
-					for (short i = 0; i < Global_ValidClassID.size(); ++i)//遍历计算最近玩家
-					{
-						const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
-						if (PlayerPawn.Pawn() == Global_LocalPlayer.Pawn())continue;//过滤本地人物
-						const auto For_Dis = Variable::Coor_Dis_3D(Global_LocalPlayer.Origin(), PlayerPawn.Origin());
-						if (RecentPlayer.Dis > For_Dis) { RecentPlayer.Dis = For_Dis; RecentPlayer.Pawn = PlayerPawn; }
-					}
-					if (RecentPlayer.Dis <= 1000)//超出范围则不执行 (因为跟不上)
-					{
-						if (RecentPlayer.Pawn.ShotsFired() != 0) { ExecuteCommand("+attack"); Sleep(1); ExecuteCommand("-attack"); }//开枪
-						if (!(RecentPlayer.Pawn.Flags() & (1 << 0))) { ExecuteCommand("+jump"); Sleep(1); ExecuteCommand("-jump"); }//跳跃
-						Advanced::Move_to_Angle(RecentPlayer.Pawn.ViewAngles(), 5, 1);//学习玩家朝向角度
-						Advanced::Move_to_Pos(RecentPlayer.Pawn.Origin());//移动到玩家
-					}
-				}
-				else if (IS_LearnPlayer == true)//释放按键
-				{
-					ExecuteCommand("-forward");
-					ExecuteCommand("-right");
-					ExecuteCommand("-back");
-					ExecuteCommand("-left");//释放所有按键
-					IS_LearnPlayer = false;
-				}
-				//--------------------------------------
-				static auto Old_Angle = Base::ViewAngles();//原始视角坐标 (要返回的坐标)
-				if (UI_Spoof_FakeRageBot && System::Get_Key(UI_Spoof_FakeRageBot_Key))//对某玩家实施暴力瞄准
-				{
-					for (short i = 0; i < Global_ValidClassID.size(); ++i)//遍历人物ID
-					{
-						if (!System::Get_Key(UI_Spoof_FakeRageBot_Key))continue;//修复延时开枪
-						if (UI_Spoof_FakeRageBot_Target && i != UI_Spoof_FakeRageBot_Target)continue;//任何目标判定
-						const auto Target = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
-						if (Target.Health() && Target.Pawn() != Global_LocalPlayer.Pawn())//目标活着 && 不是本地人物
-						{
-							const auto Aim_Angle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), Target.BonePos(6), Global_LocalPlayer.AimPunchAngle() * 2);//计算要瞄准的目标视角坐标
-							Advanced::Move_to_Angle(Aim_Angle, 30, 0.15, 200);//将视角移动到目标位置
-							if (Global_LocalPlayer.IDEntIndex_Pawn().Pawn() == Target.Pawn()) { ExecuteCommand("+attack"); Sleep(1); ExecuteCommand("-attack"); }//检查是否瞄准到
-							Advanced::Move_to_Angle(Old_Angle, 40, 1, 50);//将视角移动到出发点位置 (实现Fake静默)
-						}
-					}
-				}
-				else Old_Angle = Base::ViewAngles();//刷新原坐标
-				//--------------------------------------
-				if (UI_Spoof_StepOnHead && Global_LocalPlayer.Flags() & (1 << 0))//在目标头上时自动跟随踩头
-				{
-					for (short i = 0; i < Global_ValidClassID.size(); ++i)//遍历计算最近玩家
-					{
-						const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
-						if (PlayerPawn.Pawn() == Global_LocalPlayer.Pawn())continue;//过滤本地人物
-						const auto PlayerPos = PlayerPawn.Origin(), LocalPlayerPos = Global_LocalPlayer.Origin();//目标和本地人物坐标
-						if (Variable::Coor_Dis_2D(LocalPlayerPos, PlayerPos) <= 40 && LocalPlayerPos.z - PlayerPos.z >= 20)Advanced::Move_to_Pos(PlayerPos, 10);//移动到玩家
-					}
-				}
-				//--------------------------------------
-			}
-			//----------------------------------------------------------------------------------------------------------------------------------------
-			if (UI_Misc_SavePerformance)Sleep(3);//降低CPU占用
-			else Sleep(1);
-		}
-		else Sleep(50);//降低CPU占用
-	}
-}
-void Thread_Funtion_BunnyHop() noexcept//功能线程: 连跳
-{
-	System::Log("Load Thread: Thread_Funtion_BunnyHop()");
-	while (true)
-	{
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Misc_BunnyHop && System::Get_Key(VK_SPACE))
-		{
-			if (Global_LocalPlayer.Flags() & (1 << 0)) { ExecuteCommand("+jump"); Sleep(1); ExecuteCommand("-jump"); }//当本地人物触及到地面跳跃
-			Sleep(System::Rand_Number(1, 5, System::Tick()));
-		}
-		else Sleep(50);
-	}
-}
-void Thread_Funtion_Aimbot() noexcept//功能线程: 瞄准机器人
-{
-	System::Log("Load Thread: Thread_Funtion_Aimbot()");
-	while (true)
-	{
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Legit_Aimbot && (!UI_Legit_Aimbot_Key || System::Get_Key(UI_Legit_Aimbot_Key)))
-		{
-			System::Sleep_ns(1000);//比Sleep更快的函数为了更加自然平滑
-			static short Aim_Range, Aim_Parts; static float Aim_Smooth;//瞄准范围,瞄准部位,瞄准平滑度
-			const auto LocalPlayer_ActiveWeapon_ID = Global_LocalPlayer.ActiveWeapon();//本地人物手持武器ID
-			const auto LocalPlayer_ActiveWeapon_Type = Global_LocalPlayer.ActiveWeapon(true);//本地人物手持武器类型
-			if (LocalPlayer_ActiveWeapon_Type == 1)//手枪
-			{
-				if (UI_Legit_Armory_BodyAim_PISTOL)Aim_Parts = 3; else Aim_Parts = 6;
-				Aim_Range = UI_Legit_Armory_Range_PISTOL / 3;
-				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_PISTOL;
-			}
-			else if (LocalPlayer_ActiveWeapon_Type == 2)//步枪
-			{
-				if (UI_Legit_Armory_BodyAim_RIFLE)Aim_Parts = 3; else Aim_Parts = 6;
-				Aim_Range = UI_Legit_Armory_Range_RIFLE / 3;
-				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_RIFLE;
-			}
-			else if (LocalPlayer_ActiveWeapon_Type == 3)//狙击枪
-			{
-				if (UI_Legit_Armory_BodyAim_SNIPER)Aim_Parts = 3; else Aim_Parts = 6;
-				Aim_Range = UI_Legit_Armory_Range_SNIPER / 3;
-				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_SNIPER;
-			}
-			else if (LocalPlayer_ActiveWeapon_Type == 4)//霰弹枪
-			{
-				if (UI_Legit_Armory_BodyAim_SHOTGUN)Aim_Parts = 3; else Aim_Parts = 6;
-				Aim_Range = UI_Legit_Armory_Range_SHOTGUN / 3;
-				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_SHOTGUN;
-			}
-			else continue;//如果是无效的武器则重新来过 (刀,道具,电击枪等)
-			if (!Aim_Range)continue;//范围为0时则重新来过
-			if (!Aim_Smooth)Aim_Smooth = 1;//最小平滑度
-			const auto Local_AimPunchAngle = Global_LocalPlayer.AimPunchAngle();
-			Aim_Range = Aim_Range + -Local_AimPunchAngle.x;
-			static Variable::Vector3 Recoil_Angle;//后坐力角度
-			if (UI_Legit_Aimbot_RemoveRecoil)Recoil_Angle = Base::ViewAngles() + Local_AimPunchAngle * 2;//移除后坐力
-			else Recoil_Angle = Base::ViewAngles();
-			const auto CrosshairId = Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn());//瞄准的实体Pawn
-			struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; }; AimPlayerFOV EligiblePlayers = {};//记录变量和变量结构体 (寻找与准星距离最近的人物)
-			for (short i = 0; i < Global_ValidClassID.size(); ++i)//遍历所有实体 找到符合条件的人物Pawn 并且找到2D准星距离最近的实体
-			{
-				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
-				if (!Advanced::Check_Enemy(PlayerPawn) || (UI_Legit_Aimbot_TriggerOnAim && !CrosshairId) || (UI_Legit_Aimbot_JudgingWall && !PlayerPawn.Spotted()))continue;
-				if (LocalPlayer_ActiveWeapon_Type == 4 && Variable::Coor_Dis_3D(PlayerPawn.Origin(), Global_LocalPlayer.Origin()) > UI_Legit_Armory_TriggerDistance_SHOTGUN)continue;//霰弹枪最大触发范围
-				if (UI_Legit_Armory_HitSiteParser && PlayerPawn.Health() <= Global_LocalPlayer.ActiveWeaponDamage())Aim_Parts = 4;//部位解析器
-				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Parts), Recoil_Angle);//最终瞄准角度
-				const auto Fov = hypot(NeedAngle.x, NeedAngle.y);//准星与角度的距离
-				if (Fov < EligiblePlayers.MinFov)//范围判断
-				{
-					EligiblePlayers.Pawn = PlayerPawn;//刷新PlayerPawn
-					EligiblePlayers.MinFov = Fov;//刷新最短Fov
-					EligiblePlayers.AimAngle = NeedAngle;//刷新最终瞄准的Angle
-				}
-			}
-			if (EligiblePlayers.MinFov <= Aim_Range)//如果玩家在范围内则触发
-			{
-				if (Global_LocalPlayer.Scoped() && LocalPlayer_ActiveWeapon_Type == 3)System::Mouse_Move(-EligiblePlayers.AimAngle.y * Aim_Smooth * 3.5, EligiblePlayers.AimAngle.x * Aim_Smooth * 3.5, UI_Misc_MouseLowSensitivity);//加快开镜时灵敏度
-				else System::Mouse_Move(-EligiblePlayers.AimAngle.y * Aim_Smooth, EligiblePlayers.AimAngle.x * Aim_Smooth, UI_Misc_MouseLowSensitivity);
-				if (UI_Legit_Aimbot_AutoShoot && CrosshairId && (!UI_Legit_Aimbot_AutoStop || LocalPlayer_ActiveWeapon_Type == 4 || Advanced::Stop_Move()))//AutoShoot & CrosshairId & AutoStop
-				{
-					if (UI_Legit_Aimbot_AutoScope && LocalPlayer_ActiveWeapon_Type == 3 && !Global_LocalPlayer.Scoped()) { ExecuteCommand("+attack2"); Sleep(1); ExecuteCommand("-attack2"); Sleep(100); }//手持狙击枪时自动开镜
-					if (EligiblePlayers.MinFov <= (101 - UI_Legit_Aimbot_AutoShootHitChance) * 0.01 || UI_Legit_Aimbot_AutoShootHitChance == 0)//最大边缘点 (为了更加精准的瞄准到目标部位)
-					{
-						ExecuteCommand("+attack");//开枪!!!
-						if (LocalPlayer_ActiveWeapon_ID == 64)Sleep(250);//R8左轮无法开枪修复 (无法跟紧目标点)
-						else Sleep(1);
-						ExecuteCommand("-attack");
-						if (LocalPlayer_ActiveWeapon_Type == 3 && LocalPlayer_ActiveWeapon_ID != 11 && LocalPlayer_ActiveWeapon_ID != 38)System::Key_Con(UI_Legit_Aimbot_Key);//单发狙击枪射击后释放触发按键
-						if (Global_LocalPlayer.ShotsFired() != 0)Sleep(UI_Legit_Aimbot_AutoShootDelay);//自动开枪延迟 (缓解后座力)
-					}
-				}
-			}
-		}
-		else Sleep(10);
-	}
-}
-void Thread_Funtion_AdaptiveAimbot() noexcept//功能线程: 生物瞄准机器人(更加自然的效果)
-{
-	System::Log("Load Thread: Thread_Funtion_AdaptiveAimbot()");
-	while (true)
-	{
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Legit_AdaptiveAimbot && System::Get_Key(VK_LBUTTON) && Global_LocalPlayer.ActiveWeapon(true) == 2)//当CS窗口在最前端 && 本地人物活着 && 按键按下 && 步枪
-		{
-			System::Sleep_ns(1500);//比Sleep更快的函数为了更加自然平滑
-			float Aim_Range = 5; int Aim_Bone = 6; const auto PunchAngle = Global_LocalPlayer.AimPunchAngle();
-			if (abs(PunchAngle.x) * 2 >= Aim_Range)Aim_Range = abs(PunchAngle.x) * 1.5;//计算开枪之后附加后坐力的范围
-			struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; }; AimPlayerFOV Target = {};//记录变量和变量结构体 (寻找与准星距离最近的人物)
-			for (short i = 0; i < Global_ValidClassID.size(); ++i)//遍历所有实体 找到符合条件的人物Pawn 并且找到2D准星距离最近的实体
-			{
-				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
-				if (!Advanced::Check_Enemy(PlayerPawn) || !PlayerPawn.Spotted())continue;//当没有被发现则重新来过
-				if (PlayerPawn.Health() <= 50)Aim_Bone = 4;//低血时瞄准躯干 (降低爆头率)
-				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Bone), Base::ViewAngles() + PunchAngle * 2);//最终瞄准角度 (6: 头部)
-				const auto Fov = hypot(NeedAngle.x, NeedAngle.y);//圆圈范围计算
-				if (Fov < Target.MinFov)//范围判断
-				{
-					Target.Pawn = PlayerPawn;//刷新PlayerPawn
-					Target.MinFov = Fov;//刷新最短Fov
-					Target.AimAngle = NeedAngle;//刷新最终瞄准的Angle
-				}
-			}
-			if (Target.MinFov <= Aim_Range)//如果玩家在范围内则触发
-			{
-				if (Global_LocalPlayer.ShotsFired() > 2 && Target.MinFov <= Aim_Range / 2 && Target.Pawn.MoveSpeed() <= 130)System::Mouse_Move(-Target.AimAngle.y * 30, Target.AimAngle.x * 30, UI_Misc_MouseLowSensitivity);
-				else System::Mouse_Move(-Target.AimAngle.y * (20 - UI_Legit_AdaptiveAimbot_InitialSmooth), Target.AimAngle.x * (20 - UI_Legit_AdaptiveAimbot_InitialSmooth), UI_Misc_MouseLowSensitivity);
-			}
-			if (System::Get_ValueChangeState<int, class AdaptiveAimbot_KilledDelay_>(Advanced::Local_RoundDamage(true)))Sleep(300);//击杀目标后睡眠线程 防止以极快的速度击杀围在一起的目标们
-		}
-		else Sleep(10);
-	}
-}
-void Thread_Funtion_Triggerbot() noexcept//功能线程: 自动扳机
-{
-	System::Log("Load Thread: Thread_Funtion_Triggerbot()");
-	while (true)
-	{
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Legit_Triggerbot && System::Get_Key(UI_Legit_Triggerbot_Key))//当CS窗口在最前端 && 本地人物活着 && 按键按下
-		{
-			System::Sleep_ns(500);//纳秒级延时
-			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();//本地人物手持武器序号
-			const auto Local_ActiveWeaponType = Global_LocalPlayer.ActiveWeapon(true);//本地人物手持武器类型
-			if (Local_ActiveWeaponID == 42 || Local_ActiveWeaponID == 59 || Local_ActiveWeaponID >= 500 || Local_ActiveWeaponID == 31)continue;//过滤特殊武器 (刀子, 电击枪)
-			else if (((UI_Legit_Triggerbot_AnyTarget && Global_LocalPlayer.IDEntIndex() != -1) || Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn())) && (!UI_Legit_Triggerbot_ShootWhenAccurate || Local_ActiveWeaponType == 1 || Local_ActiveWeaponType == 4 || Advanced::Stop_Move(50, false)))
-			{
-				ExecuteCommand("+attack");//Shoot!! 开枪!!
-				if (Local_ActiveWeaponType == 1 || Local_ActiveWeaponType == 3 || Local_ActiveWeaponType == 4)Sleep(1);//单发强不进行长按处理
-				else Sleep(UI_Legit_Triggerbot_ShootDuration);
-				ExecuteCommand("-attack");
-				Sleep(UI_Legit_Triggerbot_ShootDelay);
-			}
-		}
-		else Sleep(50);
-	}
-}
-void Thread_Funtion_AssisteAim() noexcept//功能线程: 精确瞄准
-{
-	System::Log("Load Thread: Thread_Funtion_AssisteAim()");
-	while (true)
-	{
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health())//当CS窗口在最前端 && 本地人物活着
-		{
-			Sleep(1);//降低CPU利用率
-			if (UI_Legit_PreciseAim)//精确瞄准
-			{
-				const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();//本地人物手持武器ID
-				if (Local_ActiveWeaponID == 42 || Local_ActiveWeaponID == 59 || Local_ActiveWeaponID >= 500) { ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_DefaultSensitivity)); Sleep(10); continue; }//过滤特殊武器 (刀类)
-				if (Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn()))ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_EnableSensitivity));
-				else ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_DefaultSensitivity));
-			}
-			if (UI_Legit_MagnetAim && !System::Get_Key(VK_LBUTTON) && Global_LocalPlayer.ActiveWeapon() != 0 && Global_LocalPlayer.ActiveWeapon(true) != 3 && Global_LocalPlayer.MoveSpeed() <= 150)//磁吸瞄准
-			{
-				const float Aim_Range = UI_Legit_MagnetAim_Range / 5;//瞄准范围
-				struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; }; AimPlayerFOV EligiblePlayers = {};//记录变量和变量结构体 (寻找与准星距离最近的人物)
-				for (short i = 0; i < Global_ValidClassID.size(); ++i)//人物ID遍历
-				{
-					const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
-					if (!Advanced::Check_Enemy(PlayerPawn) || !PlayerPawn.Spotted())continue;//简单的实体判断
-					const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Base::ViewAngles());
-					const auto Fov = hypot(NeedAngle.x, NeedAngle.y);
-					if (Fov < EligiblePlayers.MinFov)//范围判断
-					{
-						EligiblePlayers.Pawn = PlayerPawn;//刷新PlayerPawn
-						EligiblePlayers.MinFov = Fov;//刷新最短Fov
-						EligiblePlayers.AimAngle = NeedAngle;//刷新最终瞄准的Angle
-					}
-				}
-				if (UI_Legit_MagnetAim_OnlyHeadLine)EligiblePlayers.AimAngle.y = 0;//只处理Y坐标 (只磁吸爆头线)
-				if (EligiblePlayers.MinFov <= Aim_Range && EligiblePlayers.MinFov >= 0.5)System::Mouse_Move(-EligiblePlayers.AimAngle.y * (10 - UI_Legit_MagnetAim_Smooth), EligiblePlayers.AimAngle.x * (10 - UI_Legit_MagnetAim_Smooth) * 0.7, UI_Misc_MouseLowSensitivity);
-			}
-		}
-		else Sleep(50);
-	}
-}
-void Thread_Funtion_RemoveRecoil() noexcept//功能线程: 移除后坐力
-{
-	System::Log("Load Thread: Thread_Funtion_RemoveRecoil()");
-	while (true)
-	{
-		static auto OldPunch = Variable::Vector3{};
-		if (CS2_HWND && Global_IsShowWindow && UI_Legit_RemoveRecoil && Global_LocalPlayer.Health() && System::Get_Key(VK_LBUTTON))//移除后坐力
-		{
-			if (Global_LocalPlayer.ShotsFired() >= UI_Legit_RemoveRecoil_StartBullet)//判断开出的子弹数
-			{
-				const auto AimPunch = Global_LocalPlayer.AimPunchAngle();//原始后坐力角度
-				auto NewPunch = Variable::Vector3{ OldPunch.x - AimPunch.x * 2,OldPunch.y - AimPunch.y * 2,0 };//计算后坐力之后的角度
-				if (UI_Legit_RemoveRecoil_HorizontalRepair)NewPunch.x = 0;//只处理X坐标
-				System::Mouse_Move(-NewPunch.y * UI_Legit_RemoveRecoil_Sensitive, NewPunch.x * (UI_Legit_RemoveRecoil_Sensitive / 2 + 5));//修改计算后坐力之后的角度
-				OldPunch = AimPunch * 2;
-			}
-			else OldPunch = { 0,0,0 };
-			Sleep(1);
-		}
-		else { OldPunch = { 0,0,0 }; Sleep(50); }
-	}
-}
-void Thread_Funtion_PlayerESP() noexcept//功能线程: 透视和一些视觉杂项
-{
-	System::Log("Load Thread: Thread_Funtion_PlayerESP()");
-	Window::Windows RenderWindow; RenderWindow.Create_RenderBlock_Alpha(Window::Get_Resolution().x, Window::Get_Resolution().y, "Shitware - PlayerESP");//创建绘制覆盖窗口
-	Window::Render ESP_Paint; ESP_Paint.CreatePaint(RenderWindow.Get_HWND(), 0, 0, Window::Get_Resolution().x, Window::Get_Resolution().y);//创建内存画板
-	while (true)
-	{
-		Sleep(UI_Visual_ESP_DrawDelay);//降低CPU占用
-		RenderWindow.Set_WindowTitle(System::Rand_String(10));//随机实体透视窗口标题
-		const auto CS_Scr_Res = Window::Get_WindowResolution(CS2_HWND);
-		MoveWindow(RenderWindow.Get_HWND(), CS_Scr_Res.b, CS_Scr_Res.a, CS_Scr_Res.r, CS_Scr_Res.g, true);//修改 Pos & Size
-		if (UI_Visual_ESP_DrawAlpha == -1)//敌人开枪时显示透视
-		{
-			static short ESP_DrawAlpha = 0;//初始化透明度变量
-			if (ESP_DrawAlpha <= 0)Sleep(20);//透明度为0时睡眠 (降低CPU占用)
-			ESP_DrawAlpha -= 5;//淡化透明度
-			for (short i = 0; i < Global_ValidClassID.size(); ++i)//遍历所有有效人物
-			{
-				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//ID转换为Pawn
-				if (PlayerPawn.ShotsFired() != 0)ESP_DrawAlpha = 230;//刷新显示
-			}
-			if (!Global_LocalPlayer.Health())ESP_DrawAlpha = 230;//本地人物死亡时一直显示
-			Window::Set_WindowLayeredColor(RenderWindow.Get_HWND(), { 0,0,0 }, ESP_DrawAlpha, LWA_ALPHA);//窗口透明度设置
-		}
-		else Window::Set_WindowLayeredColor(RenderWindow.Get_HWND(), { 0,0,0 }, Variable::Animation<class CLASS_PlayerESP_Alpha_Animation_>(UI_Visual_ESP_DrawAlpha, 2), LWA_ALPHA);//窗口透明度设置
-		Window::Set_LimitWindowShow(RenderWindow.Get_HWND(), UI_Misc_ByPassOBS);//绕过OBS
-		ESP_Paint.Render_SolidRect(0, 0, 9999, 9999, { 0,0,0 });//清除画板
-		if (CS2_HWND && (Menu_Open || Global_IsShowWindow))//当CS窗口在最前端 && 菜单在最前端
-		{
-			Window::Set_Topmost_Status(RenderWindow.Get_HWND(), Global_IsShowWindow);//修改窗口为最前端窗口 (覆盖一切的!!!)
-			if (UI_Visual_ESP && (!UI_Visual_ESP_Key || System::Key_Toggle<class CLASS_PlayerESP_KeyToggle_>(UI_Visual_ESP_Key)))//ESP 透视
-			{
-				auto Draw_Color = GUI_IO.GUIColor;
-				if (UI_Visual_ESP_CustomColor)Draw_Color = UI_Visual_ESP_CustomColor_Color;//自定义透视ESP颜色
-				const auto Local_Matrix = Base::ViewMatrix(); const auto Local_Angles = Base::ViewAngles(); const auto Local_Position = Global_LocalPlayer.Origin();
-				for (short i = 0; i < Global_ValidClassID.size(); ++i)
-				{
-					const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);
-					static uintptr_t C4_CachePlayerPawn = 0; if (PlayerPawn.ActiveWeaponName() == "C4")C4_CachePlayerPawn = PlayerPawn.Pawn();//更新C4缓存人物ID (可能会有刷新偏差Bug)
-					if (!Advanced::Check_Enemy(PlayerPawn))continue;//多点检测
-					const auto Top_Pos = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, PlayerPawn.BonePos(6) + Variable::Vector3{ 0, 0, 8 }, Local_Matrix);
-					const auto Entity_Position = PlayerPawn.Origin();
-					const auto Player_Distance = Variable::Coor_Dis_3D(Local_Position, Entity_Position);//计算目标人物与本地人物的距离
-					if (Player_Distance >= 8000 && Global_LocalPlayer.Health())continue;//距离太远则不绘制ESP
-					if (Top_Pos.x < -100 || Top_Pos.x > CS_Scr_Res.r + 100)//检测是否在屏幕内
-					{
-						if (UI_Visual_ESP_OutFOV && Global_LocalPlayer.Health())//方向指示器
-						{
-							auto Screen_Pos = Variable::Ang_Pos(CS_Scr_Res.g / ((120 - (float)UI_Visual_ESP_OutFOV_Radius) / 10), Local_Angles.y - 90 + atan2((Local_Position.x - Entity_Position.x), (Local_Position.y - Entity_Position.y)) * (180 / acos(-1)));
-							Screen_Pos = { CS_Scr_Res.r / 2 - Screen_Pos[0] * ((float)CS_Scr_Res.r / (float)CS_Scr_Res.g),CS_Scr_Res.g / 2 + Screen_Pos[1] };
-							ESP_Paint.RenderA_GradientCircle(Screen_Pos[0], Screen_Pos[1], UI_Visual_ESP_OutFOV_Size, { 0,0,0,100 }, { 0,0,0,0 });
-							ESP_Paint.RenderA_GradientCircle(Screen_Pos[0], Screen_Pos[1], UI_Visual_ESP_OutFOV_Size, Draw_Color.D_Alpha(System::RainbowColor(3).r), { 0,0,0,0 });
-							if (UI_Visual_ESP_ActiveWeapon)ESP_Paint.Render_String(Screen_Pos[0] - 12, Screen_Pos[1] - 4, PlayerPawn.ActiveWeaponName(), "Small Fonts", 10, { 200,200,200 });//绘制手持武器
-						}
-						continue;//不绘制ESP 重来
-					}
-					const auto Bottom_Pos = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, PlayerPawn.Origin() - Variable::Vector3{ 0, 0, 6 }, Local_Matrix);
-					const double Hight = Bottom_Pos.y - Top_Pos.y, Width = Hight * 0.25, Left = Top_Pos.x - Width, Right = Top_Pos.x + Width;
-					if (Player_Distance <= 4000)//距离检测 降低CPU占用
-					{
-						if (UI_Visual_ESP_Line)ESP_Paint.RenderA_GradientLine(CS_Scr_Res.r / 2, CS_Scr_Res.g, Left + (Right - Left) / 2, Bottom_Pos.y, { 0,0,0,0 }, Draw_Color.D_Alpha(200), UI_Visual_ESP_Skeleton_Thickness);//射线
-						if (UI_Visual_ESP_Skeleton)//骨骼
-						{
-							static const vector<short> Bone_Flags = { 6,5,4,13,14,15,14,13,4,8,9,10,9,8,4,3,2,1,25,26,27,26,25,1,22,23,24,24 };
-							for (short i = 0; i <= Bone_Flags.size() - 2; ++i)
-							{
-								const auto Bone_ScreenPos = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, PlayerPawn.BonePos(Bone_Flags[i]), Local_Matrix);
-								const auto Bone_ScreenPos_ = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, PlayerPawn.BonePos(Bone_Flags[i + 1]), Local_Matrix);
-								ESP_Paint.Render_Line(Bone_ScreenPos.x, Bone_ScreenPos.y, Bone_ScreenPos_.x, Bone_ScreenPos_.y, Draw_Color / 1.5, UI_Visual_ESP_Skeleton_Thickness);
-							}
-						}
-						if (UI_Visual_ESP_HeadDot)//头点
-						{
-							const auto Head_ScrPos = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, PlayerPawn.BonePos(6), Local_Matrix);
-							const auto Body_ScrPos = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, PlayerPawn.BonePos(3), Local_Matrix);
-							ESP_Paint.RenderA_GradientCircle(Head_ScrPos.x, Head_ScrPos.y, (Body_ScrPos.y - Head_ScrPos.y) / 2, Draw_Color.D_Alpha(220), { 0,0,0,0 }, 0.15);
-						}
-					}
-					if (UI_Visual_ESP_Box)//方框
-					{
-						ESP_Paint.RenderA_HollowRect(Left, Top_Pos.y, Right - Left, Bottom_Pos.y - Top_Pos.y, { 0,0,0,150 }, 3);
-						ESP_Paint.RenderA_HollowRect(Left, Top_Pos.y, Right - Left, Bottom_Pos.y - Top_Pos.y, Draw_Color.D_Alpha(200));
-					}
-					if (UI_Visual_ESP_Health)//血条
-					{
-						const auto PlayerHealth = PlayerPawn.Health();//人物血量
-						float Health_Ma = PlayerHealth * 0.01;
-						if (PlayerHealth >= 100)Health_Ma = 1;
-						else if (PlayerHealth <= 0)Health_Ma = 0;
-						const auto PlayerArmor = PlayerPawn.Armor();//人物护甲
-						float Armor_Ma = PlayerArmor * 0.01;
-						if (PlayerArmor >= 100)Armor_Ma = 1;
-						else if (PlayerArmor <= 0)Armor_Ma = 0;
-						ESP_Paint.RenderA_SolidRect(Left - 6, Top_Pos.y - 1, 4, Bottom_Pos.y - Top_Pos.y + 3, { 0,0,0,150 });//背景
-						ESP_Paint.RenderA_SolidRect(Left - 5, Bottom_Pos.y - Hight * Armor_Ma, 2, Bottom_Pos.y - (Bottom_Pos.y - Hight * Armor_Ma) + 1, { 70,70,70,200 });//护甲条绘制
-						if (UI_Visual_ESP_CustomColor)ESP_Paint.RenderA_GradientRect(Left - 5, Bottom_Pos.y - Hight * Health_Ma, 2, Bottom_Pos.y - (Bottom_Pos.y - Hight * Health_Ma) + 1, Draw_Color.D_Alpha(200), (Draw_Color / 3).D_Alpha(200), true);//血量条绘制
-						else ESP_Paint.RenderA_GradientRect(Left - 5, Bottom_Pos.y - Hight * Health_Ma, 2, Bottom_Pos.y - (Bottom_Pos.y - Hight * Health_Ma) + 1, { (int)(1 - Health_Ma * 255),(int)(255 * Health_Ma),0,200 }, { 255,0,0,200 }, true);
-						if (PlayerHealth < 100 && PlayerHealth > 0)ESP_Paint.Render_SmpStr(Left - 8, Bottom_Pos.y - Hight * Health_Ma - 6, to_string(PlayerHealth), { 200,200,200 }, { 0 }, false);//血量值绘制
-					}
-					if (UI_Visual_ESP_State)//人物状态
-					{
-						auto i = 0;//Line pos
-						if (PlayerPawn.Armor()) { ESP_Paint.Render_SmpStr(Right + 2, Top_Pos.y - 2 + i * 8, "HK", { 200,200,200 }, { 0 }, false); ++i; }
-						if (C4_CachePlayerPawn == PlayerPawn.Pawn()) { ESP_Paint.Render_SmpStr(Right + 2, Top_Pos.y - 2 + i * 8, "C4", { 255,100,0 }, { 0 }, false); ++i; }
-						if (PlayerPawn.Scoped() && PlayerPawn.ActiveWeapon(true) == 3) { ESP_Paint.Render_SmpStr(Right + 2, Top_Pos.y - 2 + i * 8, "ZOOM", { 0,150,255 }, { 0 }, false); ++i; }
-						if (PlayerPawn.Spotted()) { ESP_Paint.Render_SmpStr(Right + 2, Top_Pos.y - 2 + i * 8, "HIT", { 200,200,200 }, { 0 }, false); ++i; }
-						if (PlayerPawn.ShotsFired() > 0) { ESP_Paint.Render_SmpStr(Right + 2, Top_Pos.y - 2 + i * 8, "SHOT", { 200,200,200 }, { 0 }, false); ++i; }
-						if (!(PlayerPawn.Flags() & (1 << 0))) { ESP_Paint.Render_SmpStr(Right + 2, Top_Pos.y - 2 + i * 8, "AIR", { 200,200,200 }, { 0 }, false); ++i; }
-						if (Global_LocalPlayer.IDEntIndex_Pawn().Pawn() == PlayerPawn.Pawn()) { ESP_Paint.Render_SmpStr(Right + 2, Top_Pos.y - 2 + i * 8, "X", { 200,200,200 }, { 0 }, false); ++i; }
-						if (Player_Distance >= 2500) { ESP_Paint.Render_SmpStr(Right + 2, Top_Pos.y - 2 + i * 8, "INV", { 150,0,255 }, { 0 }, false); ++i; }
-					}
-					if (UI_Visual_ESP_ActiveWeapon)ESP_Paint.Render_SmpStr(Left, Bottom_Pos.y, PlayerPawn.ActiveWeaponName(), { 200,200,200 }, { 0 }, false);//手持武器名称
-					if (UI_Visual_ESP_Name)ESP_Paint.RenderA_String(Left - 2, Top_Pos.y - 15, Advanced::Player_Name(Global_ValidClassID[i]), "Segoe UI", 11, Draw_Color.Min_Bri(200).D_Alpha(255));//人物名称
-				}
-			}
-			if (Global_LocalPlayer.Health())//当本地人物活着时执行的功能
-			{
-				if (UI_Visual_HitMark)//命中标记
-				{
-					static short Mark_DMG = 0;//造成的伤害
-					static Variable::Vector4 Mark_Color, EffectColor;//绘制颜色
-					Mark_Color = Mark_Color - Variable::Vector4{ 10, 10, 10 }; Mark_Color = Mark_Color.Re_Col();//准星透明化动画
-					EffectColor = EffectColor - Variable::Vector4{ 6, 6, 6 }; EffectColor = EffectColor.Re_Col();//特效透明化动画
-					static short OldDamage, OldKill;
-					const auto Damage = Advanced::Local_RoundDamage();//伤害
-					const auto Kill = Advanced::Local_RoundDamage(true);//击杀
-					const auto IDEnt_Pos = Global_LocalPlayer.IDEntIndex_Pawn().BonePos(5); static auto Target_Pos = IDEnt_Pos;//特效目标坐标
-					if (Damage > OldDamage || Damage < OldDamage)//当伤害变化
-					{
-						auto Draw_Color = GUI_IO.GUIColor; if (UI_Visual_HitMark_CustomColor)Draw_Color = UI_Visual_HitMark_Color;//自定义颜色
-						if (Kill > OldKill && Global_LocalPlayer.ShotsFired()) { EffectColor = Draw_Color; }//Kill
-						if (Damage > OldDamage) { Mark_Color = Draw_Color; Mark_DMG = Damage - OldDamage; }//Hit
-						OldDamage = Damage; OldKill = Kill;//刷新
-					}
-					if (UI_Visual_HitMark_KillEffect)//闪电击杀效果
-					{
-						if (EffectColor.r != 0 || EffectColor.g != 0 || EffectColor.b != 0)//3D特效
-						{
-							const auto Range = UI_Visual_HitMark_KillEffect_Range;//爆炸半径 范围
-							const auto Player_Matrix = Base::ViewMatrix();//本地人物视角矩阵
-							for (short i = 0; i <= UI_Visual_HitMark_KillEffect_Quantity; ++i)//绘制粒子线条
-							{
-								srand(i * Kill);//随机种子
-								const auto Effect_Pos = Variable::WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, Target_Pos, Player_Matrix);//起点坐标
-								const auto Effect_Pos_To = Variable::WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, { Target_Pos.x + rand() % Range - Range / 2,Target_Pos.y + rand() % Range - Range / 2,Target_Pos.z + rand() % Range - Range / 2 }, Player_Matrix);
-								ESP_Paint.Render_Line(Effect_Pos.x, Effect_Pos.y, Effect_Pos_To.x, Effect_Pos_To.y, EffectColor);
-							}
-						}
-						else if (IDEnt_Pos.x != 0)Target_Pos = IDEnt_Pos;
-					}
-					if (Mark_Color.r != 0 || Mark_Color.g != 0 || Mark_Color.b != 0)//2D准星
-					{
-						const short Range = UI_Visual_HitMark_Range, Length = UI_Visual_HitMark_Length, Width = UI_Visual_HitMark_Thickness;//绘制设置(距离,长度,粗细)
-						ESP_Paint.Render_Line(CS_Scr_Res.r / 2 - Range, CS_Scr_Res.g / 2 - Range, CS_Scr_Res.r / 2 - Range - Length, CS_Scr_Res.g / 2 - Range - Length, Mark_Color, Width);
-						ESP_Paint.Render_Line(CS_Scr_Res.r / 2 + Range, CS_Scr_Res.g / 2 + Range, CS_Scr_Res.r / 2 + Range + Length, CS_Scr_Res.g / 2 + Range + Length, Mark_Color, Width);
-						ESP_Paint.Render_Line(CS_Scr_Res.r / 2 + Range, CS_Scr_Res.g / 2 - Range, CS_Scr_Res.r / 2 + Range + Length, CS_Scr_Res.g / 2 - Range - Length, Mark_Color, Width);
-						ESP_Paint.Render_Line(CS_Scr_Res.r / 2 - Range, CS_Scr_Res.g / 2 + Range, CS_Scr_Res.r / 2 - Range - Length, CS_Scr_Res.g / 2 + Range + Length, Mark_Color, Width);
-						if (UI_Visual_HitMark_Damage)ESP_Paint.Render_String(CS_Scr_Res.r / 2 - 5, CS_Scr_Res.g / 2 + Range + 10, to_string(Mark_DMG), "Small Fonts", 11, Mark_Color, false);
-					}
-				}
-				if (UI_Misc_AutoPeek)//自动Peek
-				{
-					auto Range = 30;//范围变量
-					const auto LocalPlayer_Pos = Global_LocalPlayer.Origin(); static BOOL IS_SAVED_POS = false; static auto Peek_Pos = LocalPlayer_Pos;//缓存要移动的坐标
-					static BOOL DO_MOVE = false;//判断是否要移动到目标坐标
-					if (System::Get_Key(UI_Misc_AutoPeek_Key))
-					{
-						if (!IS_SAVED_POS) { Peek_Pos = LocalPlayer_Pos; IS_SAVED_POS = true; }//刷新缓存坐标
-						if (Variable::Coor_Dis_3D(LocalPlayer_Pos, Peek_Pos) >= 250)Peek_Pos = LocalPlayer_Pos;//如果距离太远那么再次刷新
-						if (Global_LocalPlayer.ShotsFired() != 0)DO_MOVE = true;//开枪后移动
-						if (DO_MOVE && Advanced::Move_to_Pos(Peek_Pos, Range))DO_MOVE = false;//判断结束移动
-						const auto Player_Matrix = Base::ViewMatrix();//本地人物视角矩阵
-						const auto Target_Origin = Peek_Pos;//目标绘制点3D世界坐标
-						const auto Draw_SCR_Pos = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, Target_Origin, Player_Matrix);//中心点屏幕坐标
-						if (Draw_SCR_Pos.x > 0 && Draw_SCR_Pos.x < CS_Scr_Res.r && Draw_SCR_Pos.y > 0 && Draw_SCR_Pos.y < CS_Scr_Res.g)
-						{
-							const auto Origin_Offset = Variable::Pos_Angle(LocalPlayer_Pos, Target_Origin);//双点坐标连接偏差角度
-							const auto Size_X = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, Variable::Ang_Pos_Vec(Target_Origin, Range, Origin_Offset * -1), Player_Matrix);
-							const auto Size_Y = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, Variable::Ang_Pos_Vec(Target_Origin, Range, Origin_Offset * -1 + 90), Player_Matrix);
-							if (Draw_SCR_Pos.x != 9999 && Size_X.x != 9999 && Size_Y.x != 9999 && Variable::Coor_Dis_2D(Size_X, Draw_SCR_Pos) <= 500)ESP_Paint.RenderA_GradientEllipse(Draw_SCR_Pos.x, Draw_SCR_Pos.y, Variable::Coor_Dis_2D(Size_X, Draw_SCR_Pos) * 2, Variable::Coor_Dis_2D(Size_Y, Draw_SCR_Pos) * 2, GUI_IO.GUIColor.D_Alpha(255), { 0,0,0,0 }, 0.1);
-						}
-					}
-					else {
-						IS_SAVED_POS = false;
-						if (DO_MOVE)//防止串按键
-						{
-							ExecuteCommand("-forward");
-							ExecuteCommand("-right");
-							ExecuteCommand("-back");
-							ExecuteCommand("-left");//释放所有按键
-							DO_MOVE = false;
-						}
-					}
-				}
-				if (UI_Legit_Aimbot && UI_Legit_Armory_ShowAimbotRange)//Aimbot Range 自瞄范围绘制
-				{
-					auto Circle_Range = 0;
-					const auto Local_ActiveWeaponType = Global_LocalPlayer.ActiveWeapon(true);//本地人物手持武器类型
-					if (Local_ActiveWeaponType == 1)Circle_Range = UI_Legit_Armory_Range_PISTOL * 8;
-					else if (Local_ActiveWeaponType == 2)Circle_Range = UI_Legit_Armory_Range_RIFLE * 8;
-					else if (Local_ActiveWeaponType == 3) { if (Global_LocalPlayer.Scoped())Circle_Range = UI_Legit_Armory_Range_SNIPER * 20; else Circle_Range = UI_Legit_Armory_Range_SNIPER * 8; }
-					else if (Local_ActiveWeaponType == 4)Circle_Range = UI_Legit_Armory_Range_SHOTGUN * 8;
-					Circle_Range += abs(Global_LocalPlayer.AimPunchAngle().x * 25);//后坐力反馈
-					if (Circle_Range > 300)ESP_Paint.Render_HollowCircle(CS_Scr_Res.r / 2, CS_Scr_Res.g / 2, Variable::Animation<class Render_Aimbot_Range_Animation>(Circle_Range, 1.5), GUI_IO.GUIColor / 3);
-					else ESP_Paint.RenderA_GradientCircle(CS_Scr_Res.r / 2, CS_Scr_Res.g / 2, Variable::Animation<class Render_Aimbot_Range_Animation>(Circle_Range, 1.5), { 0,0,0,0 }, GUI_IO.GUIColor.D_Alpha(80), 0.95);
-				}
-				if (UI_Misc_SniperCrosshair && Global_LocalPlayer.ActiveWeapon(true) == 3 && !Global_LocalPlayer.Scoped())ESP_Paint.RenderA_GradientCircle(CS_Scr_Res.r / 2, CS_Scr_Res.g / 2, UI_Misc_SniperCrosshair_Size, GUI_IO.GUIColor.D_Alpha(180), { 0,0,0,0 }, 0.1);//狙击枪准星
-			}
-			else if (UI_Misc_SavePerformance) { ESP_Paint.RenderA_SmpStr(0, 0, "Render Performance Saving... 10ms", GUI_IO.GUIColor.D_Alpha(100)); Sleep(10); }//死亡时节省性能
-		}
-		else Sleep(20);
-		if (CS2_HWND && Menu_Open)Sleep(10);//菜单打开时降低绘制速度以降低CPU使用率
-		ESP_Paint.DrawPaint(true);//最终绘制画板
-	}
-}
-void Thread_Funtion_EntityESP() noexcept//功能线程: 实体透视
-{
-	System::Log("Load Thread: Thread_Funtion_EntityESP()");
-	Window::Windows RenderWindow; RenderWindow.Create_RenderBlock(Window::Get_Resolution().x, Window::Get_Resolution().y, "Shitware - EntityESP");
-	Window::Render WEP_Render; WEP_Render.CreatePaint(RenderWindow.Get_HWND(), 0, 0, Window::Get_Resolution().x, Window::Get_Resolution().y);
-	while (true)
-	{
-		Sleep(UI_Visual_ESP_DrawDelay);//降低CPU占用
-		RenderWindow.Set_WindowTitle(System::Rand_String(10));//随机实体透视窗口标题
-		WEP_Render.Render_SolidRect(0, 0, 9999, 9999, { 0,0,0 });//刷新绘制画板
-		if (CS2_HWND && UI_Visual_ESP && (!UI_Visual_ESP_Key || System::Get_Key(UI_Visual_ESP_Key)) && UI_Visual_ESP_Drops && (Menu_Open || Global_IsShowWindow))//当CS窗口在最前端 && 本地人物活着
-		{
-			if (Menu_Open)Sleep(50);//打开菜单时节省CPU性能
-			auto Draw_Color = GUI_IO.GUIColor; if (UI_Visual_ESP_CustomColor)Draw_Color = UI_Visual_ESP_CustomColor_Color;
-			const auto CS_Scr_Res = Window::Get_WindowResolution(CS2_HWND);
-			MoveWindow(RenderWindow.Get_HWND(), CS_Scr_Res.b, CS_Scr_Res.a, CS_Scr_Res.r, CS_Scr_Res.g, true);//Pos & Size
-			RenderWindow.Set_WindowAttributes({ 0,0,0 }, Variable::Animation<class CLASS_EntityESP_Alpha_Animation_>(UI_Visual_ESP_DrawAlpha, 2));//窗口透明度设置
-			Window::Set_LimitWindowShow(RenderWindow.Get_HWND(), UI_Misc_ByPassOBS);//绕过OBS
-			const auto Entitylist = Base::EntityList(); const auto Local_Origin = Global_LocalPlayer.Origin(); const auto Local_ViewMatrix = Base::ViewMatrix();
-			static vector<short> Class_ID = {};//有效实体ID
-			if (System::Sleep_Tick<class CLASS_Drops_ESP_Reload_ClassID_>(500))//特殊算法为了提高绘制效率
-			{
-				short Show_Quantity = 0;//计算绘制的实体数量
-				Class_ID = {};//刷新有效实体ID
-				for (short i = 65; i <= 2048; ++i)//class id 65-2048
-				{
-					if (Show_Quantity > 40)continue;//限制数量
-					const Base::PlayerPawn Entity = Base::Convert(Entitylist, i);
-					if (!Entity.Pawn())continue;
-					const auto Entity_Pos = Entity.Origin();
-					if (!Entity_Pos.x || !Entity_Pos.y || Variable::Coor_Dis_3D(Local_Origin, Entity_Pos) >= 2500)continue;//实体之间距离检测
-					const auto Entity_ScrPos = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, Entity.Origin(), Local_ViewMatrix);
-					if (Entity_ScrPos.x < -800 || Entity_ScrPos.x > CS_Scr_Res.r + 800)continue;//检测实体是否在屏幕内
-					if (Entity.ActiveWeaponName(true, Entity.Pawn()) == "NONE" && !Variable::String_Find(Entity.EntityName(), "_projectile"))continue;//检测实体名称是否有效
-					if (Entity.EntityName() == "hegrenade_projectile" && !System::Get_ValueChangeState<float, class CLASS_Drops_ESP_Delete_StopedEntity_>(Entity_Pos.x))continue;//排除手雷缓存 (受累爆炸后不在移动时就是留下的缓存)
-					Class_ID.push_back(i); ++Show_Quantity;//计算有效实体数量
-					System::Sleep_ns(10);//降低CPU占用
-				}
-			}
-			if (Class_ID.size() > 0)//存在绘制目标时绘制
-			{
-				for (short i = 0; i < Class_ID.size(); ++i)//只遍历有效实体
-				{
-					const Base::PlayerPawn Entity = Base::Convert(Entitylist, Class_ID[i]);
-					const auto Entity_Pos = Entity.Origin();
-					if (!Entity_Pos.x || !Entity_Pos.y)continue;//过滤掉无效坐标
-					auto Entity_ScrPos = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, Entity_Pos, Local_ViewMatrix);
-					auto Entity_Name = Entity.EntityName();//实体名称
-					if (Variable::String_Find(Entity_Name, "_projectile"))//飞行的道具绘制
-					{
-						Entity_Name.erase(Entity_Name.length() - 11, 11);//删除_projectile
-						Entity_Name = Variable::String_Upper(Entity_Name);//转换大写
-						if (Entity_Name == "SMOKEGRENADE")//烟雾弹范围绘制
-						{
-							const float SmokeRange = 200;//烟雾弹绘制范围 (坐标范围)
-							const auto Pos_1 = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, { Entity_Pos.x - (float)floor(sin(System::Tick() / 1000.f) * SmokeRange),Entity_Pos.y - (float)floor(cos(System::Tick() / 1000.f) * SmokeRange), Entity_Pos.z }, Local_ViewMatrix);
-							const auto Pos_2 = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, { Entity_Pos.x + (float)floor(sin(System::Tick() / 1000.f) * SmokeRange),Entity_Pos.y + (float)floor(cos(System::Tick() / 1000.f) * SmokeRange), Entity_Pos.z }, Local_ViewMatrix);
-							const auto Pos_3 = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, { Entity_Pos.x + (float)floor(cos(System::Tick() / 1000.f) * SmokeRange),Entity_Pos.y - (float)floor(sin(System::Tick() / 1000.f) * SmokeRange), Entity_Pos.z }, Local_ViewMatrix);
-							const auto Pos_4 = WorldToScreen(CS_Scr_Res.r, CS_Scr_Res.g, { Entity_Pos.x - (float)floor(cos(System::Tick() / 1000.f) * SmokeRange),Entity_Pos.y + (float)floor(sin(System::Tick() / 1000.f) * SmokeRange), Entity_Pos.z }, Local_ViewMatrix);
-							WEP_Render.Render_Line(Pos_1.x, Pos_1.y, Pos_2.x, Pos_2.y, Draw_Color);
-							WEP_Render.Render_Line(Pos_3.x, Pos_3.y, Pos_4.x, Pos_4.y, Draw_Color);
-							Entity_Name = "SMOKE";
-						}
-						else if (Entity_Name == "FLASHBANG")Entity_Name = "FLASH";
-						else if (Entity_Name == "HEGRENADE")Entity_Name = "GRENADE";
-						if (Entity_ScrPos.x <= 100)Entity_ScrPos.x = 100;
-						else if (Entity_ScrPos.x >= CS_Scr_Res.r - 100)Entity_ScrPos.x = CS_Scr_Res.r - 100;
-						if (Entity_ScrPos.y <= 100)Entity_ScrPos.y = 100;
-						else if (Entity_ScrPos.y >= CS_Scr_Res.g - 100)Entity_ScrPos.y = CS_Scr_Res.g - 100;//防止移除屏幕边缘
-						WEP_Render.RenderA_GradientCircle(Entity_ScrPos.x, Entity_ScrPos.y, 20, { 1,1,1 }, Draw_Color.D_Alpha(255), floor(sin((float)System::Tick() / 150) * 40 + 40) / 100 - 0.2);
-						WEP_Render.Render_SmpStr(Entity_ScrPos.x - 13, Entity_ScrPos.y, Entity_Name, { 200,200,200 }, { 1,1,1 });
-					}
-					else WEP_Render.Render_SmpStr(Entity_ScrPos.x - 15, Entity_ScrPos.y, Entity.ActiveWeaponName(true, Entity.Pawn()), { 200,200,200 }, { 1,1,1 });//武器绘制
-				}
-			}
-			else Sleep(50);
-		}
-		else { MoveWindow(RenderWindow.Get_HWND(), 0, 0, 0, 0, true); Sleep(50); }
-		WEP_Render.DrawPaint(true);
-	}
-}
-void Thread_Funtion_Radar() noexcept//功能线程: 雷达
-{
-	System::Log("Load Thread: Thread_Funtion_Radar()");
-	Window::Windows Radar_Window; Radar_Window.Create_Window(UI_Visual_Radar_Size, UI_Visual_Radar_Size + 15, "Shitware - Radar", true);//创建雷达绘制窗口
-	Window::Render Radar_Paint; Radar_Paint.CreatePaint(Radar_Window.Get_HWND(), 0, 0, 800, 800 + 15);//创建绘制画板
-	Radar_Window.Set_WindowPos(UI_Visual_Radar_Pos.x, UI_Visual_Radar_Pos.y);//套用预设的雷达位置
-	while (true)
-	{
-		Sleep(5);//降低CPU占用
-		Radar_Window.Set_WindowTitle(System::Rand_String(10));//随机雷达窗口标题
-		Window::Set_LimitWindowShow(Radar_Window.Get_HWND(), UI_Misc_ByPassOBS);//绕过OBS
-		static short Radar_Size_; const short RadarSizeAnimation = Variable::Animation<class Class_Radar_Window_Size>(Radar_Size_, 2);
-		if ((Global_IsShowWindow || Menu_Open || Window::Get_WindowEnable(Radar_Window.Get_HWND())) && UI_Visual_Radar)//当CS窗口在最前端
-		{
-			Radar_Size_ = UI_Visual_Radar_Size; UI_Visual_Radar_Pos = Radar_Window.Get_WindowPos();
-			if (!Radar_Window.Window_Move(15))//移动雷达窗口
-			{
-				const float RadarRangeAnimation = Variable::Animation<class Class_Radar_Window_Range>(UI_Visual_Radar_Range, 2);//窗口动画
-				const auto LocalPlayerPos = Global_LocalPlayer.Origin(); auto ViewAngle = Base::ViewAngles();
-				Radar_Paint.Render_SolidRect(0, 0, 9999, 9999, { 0,0,0 });//背景
-				if (UI_Visual_Radar_Alpha)//透明状态不绘制人物视角朝向
-				{
-					if (!CS2_HWND)ViewAngle.y = Variable::Animation<class Class_Radar_AngleAnimation_>(System::Rand_Number(-180, 180, System::Tick()), 30);
-					if (UI_Visual_Radar_FollowAngle)Radar_Paint.Render_GradientTriangle({ RadarSizeAnimation / 2, RadarSizeAnimation / 2 + 15 ,(int)Variable::Ang_Pos_(RadarSizeAnimation / 2, RadarSizeAnimation / 2 + 15, RadarSizeAnimation / 2, 135, 0)[0], (int)Variable::Ang_Pos_(RadarSizeAnimation / 2, RadarSizeAnimation / 2 + 15, RadarSizeAnimation / 2, 135, 0)[1] ,(int)Variable::Ang_Pos_(RadarSizeAnimation / 2, RadarSizeAnimation / 2 + 15, RadarSizeAnimation / 2, 225, 0)[0], (int)Variable::Ang_Pos_(RadarSizeAnimation / 2, RadarSizeAnimation / 2 + 15, RadarSizeAnimation / 2, 225, 0)[1] }, GUI_IO.GUIColor / 4, { 0,0,0 }, { 0,0,0 });
-					else Radar_Paint.Render_GradientTriangle({ RadarSizeAnimation / 2, RadarSizeAnimation / 2 + 15 ,(int)Variable::Ang_Pos_(RadarSizeAnimation / 2, RadarSizeAnimation / 2 + 15, RadarSizeAnimation / 2, ViewAngle.y, 45)[0], (int)Variable::Ang_Pos_(RadarSizeAnimation / 2, RadarSizeAnimation / 2 + 15, RadarSizeAnimation / 2, ViewAngle.y, 45)[1] ,(int)Variable::Ang_Pos_(RadarSizeAnimation / 2, RadarSizeAnimation / 2 + 15, RadarSizeAnimation / 2, ViewAngle.y, 135)[0], (int)Variable::Ang_Pos_(RadarSizeAnimation / 2, RadarSizeAnimation / 2 + 15, RadarSizeAnimation / 2, ViewAngle.y, 135)[1] }, GUI_IO.GUIColor / 4, { 0,0,0 }, { 0,0,0 });//本地人物视野
-				}
-				Radar_Paint.Render_HollowCircle(RadarSizeAnimation / 2, RadarSizeAnimation / 2 + 15, RadarSizeAnimation / 100 * 3.5, { 255,255,255 }, 2);//自身圆圈
-				for (short i = 0; i < Global_ValidClassID.size(); ++i)
-				{
-					const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);
-					if (!Advanced::Check_Enemy(PlayerPawn))continue;//多点检测
-					const auto EntityPos = PlayerPawn.Origin(); static vector<float> EnemyScreenPos;
-					if (UI_Visual_Radar_FollowAngle)EnemyScreenPos = { RadarSizeAnimation / 2 - Variable::Ang_Pos(Variable::Coor_Dis_2D(LocalPlayerPos, EntityPos), ViewAngle.y - 90 + atan2((LocalPlayerPos.x - EntityPos.x), (LocalPlayerPos.y - EntityPos.y)) * (180 / acos(-1)))[0] / RadarRangeAnimation,RadarSizeAnimation / 2 + 15 + Variable::Ang_Pos(Variable::Coor_Dis_2D(LocalPlayerPos, EntityPos), ViewAngle.y - 90 + atan2((LocalPlayerPos.x - EntityPos.x), (LocalPlayerPos.y - EntityPos.y)) * (180 / acos(-1)))[1] / RadarRangeAnimation };
-					else EnemyScreenPos = { RadarSizeAnimation / 2 - (LocalPlayerPos.x - EntityPos.x) / RadarRangeAnimation,RadarSizeAnimation / 2 + 15 + (LocalPlayerPos.y - EntityPos.y) / RadarRangeAnimation };
-					if (EnemyScreenPos[0] > RadarSizeAnimation)EnemyScreenPos[0] = RadarSizeAnimation;//边缘限制 (无法离开绘制区域)
-					else if (EnemyScreenPos[0] < 0) EnemyScreenPos[0] = 0;
-					if (EnemyScreenPos[1] > RadarSizeAnimation + 15)EnemyScreenPos[1] = RadarSizeAnimation + 15;
-					else if (EnemyScreenPos[1] < 15)EnemyScreenPos[1] = 15;
-					if (PlayerPawn.Spotted())Radar_Paint.Render_SolidCircle(EnemyScreenPos[0], EnemyScreenPos[1], RadarSizeAnimation / 100 * 3.5, GUI_IO.GUIColor, GUI_IO.GUIColor);//敌人圆圈
-					else Radar_Paint.Render_HollowCircle(EnemyScreenPos[0], EnemyScreenPos[1], RadarSizeAnimation / 100 * 3.5, GUI_IO.GUIColor, 2);
-				}
-				Radar_Paint.Render_GradientRect(0, 0, Radar_Window.Get_WindowSize().x, 14, GUI_IO.GUIColor / 2, GUI_IO.GUIColor / 4, false);
-				Radar_Paint.Render_GradientRect(0, 14, Radar_Window.Get_WindowSize().x, 1, GUI_IO.GUIColor / 4, GUI_IO.GUIColor / 2, false);//标题背景
-				Radar_Paint.Render_String(3 + 1, 1 + 1, "Shitware - Radar", "Small Fonts", 12, { 0,0,1 }, false);//标题阴影
-				Radar_Paint.Render_String(3, 1, "Shitware - Radar", "Small Fonts", 12, GUI_IO.GUIColor.Min_Bri(150), false);//标题
-				Radar_Paint.DrawPaint();//最终绘制雷达画板
-			}
-		}
-		else Radar_Size_ = 0;
-		Radar_Window.Set_WindowSize(RadarSizeAnimation, RadarSizeAnimation + 15);//雷达大小
-		if (!UI_Visual_Radar_Alpha)Radar_Window.Set_WindowAttributes({ 0,0,0 }, 0, LWA_COLORKEY);//将黑色像素改为全透明
-		else Radar_Window.Set_WindowAlpha(Variable::Animation<class Class_Radar_Window_Alpha>(UI_Visual_Radar_Alpha, 3));//雷达透明度
-		Radar_Window.Fix_inWhile();//窗口消息循环
-	}
-}
-void Thread_Funtion_Sonar() noexcept//功能线程: 声呐(距离检测)
-{
-	System::Log("Load Thread: Thread_Funtion_Sonar()");
-	while (true)
-	{
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Misc_Sonar && (!UI_Misc_Sonar_Key || System::Get_Key(UI_Misc_Sonar_Key)))//当CS窗口在最前端 && 本地人物活着
-		{
-			Sleep(5);
-			const auto Local_Pos = Global_LocalPlayer.Origin();//本地人物坐标
-			for (short i = 0; i <= 64; ++i)
-			{
-				System::Sleep_ns(150);
-				if (UI_Misc_Sonar_Key != 0 && !System::Get_Key(UI_Misc_Sonar_Key))continue;//提高效率
 				const auto PlayerPawn = Advanced::Traverse_Player(i);
-				if (!Advanced::Check_Enemy(PlayerPawn))continue;//多点检测
-				const auto Pos_Dis = Variable::Coor_Dis_2D(Local_Pos, PlayerPawn.Origin());//敌人坐标距离
-				if (Pos_Dis <= UI_Misc_Sonar_Range_Near)Beep(300, 20);//Near range 近距离
-				else if (Pos_Dis <= UI_Misc_Sonar_Range_Far)Beep(150, 20);//Far range 远距离
-				if (Pos_Dis <= UI_Misc_Sonar_Range_Far)Sleep(20);//断开间隔
+				if (!PlayerPawn.Health() > 0 || (PlayerPawn.Origin().x == 0 && PlayerPawn.Origin().y == 0))continue;//多点检测
+				Global_ValidClassID.push_back(i);
 			}
 		}
-		else Sleep(50);
+		Global_IsShowWindow = CS2_MEM.Get_ProcessHWND() == GetForegroundWindow();//刷新是否是最前端窗口
 	}
 }
-void Thread_Funtion_WalkingBot() noexcept//功能线程: 自动行走机器人(用于刷经验)
-{
-	System::Log("Load Thread: Thread_Funtion_WalkingBot()");
-	while (true)
-	{
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Misc_WalkingBot)//当CS窗口在最前端 && 本地人物活着 && 没有在射击时 && 自动行走机器人开关
-		{
-			Sleep(1);//降低CPU占用
-			const auto MovingPath = Advanced::MovingPath_Map(UI_Misc_WalkingBot_Map);//地图行走路径
-			short Distance = 133337; short TargetPosID = 0;//最近点位记录变量
-			for (short Pos_ID = 0; Pos_ID <= MovingPath.size(); ++Pos_ID)//寻找最近距离的点位设定为起点
-			{
-				const auto Dis = Variable::Coor_Dis_3D(Global_LocalPlayer.Origin(), MovingPath[Pos_ID]);
-				if (Distance > Dis) { Distance = Dis; TargetPosID = Pos_ID; }//记录起点
-			}
-			for (short Pos_ID = TargetPosID; Pos_ID < MovingPath.size(); ++Pos_ID)//执行移动到路径中...
-			{
-				while (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Misc_WalkingBot)//循环知道移动到目标点
-				{
-					BOOL IsHasPlayerInFov = false;//记录是否有目标被发现并且在视线范围内
-					for (short i = 0; i < Global_ValidClassID.size(); ++i)//全局人物实体遍历
-					{
-						const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);
-						if (!Advanced::Check_Enemy(PlayerPawn) || !PlayerPawn.Spotted())continue;//判断目标
-						const auto Angle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(3), Base::ViewAngles());
-						if (hypot(Angle.x, Angle.y) <= 45)IsHasPlayerInFov = true;//记录
-					}
-					if ((Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn()) || IsHasPlayerInFov) && UI_Legit_Aimbot)Advanced::Stop_Move();//发现到目标时停止移动坐标和移动视角
-					else {
-						if (Advanced::Move_to_Pos(MovingPath[Pos_ID], 25))break;//移动到坐标
-						const auto Angle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), MovingPath[Pos_ID + 3] + Variable::Vector3{0, 0, 60}, Base::ViewAngles());
-						System::Mouse_Move(-Angle.y * 20, Angle.x * 5, UI_Misc_MouseLowSensitivity);
-					}
-					Sleep(1);//降低CPU占用
-				}
-			}
-		}
-		else Sleep(50);//降低CPU占用
-	}
-}
-int main() noexcept//主线程 (加载多线程, 一些杂项功能)
-{
-	System::Anti_Debugger("Debugging is disabled after compilation is completed.", true);//防止逆向破解
-	//----------------------------------------------------------------------------------------------------------------------------------
-	if (FindWindow(0, L"Shitware - Menu")) { Window::Message_Box("Shitware Error", "The program is already running.", MB_ICONSTOP); exit(0); }//防止多开程序
-	//----------------------------------------------------------------------------------------------------------------------------------
-	System::URL_READ UserID_READ = { "Cache_UserID" }; BOOL Attest = false;//认证变量
-	if (UserID_READ.StoreMem("https://github.com/shitwareofc/shitware/blob/main/Cloud%20Files/UserID.uid?raw=true"))//Github读取有效用户ID
-	{
-		for (short i = 0; i <= 10000; ++i) { if (System::Get_UserName() == UserID_READ.Read(i) || Variable::String_Upper(UserID_READ.Read(i)) == "BYPASS") { Attest = true; break; } }//遍历检测并修改认证
-		UserID_READ.Release();//释放缓存
-	}
-	Attest = true;//公开版直接通过验证
-	if (!Attest) { Window::Message_Box("Shitware Attest - " + System::Get_UserName(), "Your identity cannot be passed.\n\nUnable to access from Chinese IP.\n\nAuthor: https://www.dfg.com.br/user/no_sht/listings\n", MB_ICONSTOP); exit(0); }//未被认证则直接退出
-	//----------------------------------------------------------------------------------------------------------------------------------
-	System::URL_READ AutoUpdate = { "Cache_Update" };//自动更新系统 (中国IP用户需要挂梯子)
-	if (AutoUpdate.StoreMem("https://github.com/shitwareofc/shitware/blob/main/Main.cpp?raw=true"))//版本号更新检查
-	{
-		auto Version = AutoUpdate.Read(3); Version.erase(0, 29); Version.erase(Version.size() - 15, 999);//擦除无用字符只获取版本号
-		AutoUpdate.Release();//释放缓存
-		if (Variable::string_float_(Version) > Rensen_Version && Window::Message_Box("Shitware Update", "A new version has been released.\nYou will be updated to Ver[" + Version + "]\n\nDo you want to update now?\nIt may take tens of seconds.\n", MB_YESNO | MB_ICONASTERISK) == 6)
-		{
-			System::Open_Website("Shitware"); exit(0);//打开下载链接并且关闭程序
-		}
-	}
-	//----------------------------------------------------------------------------------------------------------------------------------
-	Window::Hide_ConsoleWindow();//隐藏控制台
-	System::Set_ProcessPriority();//将Rensen程序优先级设置为高 (防止崩溃)
-	Window::Initialization_ConsoleWindow();//初始化控制台窗口 (初始化窗口大小, 清除字符)
-	printf("Welcome to Shitware for Counter-Strike 2 cheat.\nThe Shitware project is a version converted from EXTERNAL.\nBy: NoSHIT\nThe following information returned is debugging information.\n");//作者留言
-	System::Log("Load Thread: main()");
-	thread Thread_Menu_ = thread(Thread_Menu); Sleep(30);
-	thread Thread_Misc_ = thread(Thread_Misc); Sleep(30);
-	thread Thread_Funtion_BunnyHop_ = thread(Thread_Funtion_BunnyHop); Sleep(30);
-	thread Thread_Funtion_Aimbot_ = thread(Thread_Funtion_Aimbot); Sleep(30);
-	thread Thread_Funtion_AdaptiveAimbot_ = thread(Thread_Funtion_AdaptiveAimbot); Sleep(30);
-	thread Thread_Funtion_Triggerbot_ = thread(Thread_Funtion_Triggerbot); Sleep(30);
-	thread Thread_Funtion_AssisteAim_ = thread(Thread_Funtion_AssisteAim); Sleep(30);
-	thread Thread_Funtion_RemoveRecoil_ = thread(Thread_Funtion_RemoveRecoil); Sleep(30);
-	thread Thread_Funtion_PlayerESP_ = thread(Thread_Funtion_PlayerESP); Sleep(30);
-	thread Thread_Funtion_EntityESP_ = thread(Thread_Funtion_EntityESP); Sleep(30);
-	thread Thread_Funtion_Radar_ = thread(Thread_Funtion_Radar); Sleep(30);
-	thread Thread_Funtion_Sonar_ = thread(Thread_Funtion_Sonar); Sleep(30);
-	thread Thread_Funtion_WalkingBot_ = thread(Thread_Funtion_WalkingBot); Sleep(30);
-	if (!System::Judge_File(Preset_Folder))System::Create_Folder(Preset_Folder);//没有参数文件夹时创建参数文件夹
-	while (true)//菜单动画和关闭快捷键
-	{
-		if (!Attest)exit(0);//过滤未认证用户
-		if (System::Get_Key(VK_INSERT) && System::Get_Key(VK_DELETE)) { Beep(50, 50); exit(0); }//快速关闭键 (防止卡线程)
-		static short MenuWindowAlpha = 200;
-		if (UI_Setting_MenuAnimation == 1)if (Menu_Open)MenuWindowAlpha += UI_Setting_MainColor.a / 15; else MenuWindowAlpha = 0;//窗体透明度动画 (无动画时依然加载透明度动画)
-		else if (Menu_Open)MenuWindowAlpha += UI_Setting_MainColor.a / UI_Setting_MenuAnimation / 2.5; else MenuWindowAlpha -= UI_Setting_MainColor.a / UI_Setting_MenuAnimation / 1.25;//窗体透明度动画
-		if (MenuWindowAlpha >= UI_Setting_MainColor.a)MenuWindowAlpha = UI_Setting_MainColor.a;//限制窗口透明度
-		else if (MenuWindowAlpha <= 0)MenuWindowAlpha = 0;
-		GUI_VAR.Window_SetAlpha(MenuWindowAlpha);//修改菜单透明度
-		if (!System::Key_Toggle<class CLASS_Main_Rensen_MenuKey>(UI_Setting_MenuKey)) { GUI_VAR.Window_Show(); Menu_Open = true; }//保证菜单窗口在最前端
-		else { if (MenuWindowAlpha == 0)GUI_VAR.Window_Hide(); Menu_Open = false; }
-		GUI_IO = GUI_VAR.Get_IO();//刷新GUI状态数据
-		if (!UI_Setting_CustomColor)GUI_IO.GUIColor = { GUI_IO.GUIColor_Rainbow[3],GUI_IO.GUIColor_Rainbow[4],GUI_IO.GUIColor_Rainbow[5] };//GUI主题颜色到功能函数
-		if (UI_Setting_MenuFontSize == 0)GUI_VAR.Global_Set_EasyGUI_FontSize(13);//自定义GUI字体大小 (默认字体大小为13)
-		else GUI_VAR.Global_Set_EasyGUI_FontSize(UI_Setting_MenuFontSize);
-		if (UI_Setting_MenuFont == "")GUI_VAR.Global_Set_EasyGUI_Font("Verdana");//自定义GUI字体 (默认字体为Verdana)
-		else GUI_VAR.Global_Set_EasyGUI_Font(UI_Setting_MenuFont);
-		if (UI_Misc_SavePerformance)Sleep(3);//降低CPU占用
-		else Sleep(1);
-	}
-}
+using namespace CS2_SDK;
