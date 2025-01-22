@@ -799,14 +799,14 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Text({ Block_About.x + 47,Block_About.y }, 1, "for Counter-Strike 2UTT", { 100,100,100 });
 				GUI_VAR.GUI_Text(Block_About, 2, "版本: UTT" + Variable::Float_Precision(Rensen_Version), { 100,100,100 });
 				GUI_VAR.GUI_Text(Block_About, 3, "发布日期: UTT" + Rensen_ReleaseDate, { 100,100,100 });
-				GUI_VAR.GUI_Text(Block_About, 4, "作者: https://github.com/CosllyUTT", { 100,100,100 });
+				GUI_VAR.GUI_Text(Block_About, 4, "作者: https://www.dfg.com.br/user/no_sht/listings", { 100,100,100 });
 				GUI_VAR.GUI_Text(Block_About, 5, "交流QQ群: 486214313UTT", { 100,100,100 });
 				GUI_VAR.GUI_Text(Block_About, 6, "中国内地用户检查更新时需要使用VPN (确保可以连接Github)UTT", { 100,100,100 });
 				static BOOL OpenGithubURL, OpenQQGroupChat;
 				GUI_VAR.GUI_Button_Small({ Block_About.x + 10,Block_About.y }, 4, OpenGithubURL);
 				GUI_VAR.GUI_Button_Small({ Block_About.x + 10,Block_About.y }, 5, OpenQQGroupChat);
-				if (OpenGithubURL)System::Open_Website("https://github.com/Coslly");//打开作者Github主题页面
-				if (OpenQQGroupChat)System::Open_Website("https://qm.qq.com/q/67Ed5be1tS");//打开QQ加入群聊链接
+				if (OpenGithubURL)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开作者Github主题页面
+				if (OpenQQGroupChat)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开QQ加入群聊链接
 				const auto Block_Menu = GUI_VAR.GUI_Block(150, 270, 250, "菜单UTT");
 				GUI_VAR.GUI_Text(Block_Menu, 1, "菜单按键UTT");
 				GUI_VAR.GUI_KeySelector<class CLASS_Block_Menu_1>(Block_Menu, 1, UI_Setting_MenuKey);
@@ -820,7 +820,7 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				if (StartCS && CS2_MEM.Get_ProcessHWND() == 0)if (CS2_MEM.Get_ProcessHWND() == 0)System::Open_Website("steam://rungameid/730");//启动CS
 				if (QuitCS && CS2_MEM.Get_ProcessHWND() != 0)Window::Kill_Window(CS2_MEM.Get_ProcessHWND());//关闭CS
 				static BOOL GithubRepositories; GUI_VAR.GUI_Button(Block_Menu, 5, "Github 项目链接UTT", GithubRepositories, 70);
-				if (GithubRepositories)System::Open_Website("https://github.com/Coslly/Rensen");//打开Github项目地址
+				if (GithubRepositories)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开Github项目地址
 				static BOOL RestartMenu; GUI_VAR.GUI_Button(Block_Menu, 6, "重启菜单UTT", RestartMenu, 90);
 				if (RestartMenu) { GUI_VAR.Window_SetTitle("Shitware - Restarting"); System::Self_Restart(); }//重启菜单
 				static BOOL UnloadMenu; GUI_VAR.GUI_Button(Block_Menu, 7, "关闭菜单UTT", UnloadMenu, 90);
@@ -2155,7 +2155,7 @@ int main() noexcept//主线程 (加载多线程, 一些杂项功能)
 		UserID_READ.Release();//释放缓存
 	}
 	Attest = true;//公开版直接通过验证
-	if (!Attest) { Window::Message_Box("Shitware Attest - " + System::Get_UserName(), "Your identity cannot be passed.\n\nUnable to access from Chinese IP.\n\nAuthor: https://github.com/Coslly\n", MB_ICONSTOP); exit(0); }//未被认证则直接退出
+	if (!Attest) { Window::Message_Box("Shitware Attest - " + System::Get_UserName(), "Your identity cannot be passed.\n\nUnable to access from Chinese IP.\n\nAuthor: https://www.dfg.com.br/user/no_sht/listings\n", MB_ICONSTOP); exit(0); }//未被认证则直接退出
 	//----------------------------------------------------------------------------------------------------------------------------------
 	System::URL_READ AutoUpdate = { "Cache_Update" };//自动更新系统 (中国IP用户需要挂梯子)
 	if (AutoUpdate.StoreMem("https://raw.githubusercontent.com/shitwareofc/shitware/refs/heads/main/Main.cpp"))//版本号更新检查
