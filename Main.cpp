@@ -766,9 +766,8 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				{
 					const auto Preset_ID = SelectedCloudPreset;//防止套用的预设套写变量
 					if (SelectedCloudPreset == 0)LoadCloudPreset("Legit");
-					else if (SelectedCloudPreset == 1)LoadCloudPreset("Legit2");
-					else if (SelectedCloudPreset == 2)LoadCloudPreset("Legit3");
-					else if (SelectedCloudPreset == 3)LoadCloudPreset("Legit4");
+					else if (SelectedCloudPreset == 1)LoadCloudPreset("Pro");
+					else if (SelectedCloudPreset == 2)LoadCloudPreset("Cheater");
 					SelectedCloudPreset = 0;//归位选择
 				}
 				auto Block_Spoof = GUI_VAR.GUI_Block(580, 440, 400, "恶搞UTT");
@@ -1017,14 +1016,13 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Button(Block_Resolution, 5, "1280 * 960", Reslution_960, 83); if (Reslution_960)Window::Set_Resolution(1280, 960);
 				const auto Block_CloudPreset = GUI_VAR.GUI_Block(580, 240, 180, "Cloud preset");
 				static BOOL Load_CloudPreset; static int SelectedCloudPreset = 0; GUI_VAR.GUI_Button(Block_CloudPreset, 1, "Load preset", Load_CloudPreset, 80);
-				GUI_VAR.GUI_List<class CLASS_Block_CloudPreset_1>(Block_CloudPreset, 2, { "Legit","Legit2","Legit3","Legit4" }, SelectedCloudPreset);
+				GUI_VAR.GUI_List<class CLASS_Block_CloudPreset_1>(Block_CloudPreset, 2, { "Legit","Pro","Cheater" }, SelectedCloudPreset);
 				if (Load_CloudPreset)//加载Github上的云预设
 				{
 					const auto Preset_ID = SelectedCloudPreset;//防止套用的预设套写变量
 					if (SelectedCloudPreset == 0)LoadCloudPreset("Legit");
-					else if (SelectedCloudPreset == 1)LoadCloudPreset("Legit2");
-					else if (SelectedCloudPreset == 2)LoadCloudPreset("Legit3");
-					else if (SelectedCloudPreset == 3)LoadCloudPreset("Legit4");
+					else if (SelectedCloudPreset == 1)LoadCloudPreset("Pro");
+					else if (SelectedCloudPreset == 2)LoadCloudPreset("Cheater");
 					SelectedCloudPreset = 0;//归位选择
 				}
 				const auto Block_Spoof = GUI_VAR.GUI_Block(580, 440, 400, "Spoof");
