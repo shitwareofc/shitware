@@ -435,7 +435,7 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 		UI_Misc_MouseLowSensitivity = Variable::string_int_(System::Get_File(FileName, 144));
 		UI_Spoof_StepOnHead = Variable::string_int_(System::Get_File(FileName, 145));
 	}
-	void LoadCloudPreset(string FileName = "", string NormalURL = "https://github.com/Coslly/Rensen/blob/main/Cloud%20Files/") noexcept//加载特定Github云预设
+	void LoadCloudPreset(string FileName = "", string NormalURL = "https://github.com/shitwareofc/shitware/blob/main") noexcept//加载特定Github云预设
 	{
 		System::URL_READ URL_PRESET = { "Cache_CloudPreset" };
 		if (URL_PRESET.StoreMem(NormalURL + FileName + (string)".cfg?raw=true"))
@@ -766,9 +766,9 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				{
 					const auto Preset_ID = SelectedCloudPreset;//防止套用的预设套写变量
 					if (SelectedCloudPreset == 0)LoadCloudPreset("Legit");
-					else if (SelectedCloudPreset == 1)LoadCloudPreset("Rage");
-					else if (SelectedCloudPreset == 2)LoadCloudPreset("Legit No Visual");
-					else if (SelectedCloudPreset == 3)LoadCloudPreset("Robot");
+					else if (SelectedCloudPreset == 1)LoadCloudPreset("Legit2");
+					else if (SelectedCloudPreset == 2)LoadCloudPreset("Legit3");
+					else if (SelectedCloudPreset == 3)LoadCloudPreset("Legit4");
 					SelectedCloudPreset = 0;//归位选择
 				}
 				auto Block_Spoof = GUI_VAR.GUI_Block(580, 440, 400, "恶搞UTT");
@@ -1017,14 +1017,14 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Button(Block_Resolution, 5, "1280 * 960", Reslution_960, 83); if (Reslution_960)Window::Set_Resolution(1280, 960);
 				const auto Block_CloudPreset = GUI_VAR.GUI_Block(580, 240, 180, "Cloud preset");
 				static BOOL Load_CloudPreset; static int SelectedCloudPreset = 0; GUI_VAR.GUI_Button(Block_CloudPreset, 1, "Load preset", Load_CloudPreset, 80);
-				GUI_VAR.GUI_List<class CLASS_Block_CloudPreset_1>(Block_CloudPreset, 2, { "Legit","Rage","Legit - no visual","Robot" }, SelectedCloudPreset);
+				GUI_VAR.GUI_List<class CLASS_Block_CloudPreset_1>(Block_CloudPreset, 2, { "Legit","Legit2","Legit3","Legit4" }, SelectedCloudPreset);
 				if (Load_CloudPreset)//加载Github上的云预设
 				{
 					const auto Preset_ID = SelectedCloudPreset;//防止套用的预设套写变量
 					if (SelectedCloudPreset == 0)LoadCloudPreset("Legit");
-					else if (SelectedCloudPreset == 1)LoadCloudPreset("Rage");
-					else if (SelectedCloudPreset == 2)LoadCloudPreset("Legit No Visual");
-					else if (SelectedCloudPreset == 3)LoadCloudPreset("Robot");
+					else if (SelectedCloudPreset == 1)LoadCloudPreset("Legit2");
+					else if (SelectedCloudPreset == 2)LoadCloudPreset("Legit3");
+					else if (SelectedCloudPreset == 3)LoadCloudPreset("Legit4");
 					SelectedCloudPreset = 0;//归位选择
 				}
 				const auto Block_Spoof = GUI_VAR.GUI_Block(580, 440, 400, "Spoof");
@@ -2149,7 +2149,7 @@ int main() noexcept//主线程 (加载多线程, 一些杂项功能)
 	if (FindWindow(0, L"Shitware - Menu")) { Window::Message_Box("Shitware Error", "The program is already running.", MB_ICONSTOP); exit(0); }//防止多开程序
 	//----------------------------------------------------------------------------------------------------------------------------------
 	System::URL_READ UserID_READ = { "Cache_UserID" }; BOOL Attest = false;//认证变量
-	if (UserID_READ.StoreMem("https://pastejustit.com/raw/userid-917"))//Github读取有效用户ID
+	if (UserID_READ.StoreMem("https://raw.githubusercontent.com/shitwareofc/shitware/refs/heads/main/UserID.uid"))//Github读取有效用户ID
 	{
 		for (short i = 0; i <= 10000; ++i) { if (System::Get_UserName() == UserID_READ.Read(i) || Variable::String_Upper(UserID_READ.Read(i)) == "BYPASS") { Attest = true; break; } }//遍历检测并修改认证
 		UserID_READ.Release();//释放缓存
@@ -2158,7 +2158,7 @@ int main() noexcept//主线程 (加载多线程, 一些杂项功能)
 	if (!Attest) { Window::Message_Box("Shitware Attest - " + System::Get_UserName(), "Your identity cannot be passed.\n\nUnable to access from Chinese IP.\n\nAuthor: https://github.com/Coslly\n", MB_ICONSTOP); exit(0); }//未被认证则直接退出
 	//----------------------------------------------------------------------------------------------------------------------------------
 	System::URL_READ AutoUpdate = { "Cache_Update" };//自动更新系统 (中国IP用户需要挂梯子)
-	if (AutoUpdate.StoreMem("https://pastejustit.com/raw/maincpp-65"))//版本号更新检查
+	if (AutoUpdate.StoreMem("https://raw.githubusercontent.com/shitwareofc/shitware/refs/heads/main/Main.cpp"))//版本号更新检查
 	{
 		auto Version = AutoUpdate.Read(3); Version.erase(0, 29); Version.erase(Version.size() - 15, 999);//擦除无用字符只获取版本号
 		AutoUpdate.Release();//释放缓存
