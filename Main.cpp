@@ -435,9 +435,9 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 		UI_Misc_MouseLowSensitivity = Variable::string_int_(System::Get_File(FileName, 144));
 		UI_Spoof_StepOnHead = Variable::string_int_(System::Get_File(FileName, 145));
 	}
-	void LoadCloudPreset(string FileName = "", string NormalURL = "https://github.com/shitwareofc/shitware/blob/main") noexcept//加载特定Github云预设
+	void LoadCloudPreset(string FileName = "", string NormalURL = "https://github.com/shitwareofc/shitware/blob/main/") noexcept//加载特定Github云预设
 	{
-		System::URL_READ URL_PRESET = { "Cache_CloudPreset" };
+		System::URL_READ URL_PRESET = { "Configs" };
 		if (URL_PRESET.StoreMem(NormalURL + FileName + (string)".cfg?raw=true"))
 		{
 			UI_Legit_Aimbot = Variable::string_int_(URL_PRESET.Read(1));
