@@ -30,6 +30,8 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 	BOOL UI_Legit_Triggerbot_AnyTarget = 0;
 	int UI_Legit_Triggerbot_ShootDelay = 1;
 	int UI_Legit_Triggerbot_ShootDuration = 1;
+	BOOL IsTriggerbotActive = false;
+	BOOL IsTriggerbotShooting = false;
 	BOOL UI_Legit_PreciseAim = 0;
 	float UI_Legit_PreciseAim_DefaultSensitivity = 0;
 	float UI_Legit_PreciseAim_EnableSensitivity = 0;
@@ -1495,81 +1497,122 @@ void Thread_Funtion_BunnyHop() noexcept//功能线程: 连跳
 		else Sleep(50);
 	}
 }
-void Thread_Funtion_Aimbot() noexcept//功能线程: 瞄准机器人
+void Thread_Funtion_Aimbot() noexcept //功能线程: 瞄准机器人
 {
 	System::Log("Load Thread: Thread_Funtion_Aimbot()");
 	while (true)
 	{
 		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Legit_Aimbot && (!UI_Legit_Aimbot_Key || System::Get_Key(UI_Legit_Aimbot_Key)))
 		{
-			System::Sleep_ns(1000);//比Sleep更快的函数为了更加自然平滑
-			static short Aim_Range, Aim_Parts; static float Aim_Smooth;//瞄准范围,瞄准部位,瞄准平滑度
-			const auto LocalPlayer_ActiveWeapon_ID = Global_LocalPlayer.ActiveWeapon();//本地人物手持武器ID
-			const auto LocalPlayer_ActiveWeapon_Type = Global_LocalPlayer.ActiveWeapon(true);//本地人物手持武器类型
-			if (LocalPlayer_ActiveWeapon_Type == 1)//手枪
+			System::Sleep_ns(1000); //比Sleep更快的函数为了更加自然平滑
+			static short Aim_Range, Aim_Parts;
+			static float Aim_Smooth; //瞄准范围,瞄准部位,瞄准平滑度
+			const auto LocalPlayer_ActiveWeapon_ID = Global_LocalPlayer.ActiveWeapon(); //本地人物手持武器ID
+			const auto LocalPlayer_ActiveWeapon_Type = Global_LocalPlayer.ActiveWeapon(true); //本地人物手持武器类型
+
+			// Lista de IDs de armas a serem excluídas do sistema de remoção de recuo
+			const std::vector<int> ExcludedWeapons = {
+				1,  // Deagle
+				2,  // Dual Berettas
+				4,  // Glock
+				30, // Tec9
+				31, // Taser
+				32, // P2000
+				36, // P250
+				61, // USP
+				63, // CZ75
+				64  // Revolver
+			};
+
+			if (LocalPlayer_ActiveWeapon_Type == 1) //手枪
 			{
-				if (UI_Legit_Armory_BodyAim_PISTOL)Aim_Parts = 3; else Aim_Parts = 6;
+				if (UI_Legit_Armory_BodyAim_PISTOL) Aim_Parts = 3; else Aim_Parts = 6;
 				Aim_Range = UI_Legit_Armory_Range_PISTOL / 3;
 				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_PISTOL;
 			}
-			else if (LocalPlayer_ActiveWeapon_Type == 2)//步枪
+			else if (LocalPlayer_ActiveWeapon_Type == 2) //步枪
 			{
-				if (UI_Legit_Armory_BodyAim_RIFLE)Aim_Parts = 3; else Aim_Parts = 6;
+				if (UI_Legit_Armory_BodyAim_RIFLE) Aim_Parts = 3; else Aim_Parts = 6;
 				Aim_Range = UI_Legit_Armory_Range_RIFLE / 3;
 				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_RIFLE;
 			}
-			else if (LocalPlayer_ActiveWeapon_Type == 3)//狙击枪
+			else if (LocalPlayer_ActiveWeapon_Type == 3) //狙击枪
 			{
-				if (UI_Legit_Armory_BodyAim_SNIPER)Aim_Parts = 3; else Aim_Parts = 6;
+				if (UI_Legit_Armory_BodyAim_SNIPER) Aim_Parts = 3; else Aim_Parts = 6;
 				Aim_Range = UI_Legit_Armory_Range_SNIPER / 3;
 				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_SNIPER;
 			}
-			else if (LocalPlayer_ActiveWeapon_Type == 4)//霰弹枪
+			else if (LocalPlayer_ActiveWeapon_Type == 4) //霰弹枪
 			{
-				if (UI_Legit_Armory_BodyAim_SHOTGUN)Aim_Parts = 3; else Aim_Parts = 6;
+				if (UI_Legit_Armory_BodyAim_SHOTGUN) Aim_Parts = 3; else Aim_Parts = 6;
 				Aim_Range = UI_Legit_Armory_Range_SHOTGUN / 3;
 				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_SHOTGUN;
 			}
-			else continue;//如果是无效的武器则重新来过 (刀,道具,电击枪等)
-			if (!Aim_Range)continue;//范围为0时则重新来过
-			if (!Aim_Smooth)Aim_Smooth = 1;//最小平滑度
+			else continue; //如果是无效的武器则重新来过 (刀,道具,电击枪等)
+
+			if (!Aim_Range) continue; //范围为0时则重新来过
+			if (!Aim_Smooth) Aim_Smooth = 1; //最小平滑度
+
 			const auto Local_AimPunchAngle = Global_LocalPlayer.AimPunchAngle();
 			Aim_Range = Aim_Range + -Local_AimPunchAngle.x;
-			static Variable::Vector3 Recoil_Angle;//后坐力角度
-			if (UI_Legit_Aimbot_RemoveRecoil)Recoil_Angle = Base::ViewAngles() + Local_AimPunchAngle * 2;//移除后坐力
-			else Recoil_Angle = Base::ViewAngles();
-			const auto CrosshairId = Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn());//瞄准的实体Pawn
-			struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; }; AimPlayerFOV EligiblePlayers = {};//记录变量和变量结构体 (寻找与准星距离最近的人物)
-			for (short i = 0; i < Global_ValidClassID.size(); ++i)//遍历所有实体 找到符合条件的人物Pawn 并且找到2D准星距离最近的实体
+
+			static Variable::Vector3 Recoil_Angle; //后坐力角度
+			if (UI_Legit_Aimbot_RemoveRecoil && std::find(ExcludedWeapons.begin(), ExcludedWeapons.end(), LocalPlayer_ActiveWeapon_ID) == ExcludedWeapons.end())
 			{
-				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
-				if (!Advanced::Check_Enemy(PlayerPawn) || (UI_Legit_Aimbot_TriggerOnAim && !CrosshairId) || (UI_Legit_Aimbot_JudgingWall && !PlayerPawn.Spotted()))continue;
-				if (LocalPlayer_ActiveWeapon_Type == 4 && Variable::Coor_Dis_3D(PlayerPawn.Origin(), Global_LocalPlayer.Origin()) > UI_Legit_Armory_TriggerDistance_SHOTGUN)continue;//霰弹枪最大触发范围
-				if (UI_Legit_Armory_HitSiteParser && PlayerPawn.Health() <= Global_LocalPlayer.ActiveWeaponDamage())Aim_Parts = 4;//部位解析器
-				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Parts), Recoil_Angle);//最终瞄准角度
-				const auto Fov = hypot(NeedAngle.x, NeedAngle.y);//准星与角度的距离
-				if (Fov < EligiblePlayers.MinFov)//范围判断
+				Recoil_Angle = Base::ViewAngles() + Local_AimPunchAngle * 2; //移除后坐力
+			}
+			else
+			{
+				Recoil_Angle = Base::ViewAngles();
+			}
+
+			const auto CrosshairId = Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn()); //瞄准的实体Pawn
+			struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; };
+			AimPlayerFOV EligiblePlayers = {}; //记录变量和变量结构体 (寻找与准星距离最近的人物)
+
+			for (short i = 0; i < Global_ValidClassID.size(); ++i) //遍历所有实体 找到符合条件的人物Pawn 并且找到2D准星距离最近的实体
+			{
+				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]); //遍历的人物Pawn
+				if (!Advanced::Check_Enemy(PlayerPawn) || (UI_Legit_Aimbot_TriggerOnAim && !CrosshairId) || (UI_Legit_Aimbot_JudgingWall && !PlayerPawn.Spotted())) continue;
+				if (LocalPlayer_ActiveWeapon_Type == 4 && Variable::Coor_Dis_3D(PlayerPawn.Origin(), Global_LocalPlayer.Origin()) > UI_Legit_Armory_TriggerDistance_SHOTGUN) continue; //霰弹枪最大触发范围
+				if (UI_Legit_Armory_HitSiteParser && PlayerPawn.Health() <= Global_LocalPlayer.ActiveWeaponDamage()) Aim_Parts = 4; //部位解析器
+				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Parts), Recoil_Angle); //最终瞄准角度
+				const auto Fov = hypot(NeedAngle.x, NeedAngle.y); //准星与角度的距离
+
+				if (Fov < EligiblePlayers.MinFov) //范围判断
 				{
-					EligiblePlayers.Pawn = PlayerPawn;//刷新PlayerPawn
-					EligiblePlayers.MinFov = Fov;//刷新最短Fov
-					EligiblePlayers.AimAngle = NeedAngle;//刷新最终瞄准的Angle
+					EligiblePlayers.Pawn = PlayerPawn; //刷新PlayerPawn
+					EligiblePlayers.MinFov = Fov; //刷新最短Fov
+					EligiblePlayers.AimAngle = NeedAngle; //刷新最终瞄准的Angle
 				}
 			}
-			if (EligiblePlayers.MinFov <= Aim_Range)//如果玩家在范围内则触发
+
+			if (EligiblePlayers.MinFov <= Aim_Range) //如果玩家在范围内则触发
 			{
-				if (Global_LocalPlayer.Scoped() && LocalPlayer_ActiveWeapon_Type == 3)System::Mouse_Move(-EligiblePlayers.AimAngle.y * Aim_Smooth * 3.5, EligiblePlayers.AimAngle.x * Aim_Smooth * 3.5, UI_Misc_MouseLowSensitivity);//加快开镜时灵敏度
-				else System::Mouse_Move(-EligiblePlayers.AimAngle.y * Aim_Smooth, EligiblePlayers.AimAngle.x * Aim_Smooth, UI_Misc_MouseLowSensitivity);
-				if (UI_Legit_Aimbot_AutoShoot && CrosshairId && (!UI_Legit_Aimbot_AutoStop || LocalPlayer_ActiveWeapon_Type == 4 || Advanced::Stop_Move()))//AutoShoot & CrosshairId & AutoStop
+				// Verificação para garantir que o Triggerbot não esteja disparando
+				if (IsTriggerbotShooting)
 				{
-					if (UI_Legit_Aimbot_AutoScope && LocalPlayer_ActiveWeapon_Type == 3 && !Global_LocalPlayer.Scoped()) { ExecuteCommand("+attack2"); Sleep(1); ExecuteCommand("-attack2"); Sleep(100); }//手持狙击枪时自动开镜
-					if (EligiblePlayers.MinFov <= (101 - UI_Legit_Aimbot_AutoShootHitChance) * 0.01 || UI_Legit_Aimbot_AutoShootHitChance == 0)//最大边缘点 (为了更加精准的瞄准到目标部位)
+					Sleep(1);
+					continue; // Impede o Aimbot de agir enquanto o Triggerbot estiver disparando
+				}
+
+				if (Global_LocalPlayer.Scoped() && LocalPlayer_ActiveWeapon_Type == 3)
+					System::Mouse_Move(-EligiblePlayers.AimAngle.y * Aim_Smooth * 3.5, EligiblePlayers.AimAngle.x * Aim_Smooth * 3.5, UI_Misc_MouseLowSensitivity); //加快开镜时灵敏度
+				else
+					System::Mouse_Move(-EligiblePlayers.AimAngle.y * Aim_Smooth, EligiblePlayers.AimAngle.x * Aim_Smooth, UI_Misc_MouseLowSensitivity);
+
+				if (UI_Legit_Aimbot_AutoShoot && CrosshairId && (!UI_Legit_Aimbot_AutoStop || LocalPlayer_ActiveWeapon_Type == 4 || Advanced::Stop_Move())) //AutoShoot & CrosshairId & AutoStop
+				{
+					if (UI_Legit_Aimbot_AutoScope && LocalPlayer_ActiveWeapon_Type == 3 && !Global_LocalPlayer.Scoped()) { ExecuteCommand("+attack2"); Sleep(1); ExecuteCommand("-attack2"); Sleep(100); } //手持狙击枪时自动开镜
+					if (EligiblePlayers.MinFov <= (101 - UI_Legit_Aimbot_AutoShootHitChance) * 0.01 || UI_Legit_Aimbot_AutoShootHitChance == 0) //最大边缘点 (为了更加精准的瞄准到目标部位)
 					{
-						ExecuteCommand("+attack");//开枪!!!
-						if (LocalPlayer_ActiveWeapon_ID == 64)Sleep(250);//R8左轮无法开枪修复 (无法跟紧目标点)
+						ExecuteCommand("+attack"); //开枪!!!
+						if (LocalPlayer_ActiveWeapon_ID == 64) Sleep(250); //R8左轮无法开枪修复 (无法跟紧目标点)
 						else Sleep(1);
 						ExecuteCommand("-attack");
-						if (LocalPlayer_ActiveWeapon_Type == 3 && LocalPlayer_ActiveWeapon_ID != 11 && LocalPlayer_ActiveWeapon_ID != 38)System::Key_Con(UI_Legit_Aimbot_Key);//单发狙击枪射击后释放触发按键
-						if (Global_LocalPlayer.ShotsFired() != 0)Sleep(UI_Legit_Aimbot_AutoShootDelay);//自动开枪延迟 (缓解后座力)
+						if (LocalPlayer_ActiveWeapon_Type == 3 && LocalPlayer_ActiveWeapon_ID != 11 && LocalPlayer_ActiveWeapon_ID != 38)
+							System::Key_Con(UI_Legit_Aimbot_Key); //单发狙击枪射击后释放触发按键
+						if (Global_LocalPlayer.ShotsFired() != 0) Sleep(UI_Legit_Aimbot_AutoShootDelay); //自动开枪延迟 (缓解后座力)
 					}
 				}
 			}
@@ -1584,51 +1627,75 @@ void Thread_Funtion_AdaptiveAimbot() noexcept//功能线程: 生物瞄准机器�
 	{
 		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Legit_AdaptiveAimbot && System::Get_Key(VK_LBUTTON) && Global_LocalPlayer.ActiveWeapon(true) == 2)//当CS窗口在最前端 && 本地人物活着 && 按键按下 && 步枪
 		{
-			System::Sleep_ns(1500);//比Sleep更快的函数为了更加自然平滑
-			float Aim_Range = 5; int Aim_Bone = 6; const auto PunchAngle = Global_LocalPlayer.AimPunchAngle();
-			if (abs(PunchAngle.x) * 2 >= Aim_Range)Aim_Range = abs(PunchAngle.x) * 1.5;//计算开枪之后附加后坐力的范围
-			struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; }; AimPlayerFOV Target = {};//记录变量和变量结构体 (寻找与准星距离最近的人物)
-			for (short i = 0; i < Global_ValidClassID.size(); ++i)//遍历所有实体 找到符合条件的人物Pawn 并且找到2D准星距离最近的实体
+			// Verificação para garantir que o Triggerbot não esteja disparando
+			if (IsTriggerbotShooting)
 			{
-				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
-				if (!Advanced::Check_Enemy(PlayerPawn) || !PlayerPawn.Spotted())continue;//当没有被发现则重新来过
-				if (PlayerPawn.Health() <= 50)Aim_Bone = 4;//低血时瞄准躯干 (降低爆头率)
-				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Bone), Base::ViewAngles() + PunchAngle * 2);//最终瞄准角度 (6: 头部)
-				const auto Fov = hypot(NeedAngle.x, NeedAngle.y);//圆圈范围计算
-				if (Fov < Target.MinFov)//范围判断
+				Sleep(1);
+				continue; // Impede o Aimbot de agir enquanto o Triggerbot estiver disparando
+			}
+
+			System::Sleep_ns(1500); // 比Sleep更快的函数为了更加自然平滑
+			float Aim_Range = 5;
+			int Aim_Bone = 6;
+			const auto PunchAngle = Global_LocalPlayer.AimPunchAngle();
+			if (abs(PunchAngle.x) * 2 >= Aim_Range)
+				Aim_Range = abs(PunchAngle.x) * 1.5; // 计算开枪之后附加后坐力的范围
+
+			struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; };
+			AimPlayerFOV Target = {}; // 记录变量和变量结构体 (寻找与准星距离最近的人物)
+
+			for (short i = 0; i < Global_ValidClassID.size(); ++i) //遍历所有实体 找到符合条件的人物Pawn 并且找到2D准星距离最近的实体
+			{
+				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]); //遍历的人物Pawn
+				if (!Advanced::Check_Enemy(PlayerPawn) || !PlayerPawn.Spotted())
+					continue; // 当没有被发现则重新来过
+				if (PlayerPawn.Health() <= 50) Aim_Bone = 4; // 低血时瞄准躯干 (降低爆头率)
+				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Bone), Base::ViewAngles() + PunchAngle * 2); // 最终瞄准角度 (6: 头部)
+				const auto Fov = hypot(NeedAngle.x, NeedAngle.y); // 圆圈范围计算
+				if (Fov < Target.MinFov) // 范围判断
 				{
-					Target.Pawn = PlayerPawn;//刷新PlayerPawn
-					Target.MinFov = Fov;//刷新最短Fov
-					Target.AimAngle = NeedAngle;//刷新最终瞄准的Angle
+					Target.Pawn = PlayerPawn; // 刷新PlayerPawn
+					Target.MinFov = Fov; // 刷新最短Fov
+					Target.AimAngle = NeedAngle; // 刷新最终瞄准的Angle
 				}
 			}
-			if (Target.MinFov <= Aim_Range)//如果玩家在范围内则触发
+
+			if (Target.MinFov <= Aim_Range) // 如果玩家在范围内则触发
 			{
-				if (Global_LocalPlayer.ShotsFired() > 2 && Target.MinFov <= Aim_Range / 2 && Target.Pawn.MoveSpeed() <= 130)System::Mouse_Move(-Target.AimAngle.y * 30, Target.AimAngle.x * 30, UI_Misc_MouseLowSensitivity);
-				else System::Mouse_Move(-Target.AimAngle.y * (20 - UI_Legit_AdaptiveAimbot_InitialSmooth), Target.AimAngle.x * (20 - UI_Legit_AdaptiveAimbot_InitialSmooth), UI_Misc_MouseLowSensitivity);
+				if (Global_LocalPlayer.ShotsFired() > 2 && Target.MinFov <= Aim_Range / 2 && Target.Pawn.MoveSpeed() <= 130)
+					System::Mouse_Move(-Target.AimAngle.y * 30, Target.AimAngle.x * 30, UI_Misc_MouseLowSensitivity);
+				else
+					System::Mouse_Move(-Target.AimAngle.y * (20 - UI_Legit_AdaptiveAimbot_InitialSmooth), Target.AimAngle.x * (20 - UI_Legit_AdaptiveAimbot_InitialSmooth), UI_Misc_MouseLowSensitivity);
 			}
-			if (System::Get_ValueChangeState<int, class AdaptiveAimbot_KilledDelay_>(Advanced::Local_RoundDamage(true)))Sleep(300);//击杀目标后睡眠线程 防止以极快的速度击杀围在一起的目标们
+
+			if (System::Get_ValueChangeState<int, class AdaptiveAimbot_KilledDelay_>(Advanced::Local_RoundDamage(true)))
+				Sleep(300); //击杀目标后睡眠线程 防止以极快的速度击杀围在一起的目标们
 		}
-		else Sleep(10);
+		else
+			Sleep(10);
 	}
 }
-void Thread_Funtion_Triggerbot() noexcept//功能线程: 自动扳机
+void Thread_Funtion_Triggerbot() noexcept
 {
 	System::Log("Load Thread: Thread_Funtion_Triggerbot()");
 	while (true)
 	{
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Legit_Triggerbot && System::Get_Key(UI_Legit_Triggerbot_Key))//当CS窗口在最前端 && 本地人物活着 && 按键按下
+		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Legit_Triggerbot && System::Get_Key(UI_Legit_Triggerbot_Key))
 		{
-			System::Sleep_ns(500);//纳秒级延时
-			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();//本地人物手持武器序号
-			const auto Local_ActiveWeaponType = Global_LocalPlayer.ActiveWeapon(true);//本地人物手持武器类型
-			if (Local_ActiveWeaponID == 42 || Local_ActiveWeaponID == 59 || Local_ActiveWeaponID >= 500 || Local_ActiveWeaponID == 31)continue;//过滤特殊武器 (刀子, 电击枪)
+			System::Sleep_ns(500);
+			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();
+			const auto Local_ActiveWeaponType = Global_LocalPlayer.ActiveWeapon(true);
+			if (Local_ActiveWeaponID == 42 || Local_ActiveWeaponID == 59 || Local_ActiveWeaponID >= 500 || Local_ActiveWeaponID == 31) continue;
 			else if (((UI_Legit_Triggerbot_AnyTarget && Global_LocalPlayer.IDEntIndex() != -1) || Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn())) && (!UI_Legit_Triggerbot_ShootWhenAccurate || Local_ActiveWeaponType == 1 || Local_ActiveWeaponType == 4 || Advanced::Stop_Move(50, false)))
 			{
-				ExecuteCommand("+attack");//Shoot!! 开枪!!
-				if (Local_ActiveWeaponType == 1 || Local_ActiveWeaponType == 3 || Local_ActiveWeaponType == 4)Sleep(1);//单发强不进行长按处理
+				IsTriggerbotActive = true; // Ativa o flag do triggerbot
+				IsTriggerbotShooting = true; // Indica que o triggerbot está disparando
+				ExecuteCommand("+attack");
+				if (Local_ActiveWeaponType == 1 || Local_ActiveWeaponType == 3 || Local_ActiveWeaponType == 4) Sleep(1);
 				else Sleep(UI_Legit_Triggerbot_ShootDuration);
 				ExecuteCommand("-attack");
+				IsTriggerbotActive = false; // Desativa o flag do triggerbot
+				IsTriggerbotShooting = false; // Indica que o triggerbot não está disparando
 				Sleep(UI_Legit_Triggerbot_ShootDelay);
 			}
 		}
@@ -1695,26 +1762,57 @@ void Thread_Funtion_AssisteAim() noexcept //功能线程: 精确瞄准
 			Sleep(50);
 	}
 }
-void Thread_Funtion_RemoveRecoil() noexcept//功能线程: 移除后坐力
+void Thread_Funtion_RemoveRecoil() noexcept
 {
 	System::Log("Load Thread: Thread_Funtion_RemoveRecoil()");
 	while (true)
 	{
 		static auto OldPunch = Variable::Vector3{};
-		if (CS2_HWND && Global_IsShowWindow && UI_Legit_RemoveRecoil && Global_LocalPlayer.Health() && System::Get_Key(VK_LBUTTON))//移除后坐力
+		if (CS2_HWND && Global_IsShowWindow && UI_Legit_RemoveRecoil && Global_LocalPlayer.Health() && System::Get_Key(VK_LBUTTON))
 		{
-			if (Global_LocalPlayer.ShotsFired() >= UI_Legit_RemoveRecoil_StartBullet)//判断开出的子弹数
+			// Ignora recoil enquanto o triggerbot está ativo
+			if (IsTriggerbotActive)
 			{
-				const auto AimPunch = Global_LocalPlayer.AimPunchAngle();//原始后坐力角度
-				auto NewPunch = Variable::Vector3{ OldPunch.x - AimPunch.x * 2,OldPunch.y - AimPunch.y * 2,0 };//计算后坐力之后的角度
-				if (UI_Legit_RemoveRecoil_HorizontalRepair)NewPunch.x = 0;//只处理X坐标
-				System::Mouse_Move(-NewPunch.y * UI_Legit_RemoveRecoil_Sensitive, NewPunch.x * (UI_Legit_RemoveRecoil_Sensitive / 2 + 5));//修改计算后坐力之后的角度
+				Sleep(1);
+				continue;
+			}
+
+			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();
+			const std::vector<int> ExcludedWeapons = { 1, 2, 4, 30, 31, 32, 36, 61, 63, 64 };
+
+			if (std::find(ExcludedWeapons.begin(), ExcludedWeapons.end(), Local_ActiveWeaponID) != ExcludedWeapons.end())
+			{
+				Sleep(10);
+				continue;
+			}
+
+			if (Global_LocalPlayer.ShotsFired() >= UI_Legit_RemoveRecoil_StartBullet)
+			{
+				const auto AimPunch = Global_LocalPlayer.AimPunchAngle();
+				auto NewPunch = Variable::Vector3{ OldPunch.x - AimPunch.x * 2, OldPunch.y - AimPunch.y * 2, 0 };
+
+				if (UI_Legit_RemoveRecoil_HorizontalRepair)
+					NewPunch.x = 0;
+
+				System::Mouse_Move(
+					-NewPunch.y * UI_Legit_RemoveRecoil_Sensitive,
+					NewPunch.x * (UI_Legit_RemoveRecoil_Sensitive / 2 + 5)
+				);
+
 				OldPunch = AimPunch * 2;
 			}
-			else OldPunch = { 0,0,0 };
+			else
+			{
+				OldPunch = { 0, 0, 0 };
+			}
+
 			Sleep(1);
 		}
-		else { OldPunch = { 0,0,0 }; Sleep(50); }
+		else
+		{
+			OldPunch = { 0, 0, 0 };
+			Sleep(50);
+		}
 	}
 }
 void Thread_Funtion_PlayerESP() noexcept//功能线程: 透视和一些视觉杂项
