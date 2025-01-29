@@ -38,8 +38,8 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 	BOOL UI_Legit_RemoveRecoil = 0;
 	BOOL UI_Legit_RemoveRecoil_HorizontalRepair = 0;
 	int UI_Legit_RemoveRecoil_StartBullet = 1;
-	BOOL UI_Legit_Backtracking = 0;
-	int UI_Legit_Backtracking_MaximumTime = 0;
+	BOOL UI_Legit_Standalone = 0;
+	int UI_Legit_Standalone_Sensitivity = 0;
 	BOOL UI_Visual_ESP = 0;
 	int UI_Visual_ESP_Key = 0;
 	BOOL UI_Visual_ESP_Box = 0;
@@ -135,7 +135,7 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 	float UI_Legit_Armory_Smooth_SHOTGUN = 0;
 	int UI_Legit_Armory_TriggerDistance_SHOTGUN = 100;
 	int UI_Legit_MagnetAim_Range = 0;
-	int UI_Legit_Backtracking_MinimumTime = 0;
+	int UI_Legit_Standalone_StartBullet = 0;
 	int UI_Legit_RemoveRecoil_Sensitive = 0;
 	BOOL UI_Visual_HitMark_CustomColor = 0;
 	int UI_Legit_Aimbot_AutoShootHitChance = 0;
@@ -180,8 +180,8 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 			to_string(UI_Legit_RemoveRecoil) + "\n" +
 			to_string(UI_Legit_RemoveRecoil_HorizontalRepair) + "\n" +
 			to_string(UI_Legit_RemoveRecoil_StartBullet) + "\n" +
-			to_string(UI_Legit_Backtracking) + "\n" +
-			to_string(UI_Legit_Backtracking_MaximumTime) + "\n" +
+			to_string(UI_Legit_Standalone) + "\n" +
+			to_string(UI_Legit_Standalone_Sensitivity) + "\n" +
 			to_string(UI_Visual_ESP) + "\n" +
 			to_string(UI_Visual_ESP_Key) + "\n" +
 			to_string(UI_Visual_ESP_Box) + "\n" +
@@ -286,7 +286,7 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 			to_string(UI_Legit_Armory_Smooth_SHOTGUN) + "\n" +
 			to_string(UI_Legit_Armory_TriggerDistance_SHOTGUN) + "\n" +
 			to_string(UI_Legit_MagnetAim_Range) + "\n" +
-			to_string(UI_Legit_Backtracking_MinimumTime) + "\n" +
+			to_string(UI_Legit_Standalone_StartBullet) + "\n" +
 			to_string(UI_Legit_RemoveRecoil_Sensitive) + "\n" +
 			to_string(UI_Visual_HitMark_CustomColor) + "\n" +
 			to_string(UI_Legit_Aimbot_AutoShootHitChance) + "\n" +
@@ -330,8 +330,8 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 		UI_Legit_RemoveRecoil = Variable::string_int_(System::Get_File(FileName, 28));
 		UI_Legit_RemoveRecoil_HorizontalRepair = Variable::string_int_(System::Get_File(FileName, 29));
 		UI_Legit_RemoveRecoil_StartBullet = Variable::string_int_(System::Get_File(FileName, 30));
-		UI_Legit_Backtracking = Variable::string_int_(System::Get_File(FileName, 31));
-		UI_Legit_Backtracking_MaximumTime = Variable::string_int_(System::Get_File(FileName, 32));
+		UI_Legit_Standalone = Variable::string_int_(System::Get_File(FileName, 31));
+		UI_Legit_Standalone_Sensitivity = Variable::string_int_(System::Get_File(FileName, 32));
 		UI_Visual_ESP = Variable::string_int_(System::Get_File(FileName, 33));
 		UI_Visual_ESP_Key = Variable::string_int_(System::Get_File(FileName, 34));
 		UI_Visual_ESP_Box = Variable::string_int_(System::Get_File(FileName, 35));
@@ -427,7 +427,7 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 		UI_Legit_Armory_Smooth_SHOTGUN = Variable::string_float_(System::Get_File(FileName, 134));
 		UI_Legit_Armory_TriggerDistance_SHOTGUN = Variable::string_int_(System::Get_File(FileName, 135));
 		UI_Legit_MagnetAim_Range = Variable::string_int_(System::Get_File(FileName, 136));
-		UI_Legit_Backtracking_MinimumTime = Variable::string_int_(System::Get_File(FileName, 137));
+		UI_Legit_Standalone_StartBullet = Variable::string_int_(System::Get_File(FileName, 137));
 		UI_Legit_RemoveRecoil_Sensitive = Variable::string_int_(System::Get_File(FileName, 138));
 		UI_Visual_HitMark_CustomColor = Variable::string_int_(System::Get_File(FileName, 139));
 		UI_Legit_Aimbot_AutoShootHitChance = Variable::string_int_(System::Get_File(FileName, 140));
@@ -472,8 +472,8 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 			UI_Legit_RemoveRecoil = Variable::string_int_(URL_PRESET.Read(28));
 			UI_Legit_RemoveRecoil_HorizontalRepair = Variable::string_int_(URL_PRESET.Read(29));
 			UI_Legit_RemoveRecoil_StartBullet = Variable::string_int_(URL_PRESET.Read(30));
-			UI_Legit_Backtracking = Variable::string_int_(URL_PRESET.Read(31));
-			UI_Legit_Backtracking_MaximumTime = Variable::string_int_(URL_PRESET.Read(32));
+			UI_Legit_Standalone = Variable::string_int_(URL_PRESET.Read(31));
+			UI_Legit_Standalone_Sensitivity = Variable::string_int_(URL_PRESET.Read(32));
 			UI_Visual_ESP = Variable::string_int_(URL_PRESET.Read(33));
 			UI_Visual_ESP_Key = Variable::string_int_(URL_PRESET.Read(34));
 			UI_Visual_ESP_Box = Variable::string_int_(URL_PRESET.Read(35));
@@ -569,7 +569,7 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 			UI_Legit_Armory_Smooth_SHOTGUN = Variable::string_float_(URL_PRESET.Read(134));
 			UI_Legit_Armory_TriggerDistance_SHOTGUN = Variable::string_int_(URL_PRESET.Read(135));
 			UI_Legit_MagnetAim_Range = Variable::string_int_(URL_PRESET.Read(136));
-			UI_Legit_Backtracking_MinimumTime = Variable::string_int_(URL_PRESET.Read(137));
+			UI_Legit_Standalone_StartBullet = Variable::string_int_(URL_PRESET.Read(137));
 			UI_Legit_RemoveRecoil_Sensitive = Variable::string_int_(URL_PRESET.Read(138));
 			UI_Visual_HitMark_CustomColor = Variable::string_int_(URL_PRESET.Read(139));
 			UI_Legit_Aimbot_AutoShootHitChance = Variable::string_int_(URL_PRESET.Read(140));
@@ -669,10 +669,9 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Checkbox({ Block_MagnetAim.x + 20,Block_MagnetAim.y }, 2, "只磁吸头线UTT", UI_Legit_MagnetAim_OnlyHeadLine);
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_MagnetAim_1>(Block_MagnetAim, 3, "范围UTT", 0, 100, UI_Legit_MagnetAim_Range, "%");
 				GUI_VAR.GUI_Slider<float, class CLASS_Block_MagnetAim_2>(Block_MagnetAim, 4, "平滑度UTT", 0, 10, UI_Legit_MagnetAim_Smooth);
-				const auto Block_Backtracking = GUI_VAR.GUI_Block(580, 750, 130, "回溯UTT");
-				GUI_VAR.GUI_Checkbox(Block_Backtracking, 1, "开启UTT", UI_Legit_Backtracking);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Backtracking_1>(Block_Backtracking, 2, "最小延迟UTT", 0, 500, UI_Legit_Backtracking_MinimumTime, "ms");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Backtracking_2>(Block_Backtracking, 3, "最大延迟UTT", UI_Legit_Backtracking_MinimumTime, 1000, UI_Legit_Backtracking_MaximumTime, "ms");
+				const auto Block_Standalone = GUI_VAR.GUI_Block(580, 750, 130, "回溯UTT");
+				GUI_VAR.GUI_Checkbox(Block_Standalone, 1, "开启UTT", UI_Legit_Standalone);
+				GUI_VAR.GUI_Slider<int, class CLASS_Block_Standalone_2>(Block_Standalone, 2, "最大延迟UTT", 0, 100, UI_Legit_Standalone_Sensitivity, "%");
 				GUI_WindowSize = { 1010,940 };
 			}
 			else if (UI_Panel == 1)//Visual
@@ -911,10 +910,9 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Checkbox({ Block_MagnetAim.x + 20,Block_MagnetAim.y }, 2, "Only aim headline", UI_Legit_MagnetAim_OnlyHeadLine);
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_MagnetAim_1>(Block_MagnetAim, 3, "Range", 0, 100, UI_Legit_MagnetAim_Range, "%");
 				GUI_VAR.GUI_Slider<float, class CLASS_Block_MagnetAim_2>(Block_MagnetAim, 4, "Smooth", 0, 10, UI_Legit_MagnetAim_Smooth);
-				const auto Block_Backtracking = GUI_VAR.GUI_Block(580, 750, 130, "Back tracking");
-				GUI_VAR.GUI_Checkbox(Block_Backtracking, 1, "Enabled", UI_Legit_Backtracking);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Backtracking_1>(Block_Backtracking, 2, "Minimum time", 0, 500, UI_Legit_Backtracking_MinimumTime, "ms");
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Backtracking_2>(Block_Backtracking, 3, "Maximum time", UI_Legit_Backtracking_MinimumTime, 1000, UI_Legit_Backtracking_MaximumTime, "ms");
+				const auto Block_Standalone = GUI_VAR.GUI_Block(580, 750, 130, "Macro recoil");
+				GUI_VAR.GUI_Checkbox(Block_Standalone, 1, "Enabled", UI_Legit_Standalone);
+				GUI_VAR.GUI_Slider<int, class CLASS_Block_Standalone_2>(Block_Standalone, 2, "Sensitive", 0, 100, UI_Legit_Standalone_Sensitivity, "%");
 				GUI_VAR.GUI_Tips(Block_Aimbot, 1, "Help you quickly aim at the target.");
 				GUI_VAR.GUI_Tips({ Block_Aimbot.x + 10,Block_Aimbot.y }, 5, "Prefer Ragebot.", 0, { 255,150,150 });
 				GUI_VAR.GUI_Tips({ Block_Aimbot.x + 20,Block_Aimbot.y }, 9, "Chance of hitting the target. (Affects shooting speed)", 0, { 255,150,150 });
@@ -924,7 +922,7 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Tips({ Block_RemoveRecoil.x + 10,Block_RemoveRecoil.y }, 2, "Operations that only return landscape.");
 				GUI_VAR.GUI_Tips({ Block_RemoveRecoil.x + 10,Block_RemoveRecoil.y }, 4, "Corresponding game sensitivity value.");
 				GUI_VAR.GUI_Tips(Block_MagnetAim, 1, "Slow aiming without triggering key conditions.");
-				GUI_VAR.GUI_Tips(Block_Backtracking, 1, "Take advantage of network latency to have a bigger hitbox.");
+				GUI_VAR.GUI_Tips(Block_Standalone, 1, "Improve the recoil of main rifles, but it is not recommended to use with aiming assistance.");
 				GUI_WindowSize = { 1010,940 };
 			}
 			else if (UI_Panel == 1)//Visual
@@ -1770,47 +1768,128 @@ void Thread_Funtion_RemoveRecoil() noexcept
 		static auto OldPunch = Variable::Vector3{};
 		if (CS2_HWND && Global_IsShowWindow && UI_Legit_RemoveRecoil && Global_LocalPlayer.Health() && System::Get_Key(VK_LBUTTON))
 		{
-			// Ignora recoil enquanto o triggerbot está ativo
-			if (IsTriggerbotActive)
-			{
-				Sleep(1);
-				continue;
-			}
+			// Defina um vetor de armas para as quais a remoção de recoil não deve ser aplicada quando o standalone estiver ativo
+			const std::vector<int> ExcludedWeapons = { 1, 2, 4, 30, 31, 32, 36, 61, 63, 64 };  // Pistolas
 
 			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();
-			const std::vector<int> ExcludedWeapons = { 1, 2, 4, 30, 31, 32, 36, 61, 63, 64 };
 
-			if (std::find(ExcludedWeapons.begin(), ExcludedWeapons.end(), Local_ActiveWeaponID) != ExcludedWeapons.end())
+			// Se o Standalone estiver ativo, não aplica remoção de recoil para AK47, M4A4 e M4A1-S
+			if (UI_Legit_Standalone)
+			{
+				// Se a arma for AK47, M4A4 ou M4A1-S, não aplica remoção de recoil
+				if (Local_ActiveWeaponID == 7 || Local_ActiveWeaponID == 16 || Local_ActiveWeaponID == 60)
+				{
+					Sleep(10);
+					continue;
+				}
+			}
+			else
+			{
+				// Quando o Standalone está desativado, não aplica remoção de recoil para as pistolas
+				if (std::find(ExcludedWeapons.begin(), ExcludedWeapons.end(), Local_ActiveWeaponID) != ExcludedWeapons.end())
+				{
+					Sleep(10);
+					continue;
+				}
+			}
+
+			// Evitar remover recoil de pistolas quando o Standalone está ativo
+			if (UI_Legit_Standalone && std::find(ExcludedWeapons.begin(), ExcludedWeapons.end(), Local_ActiveWeaponID) != ExcludedWeapons.end())
 			{
 				Sleep(10);
 				continue;
 			}
 
-			if (Global_LocalPlayer.ShotsFired() >= UI_Legit_RemoveRecoil_StartBullet)
-			{
-				const auto AimPunch = Global_LocalPlayer.AimPunchAngle();
-				auto NewPunch = Variable::Vector3{ OldPunch.x - AimPunch.x * 2, OldPunch.y - AimPunch.y * 2, 0 };
+			const auto AimPunch = Global_LocalPlayer.AimPunchAngle();
+			auto NewPunch = Variable::Vector3{ OldPunch.x - AimPunch.x * 2, OldPunch.y - AimPunch.y * 2, 0 };
 
-				if (UI_Legit_RemoveRecoil_HorizontalRepair)
-					NewPunch.x = 0;
+			if (UI_Legit_RemoveRecoil_HorizontalRepair)
+				NewPunch.x = 0;
 
-				System::Mouse_Move(
-					-NewPunch.y * UI_Legit_RemoveRecoil_Sensitive,
-					NewPunch.x * (UI_Legit_RemoveRecoil_Sensitive / 2 + 5)
-				);
+			System::Mouse_Move(
+				-NewPunch.y * UI_Legit_RemoveRecoil_Sensitive,
+				NewPunch.x * (UI_Legit_RemoveRecoil_Sensitive / 2 + 5)
+			);
 
-				OldPunch = AimPunch * 2;
-			}
-			else
-			{
-				OldPunch = { 0, 0, 0 };
-			}
-
+			OldPunch = AimPunch * 2;
 			Sleep(1);
 		}
 		else
 		{
 			OldPunch = { 0, 0, 0 };
+			Sleep(50);
+		}
+	}
+}
+void Thread_Funtion_Standalone() noexcept
+{
+	System::Log("Load Thread: Thread_Funtion_Standalone()");
+	while (true)
+	{
+		static auto OldPunch = Variable::Vector3{};
+		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && System::Get_Key(VK_LBUTTON))
+		{
+			// Verificar se a checkbox do standalone está marcada
+			if (!UI_Legit_Standalone)  // Se a checkbox não estiver marcada, pula a execução
+			{
+				Sleep(10);
+				continue;
+			}
+
+			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();
+			const std::vector<int> StandaloneWeapons = { 7, 16, 60 };  // AK47, M4A4, M4A1-S
+
+			// Se a arma for AK47, M4A4 ou M4A1-S, aplique o padrão de recoil standalone
+			if (std::find(StandaloneWeapons.begin(), StandaloneWeapons.end(), Local_ActiveWeaponID) != StandaloneWeapons.end())
+			{
+				int RawX[31], RawY[31];  // Arrays de movimento de recoil
+				// Padrão de recoil da AK-47
+				if (Local_ActiveWeaponID == 7)
+				{
+					int AK47_RawX[31] = { 0, 0, 0, 0, 0, 40, 40, -40, -90, -30, -20, -20, -20, 0, 80, 30, 50, 50, 30, 20, -20, -10, 0, 10, 0, -40, -90, -70, -30, -10, 0 };
+					int AK47_RawY[31] = { 0, 40, 40, 80, 80, 80, 80,  20, -10, 20, 0, 0, -10, 20, 30, -10, 20, 0, -10, -10, 10, 10, 10, 0, 10, -10, 0, -50, 10, -10, 0 };
+					std::copy(std::begin(AK47_RawX), std::end(AK47_RawX), RawX);
+					std::copy(std::begin(AK47_RawY), std::end(AK47_RawY), RawY);
+				}
+				// Padrão de recoil da M4A4
+				else if (Local_ActiveWeaponID == 16)
+				{
+					int M4A4_RawX[31] = { 0, 0, 0, 0, 0, -10, 10, 20, 20, 30, -40, -40, -40, -40, -40, -50, 0, 30, 30, 20, 60, 30, 40, 20, 10, 0, 0, 10, 10, 0, 0 };
+					int M4A4_RawY[31] = { 0, 10, 30, 40, 40, 60, 60, 60, 30, 20, 20,  20, 0, -10, 0, 10, 10, 0, 0, 0, 10, 0, 0, 10, 0, 10, 10, 0, 0, 0, 0 };
+					std::copy(std::begin(M4A4_RawX), std::end(M4A4_RawX), RawX);
+					std::copy(std::begin(M4A4_RawY), std::end(M4A4_RawY), RawY);
+				}
+				// Padrão de recoil da M4A1-S
+				else if (Local_ActiveWeaponID == 60)
+				{
+					int M4A1S_RawX[31] = { 0, 0, 0, 0 , 0, -10, 0, 30, 10, 30, -10, -40, -20, -30, -20, -20, -30, -30, 10, -10, 0, 20, 40, 60, 10, 0 };
+					int M4A1S_RawY[31] = { 0, 10, 10, 30 , 30, 40, 40, 50, 10, 10, 10, 20, 0, -10, 0, 0, -10, 0, 10, 0, 10, 0, 0, 20, 0, 0 };
+					std::copy(std::begin(M4A1S_RawX), std::end(M4A1S_RawX), RawX);
+					std::copy(std::begin(M4A1S_RawY), std::end(M4A1S_RawY), RawY);
+				}
+
+				// Calcular o índice com base no número de tiros
+				int ShotIndex = Global_LocalPlayer.ShotsFired() % 31; // Usamos diretamente o tamanho do array
+
+				// Pega a sensibilidade da interface
+				float sensitivity = static_cast<float>(UI_Legit_Standalone_Sensitivity) / 1000.0f;
+
+				// Ajuste do movimento do mouse com base no recoil
+				int moveX = RawX[ShotIndex] * sensitivity;
+				int moveY = RawY[ShotIndex] * sensitivity;
+
+				// Movimenta o mouse
+				System::Mouse_Move(moveX, moveY);
+
+				Sleep(1);
+			}
+			else
+			{
+				Sleep(10);
+			}
+		}
+		else
+		{
 			Sleep(50);
 		}
 	}
@@ -2269,6 +2348,7 @@ int main() noexcept//主线程 (加载多线程, 一些杂项功能)
 	thread Thread_Funtion_Triggerbot_ = thread(Thread_Funtion_Triggerbot); Sleep(30);
 	thread Thread_Funtion_AssisteAim_ = thread(Thread_Funtion_AssisteAim); Sleep(30);
 	thread Thread_Funtion_RemoveRecoil_ = thread(Thread_Funtion_RemoveRecoil); Sleep(30);
+	thread Thread_Funtion_Standalone_ = thread(Thread_Funtion_Standalone); Sleep(30);
 	thread Thread_Funtion_PlayerESP_ = thread(Thread_Funtion_PlayerESP); Sleep(30);
 	thread Thread_Funtion_EntityESP_ = thread(Thread_Funtion_EntityESP); Sleep(30);
 	thread Thread_Funtion_Radar_ = thread(Thread_Funtion_Radar); Sleep(30);
