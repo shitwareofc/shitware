@@ -1768,6 +1768,13 @@ void Thread_Funtion_RemoveRecoil() noexcept
 		static auto OldPunch = Variable::Vector3{};
 		if (CS2_HWND && Global_IsShowWindow && UI_Legit_RemoveRecoil && Global_LocalPlayer.Health() && System::Get_Key(VK_LBUTTON))
 		{
+			// Ignora recoil enquanto o triggerbot está ativo
+			if (IsTriggerbotActive)
+			{
+				Sleep(1);
+				continue;
+			}
+
 			// Defina um vetor de armas para as quais a remoção de recoil não deve ser aplicada quando o standalone estiver ativo
 			const std::vector<int> ExcludedWeapons = { 1, 2, 4, 30, 31, 32, 36, 61, 63, 64 };  // Pistolas
 
@@ -1829,6 +1836,13 @@ void Thread_Funtion_Standalone() noexcept
 		static auto OldPunch = Variable::Vector3{};
 		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && System::Get_Key(VK_LBUTTON))
 		{
+			// Ignora standalone enquanto o triggerbot está ativo
+			if (IsTriggerbotActive)
+			{
+				Sleep(1);
+				continue;
+			}
+
 			// Verificar se a checkbox do standalone está marcada
 			if (!UI_Legit_Standalone)  // Se a checkbox não estiver marcada, pula a execução
 			{
