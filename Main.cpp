@@ -873,9 +873,9 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_Aimbot_3>({ Block_Aimbot.x + 20,Block_Aimbot.y }, 9, "Auto shoot hit chance", 0, 100, UI_Legit_Aimbot_AutoShootHitChance, "%", { 255,150,150 });
 				GUI_VAR.GUI_Checkbox(Block_Aimbot, 10, "Adaptive aimbot", UI_Legit_AdaptiveAimbot, { 200,200,150 });
 				GUI_VAR.GUI_Slider<float, class CLASS_Block_Aimbot_4>(Block_Aimbot, 11, "Initial smooth", 0, 20, UI_Legit_AdaptiveAimbot_InitialSmooth, "", { 200,200,150 });
-				const auto Block_Armory = GUI_VAR.GUI_Block(150, 420, 490, "Armory");
+				const auto Block_Armory = GUI_VAR.GUI_Block(150, 420, 490, "Weapons");
 				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 1, "Show range", UI_Legit_Armory_ShowAimbotRange);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 2, "Hit site parser", UI_Legit_Armory_HitSiteParser);
+				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 2, "Nearest bone", UI_Legit_Armory_HitSiteParser);
 				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 3, "[PISTOL] Body aim (else head)", UI_Legit_Armory_BodyAim_PISTOL);
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_1>({ Block_Armory.x - 10,Block_Armory.y }, 4, "[PISTOL] Range", 0, 100, UI_Legit_Armory_Range_PISTOL, "%");
 				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_2>({ Block_Armory.x - 10,Block_Armory.y }, 5, "[PISTOL] Smooth", 0, 40, UI_Legit_Armory_Smooth_PISTOL);
@@ -1573,7 +1573,9 @@ void Thread_Funtion_Aimbot() noexcept //功能线程: 瞄准机器人
 				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]); //遍历的人物Pawn
 				if (!Advanced::Check_Enemy(PlayerPawn) || (UI_Legit_Aimbot_TriggerOnAim && !CrosshairId) || (UI_Legit_Aimbot_JudgingWall && !PlayerPawn.Spotted())) continue;
 				if (LocalPlayer_ActiveWeapon_Type == 4 && Variable::Coor_Dis_3D(PlayerPawn.Origin(), Global_LocalPlayer.Origin()) > UI_Legit_Armory_TriggerDistance_SHOTGUN) continue; //霰弹枪最大触发范围
-				if (UI_Legit_Armory_HitSiteParser && PlayerPawn.Health() <= Global_LocalPlayer.ActiveWeaponDamage()) Aim_Parts = 4; //部位解析器
+				const auto HeadAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Recoil_Angle);
+				const auto ChestAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(3), Recoil_Angle);
+				Aim_Parts = (hypot(HeadAngle.x, HeadAngle.y) < hypot(ChestAngle.x, ChestAngle.y)) ? 6 : 3;
 				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Parts), Recoil_Angle); //最终瞄准角度
 				const auto Fov = hypot(NeedAngle.x, NeedAngle.y); //准星与角度的距离
 
@@ -1647,7 +1649,9 @@ void Thread_Funtion_AdaptiveAimbot() noexcept//功能线程: 生物瞄准机器�
 				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]); //遍历的人物Pawn
 				if (!Advanced::Check_Enemy(PlayerPawn) || !PlayerPawn.Spotted())
 					continue; // 当没有被发现则重新来过
-				if (PlayerPawn.Health() <= 50) Aim_Bone = 4; // 低血时瞄准躯干 (降低爆头率)
+				const auto HeadAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Base::ViewAngles() + PunchAngle * 2);
+				const auto ChestAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(3), Base::ViewAngles() + PunchAngle * 2);
+				Aim_Bone = (hypot(HeadAngle.x, HeadAngle.y) < hypot(ChestAngle.x, ChestAngle.y)) ? 6 : 3;
 				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Bone), Base::ViewAngles() + PunchAngle * 2); // 最终瞄准角度 (6: 头部)
 				const auto Fov = hypot(NeedAngle.x, NeedAngle.y); // 圆圈范围计算
 				if (Fov < Target.MinFov) // 范围判断
