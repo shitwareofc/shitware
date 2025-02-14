@@ -671,7 +671,8 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Slider<float, class CLASS_Block_MagnetAim_2>(Block_MagnetAim, 4, "平滑度UTT", 0, 10, UI_Legit_MagnetAim_Smooth);
 				const auto Block_Standalone = GUI_VAR.GUI_Block(580, 750, 130, "回溯UTT");
 				GUI_VAR.GUI_Checkbox(Block_Standalone, 1, "开启UTT", UI_Legit_Standalone);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Standalone_2>(Block_Standalone, 2, "最大延迟UTT", 0, 100, UI_Legit_Standalone_Sensitivity, "%");
+				GUI_VAR.GUI_Slider<int, class CLASS_Block_Standalone_2>(Block_Standalone, 2, "开始子弹UTT", 1, 15, UI_Legit_Standalone_StartBullet);
+				GUI_VAR.GUI_Slider<int, class CLASS_Block_Standalone_3>(Block_Standalone, 3, "最大延迟UTT", 0, 100, UI_Legit_Standalone_Sensitivity, "%");
 				GUI_WindowSize = { 1010,940 };
 			}
 			else if (UI_Panel == 1)//Visual
@@ -863,18 +864,18 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				const auto Block_Aimbot = GUI_VAR.GUI_Block(150, 30, 370, "Aim bot");
 				GUI_VAR.GUI_Checkbox(Block_Aimbot, 1, "Enabled", UI_Legit_Aimbot);
 				GUI_VAR.GUI_KeySelector<class CLASS_Block_Aimbot_1>(Block_Aimbot, 1, UI_Legit_Aimbot_Key);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 2, "Judging wall", UI_Legit_Aimbot_JudgingWall);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 3, "Remove recoil", UI_Legit_Aimbot_RemoveRecoil);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 4, "Trigger on aiming", UI_Legit_Aimbot_TriggerOnAim);
+				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 2, "Visibility check", UI_Legit_Aimbot_JudgingWall);
+				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 3, "Recoil in aimbot", UI_Legit_Aimbot_RemoveRecoil);
+				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 4, "Aim only at the player", UI_Legit_Aimbot_TriggerOnAim);
 				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 5, "Auto shoot", UI_Legit_Aimbot_AutoShoot, { 255,150,150 });
 				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 40,Block_Aimbot.y }, 6, "Auto stop", UI_Legit_Aimbot_AutoStop, { 255,150,150 });
 				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 40,Block_Aimbot.y }, 7, "Auto scope", UI_Legit_Aimbot_AutoScope, { 255,150,150 });
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_Aimbot_2>({ Block_Aimbot.x + 20,Block_Aimbot.y }, 8, "Auto shoot delay", 0, 500, UI_Legit_Aimbot_AutoShootDelay, "ms", { 255,150,150 });
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_Aimbot_3>({ Block_Aimbot.x + 20,Block_Aimbot.y }, 9, "Auto shoot hit chance", 0, 100, UI_Legit_Aimbot_AutoShootHitChance, "%", { 255,150,150 });
-				GUI_VAR.GUI_Checkbox(Block_Aimbot, 10, "Adaptive aimbot", UI_Legit_AdaptiveAimbot, { 200,200,150 });
+				GUI_VAR.GUI_Checkbox(Block_Aimbot, 10, "Humanized aimbot", UI_Legit_AdaptiveAimbot, { 200,200,150 });
 				GUI_VAR.GUI_Slider<float, class CLASS_Block_Aimbot_4>(Block_Aimbot, 11, "Initial smooth", 0, 20, UI_Legit_AdaptiveAimbot_InitialSmooth, "", { 200,200,150 });
 				const auto Block_Armory = GUI_VAR.GUI_Block(150, 420, 490, "Weapons");
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 1, "Show range", UI_Legit_Armory_ShowAimbotRange);
+				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 1, "Show fov", UI_Legit_Armory_ShowAimbotRange);
 				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 2, "Nearest bone", UI_Legit_Armory_HitSiteParser);
 				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 3, "[PISTOL] Body aim (else head)", UI_Legit_Armory_BodyAim_PISTOL);
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_1>({ Block_Armory.x - 10,Block_Armory.y }, 4, "[PISTOL] Range", 0, 100, UI_Legit_Armory_Range_PISTOL, "%");
@@ -910,9 +911,10 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Checkbox({ Block_MagnetAim.x + 20,Block_MagnetAim.y }, 2, "Only aim headline", UI_Legit_MagnetAim_OnlyHeadLine);
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_MagnetAim_1>(Block_MagnetAim, 3, "Range", 0, 100, UI_Legit_MagnetAim_Range, "%");
 				GUI_VAR.GUI_Slider<float, class CLASS_Block_MagnetAim_2>(Block_MagnetAim, 4, "Smooth", 0, 10, UI_Legit_MagnetAim_Smooth);
-				const auto Block_Standalone = GUI_VAR.GUI_Block(580, 750, 130, "Macro recoil");
+				const auto Block_Standalone = GUI_VAR.GUI_Block(580, 750, 130, "Soft recoil");
 				GUI_VAR.GUI_Checkbox(Block_Standalone, 1, "Enabled", UI_Legit_Standalone);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Standalone_2>(Block_Standalone, 2, "Sensitive", 0, 100, UI_Legit_Standalone_Sensitivity, "%");
+				GUI_VAR.GUI_Slider<int, class CLASS_Block_Standalone_1>(Block_Standalone, 2, "Start bullet", 1, 15, UI_Legit_Standalone_StartBullet);
+				GUI_VAR.GUI_Slider<int, class CLASS_Block_Standalone_2>(Block_Standalone, 3, "Sensitive", 0, 100, UI_Legit_Standalone_Sensitivity, "%");
 				GUI_VAR.GUI_Tips(Block_Aimbot, 1, "Help you quickly aim at the target.");
 				GUI_VAR.GUI_Tips({ Block_Aimbot.x + 10,Block_Aimbot.y }, 5, "Prefer Ragebot.", 0, { 255,150,150 });
 				GUI_VAR.GUI_Tips({ Block_Aimbot.x + 20,Block_Aimbot.y }, 9, "Chance of hitting the target. (Affects shooting speed)", 0, { 255,150,150 });
@@ -922,7 +924,7 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Tips({ Block_RemoveRecoil.x + 10,Block_RemoveRecoil.y }, 2, "Operations that only return landscape.");
 				GUI_VAR.GUI_Tips({ Block_RemoveRecoil.x + 10,Block_RemoveRecoil.y }, 4, "Corresponding game sensitivity value.");
 				GUI_VAR.GUI_Tips(Block_MagnetAim, 1, "Slow aiming without triggering key conditions.");
-				GUI_VAR.GUI_Tips(Block_Standalone, 1, "Improve the recoil of main rifles, but it is not recommended to use with aiming assistance.");
+				GUI_VAR.GUI_Tips(Block_Standalone, 1, "Humanizes the recoil of main rifles.");
 				GUI_WindowSize = { 1010,940 };
 			}
 			else if (UI_Panel == 1)//Visual
@@ -1573,9 +1575,48 @@ void Thread_Funtion_Aimbot() noexcept //功能线程: 瞄准机器人
 				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]); //遍历的人物Pawn
 				if (!Advanced::Check_Enemy(PlayerPawn) || (UI_Legit_Aimbot_TriggerOnAim && !CrosshairId) || (UI_Legit_Aimbot_JudgingWall && !PlayerPawn.Spotted())) continue;
 				if (LocalPlayer_ActiveWeapon_Type == 4 && Variable::Coor_Dis_3D(PlayerPawn.Origin(), Global_LocalPlayer.Origin()) > UI_Legit_Armory_TriggerDistance_SHOTGUN) continue; //霰弹枪最大触发范围
-				const auto HeadAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Recoil_Angle);
-				const auto ChestAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(3), Recoil_Angle);
-				Aim_Parts = (hypot(HeadAngle.x, HeadAngle.y) < hypot(ChestAngle.x, ChestAngle.y)) ? 6 : 3;
+				if ((LocalPlayer_ActiveWeapon_Type == 1 && UI_Legit_Armory_BodyAim_PISTOL) ||
+					(LocalPlayer_ActiveWeapon_Type == 2 && UI_Legit_Armory_BodyAim_RIFLE) ||
+					(LocalPlayer_ActiveWeapon_Type == 3 && UI_Legit_Armory_BodyAim_SNIPER) ||
+					(LocalPlayer_ActiveWeapon_Type == 4 && UI_Legit_Armory_BodyAim_SHOTGUN))
+				{
+					Aim_Parts = 3; // Se "Body Aim" estiver ativado, sempre mira no torso
+				}
+				else
+				{
+					if (UI_Legit_Armory_HitSiteParser)
+					{
+						const auto HeadFOV = hypot(
+							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Recoil_Angle).x,
+							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Recoil_Angle).y
+						);
+						const auto NeckFOV = hypot(
+							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(5), Recoil_Angle).x,
+							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(5), Recoil_Angle).y
+						);
+						const auto ChestFOV = hypot(
+							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(3), Recoil_Angle).x,
+							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(3), Recoil_Angle).y
+						);
+						const auto PelvisFOV = hypot(
+							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(0), Recoil_Angle).x,
+							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(0), Recoil_Angle).y
+						);
+
+						if (HeadFOV < NeckFOV && HeadFOV < ChestFOV && HeadFOV < PelvisFOV)
+							Aim_Parts = 6; // Head
+						else if (NeckFOV < ChestFOV && NeckFOV < PelvisFOV)
+							Aim_Parts = 5; // Neck
+						else if (ChestFOV < PelvisFOV)
+							Aim_Parts = 3; // Chest
+						else
+							Aim_Parts = 0; // Pelvis
+					}
+					else
+					{
+						Aim_Parts = 6; // Se Hit Parser estiver desativado, sempre mira na cabeça
+					}
+				}
 				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Parts), Recoil_Angle); //最终瞄准角度
 				const auto Fov = hypot(NeedAngle.x, NeedAngle.y); //准星与角度的距离
 
@@ -1650,14 +1691,28 @@ void Thread_Funtion_AdaptiveAimbot() noexcept//功能线程: 生物瞄准机器�
 				if (!Advanced::Check_Enemy(PlayerPawn) || !PlayerPawn.Spotted())
 					continue; // 当没有被发现则重新来过
 				const auto HeadAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Base::ViewAngles() + PunchAngle * 2);
+				const auto NeckAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(5), Base::ViewAngles() + PunchAngle * 2);
 				const auto ChestAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(3), Base::ViewAngles() + PunchAngle * 2);
-				Aim_Bone = (hypot(HeadAngle.x, HeadAngle.y) < hypot(ChestAngle.x, ChestAngle.y)) ? 6 : 3;
-				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Bone), Base::ViewAngles() + PunchAngle * 2); // 最终瞄准角度 (6: 头部)
-				const auto Fov = hypot(NeedAngle.x, NeedAngle.y); // 圆圈范围计算
-				if (Fov < Target.MinFov) // 范围判断
+				const auto PelvisAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(0), Base::ViewAngles() + PunchAngle * 2);
+
+				std::vector<std::pair<int, float>> BoneFOVs = {
+					{6, hypot(HeadAngle.x, HeadAngle.y)},
+					{5, hypot(NeckAngle.x, NeckAngle.y)},
+					{3, hypot(ChestAngle.x, ChestAngle.y)},
+					{0, hypot(PelvisAngle.x, PelvisAngle.y)}
+				};
+
+				// Ordena para pegar o osso mais próximo do FOV
+				std::sort(BoneFOVs.begin(), BoneFOVs.end(), [](const auto& a, const auto& b) {
+					return a.second < b.second;
+					});
+
+				Aim_Bone = BoneFOVs.front().first;
+				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Bone), Base::ViewAngles() + PunchAngle * 2);
+				if (BoneFOVs.front().second < Target.MinFov) // 范围判断
 				{
 					Target.Pawn = PlayerPawn; // 刷新PlayerPawn
-					Target.MinFov = Fov; // 刷新最短Fov
+					Target.MinFov = BoneFOVs.front().second; // 刷新最短Fov
 					Target.AimAngle = NeedAngle; // 刷新最终瞄准的Angle
 				}
 			}
@@ -1688,7 +1743,7 @@ void Thread_Funtion_Triggerbot() noexcept
 			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();
 			const auto Local_ActiveWeaponType = Global_LocalPlayer.ActiveWeapon(true);
 			if (Local_ActiveWeaponID == 42 || Local_ActiveWeaponID == 59 || Local_ActiveWeaponID >= 500 || Local_ActiveWeaponID == 31) continue;
-			else if (((UI_Legit_Triggerbot_AnyTarget && Global_LocalPlayer.IDEntIndex() != -1) || Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn())) && (!UI_Legit_Triggerbot_ShootWhenAccurate || Local_ActiveWeaponType == 1 || Local_ActiveWeaponType == 4 || Advanced::Stop_Move(50, false)))
+			else if (((UI_Legit_Triggerbot_AnyTarget && Global_LocalPlayer.IDEntIndex() != -1) || Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn())) && (!UI_Legit_Triggerbot_ShootWhenAccurate || Local_ActiveWeaponType == 1 || Local_ActiveWeaponType == 4 || Advanced::Stop_Move(50, true)))
 			{
 				IsTriggerbotActive = true; // Ativa o flag do triggerbot
 				IsTriggerbotShooting = true; // Indica que o triggerbot está disparando
@@ -1767,27 +1822,24 @@ void Thread_Funtion_AssisteAim() noexcept //功能线程: 精确瞄准
 void Thread_Funtion_RemoveRecoil() noexcept
 {
 	System::Log("Load Thread: Thread_Funtion_RemoveRecoil()");
+	static int BulletCount = 0;
+
 	while (true)
 	{
 		static auto OldPunch = Variable::Vector3{};
 		if (CS2_HWND && Global_IsShowWindow && UI_Legit_RemoveRecoil && Global_LocalPlayer.Health() && System::Get_Key(VK_LBUTTON))
 		{
-			// Ignora recoil enquanto o triggerbot está ativo
 			if (IsTriggerbotActive)
 			{
 				Sleep(1);
 				continue;
 			}
 
-			// Defina um vetor de armas para as quais a remoção de recoil não deve ser aplicada quando o standalone estiver ativo
-			const std::vector<int> ExcludedWeapons = { 1, 2, 4, 30, 31, 32, 36, 61, 63, 64 };  // Pistolas
-
+			const std::vector<int> ExcludedWeapons = { 1, 2, 4, 30, 31, 32, 36, 61, 63, 64 };
 			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();
 
-			// Se o Standalone estiver ativo, não aplica remoção de recoil para AK47, M4A4 e M4A1-S
 			if (UI_Legit_Standalone)
 			{
-				// Se a arma for AK47, M4A4 ou M4A1-S, não aplica remoção de recoil
 				if (Local_ActiveWeaponID == 7 || Local_ActiveWeaponID == 16 || Local_ActiveWeaponID == 60)
 				{
 					Sleep(10);
@@ -1796,7 +1848,6 @@ void Thread_Funtion_RemoveRecoil() noexcept
 			}
 			else
 			{
-				// Quando o Standalone está desativado, não aplica remoção de recoil para as pistolas
 				if (std::find(ExcludedWeapons.begin(), ExcludedWeapons.end(), Local_ActiveWeaponID) != ExcludedWeapons.end())
 				{
 					Sleep(10);
@@ -1804,10 +1855,23 @@ void Thread_Funtion_RemoveRecoil() noexcept
 				}
 			}
 
-			// Evitar remover recoil de pistolas quando o Standalone está ativo
 			if (UI_Legit_Standalone && std::find(ExcludedWeapons.begin(), ExcludedWeapons.end(), Local_ActiveWeaponID) != ExcludedWeapons.end())
 			{
 				Sleep(10);
+				continue;
+			}
+
+			// Resetar contador ao iniciar o disparo
+			if (System::Get_Key(VK_LBUTTON))
+			{
+				BulletCount = 0;
+			}
+			BulletCount++;
+
+			// Aplicar remoção de recoil apenas após o número mínimo de balas disparadas
+			if (BulletCount < UI_Legit_RemoveRecoil_StartBullet)
+			{
+				Sleep(1);
 				continue;
 			}
 
@@ -1828,6 +1892,7 @@ void Thread_Funtion_RemoveRecoil() noexcept
 		else
 		{
 			OldPunch = { 0, 0, 0 };
+			BulletCount = 0;
 			Sleep(50);
 		}
 	}
@@ -1884,6 +1949,22 @@ void Thread_Funtion_Standalone() noexcept
 					int M4A1S_RawY[31] = { 0, 10, 10, 30 , 30, 40, 40, 50, 10, 10, 10, 20, 0, -10, 0, 0, -10, 0, 10, 0, 10, 0, 0, 20, 0, 0 };
 					std::copy(std::begin(M4A1S_RawX), std::end(M4A1S_RawX), RawX);
 					std::copy(std::begin(M4A1S_RawY), std::end(M4A1S_RawY), RawY);
+				}
+
+				static int BulletCount = 0;
+
+				// Resetar contador ao iniciar o disparo
+				if (System::Get_Key(VK_LBUTTON))
+				{
+					BulletCount = 0;
+				}
+				BulletCount++;
+
+				// Aplicar padrão de recoil apenas após o número mínimo de balas disparadas
+				if (BulletCount < UI_Legit_Standalone_StartBullet)
+				{
+					Sleep(1);
+					continue;
 				}
 
 				// Calcular o índice com base no número de tiros
