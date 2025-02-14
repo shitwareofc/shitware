@@ -27,7 +27,7 @@
 //m_vecVelocity
 0x400
 //m_entitySpottedState + m_bSpotted
-0x23D8
+0x11B0
 //m_bIsScoped
 0x23E8
 //m_pClippingWeapon
