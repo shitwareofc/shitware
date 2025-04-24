@@ -1,0 +1,16 @@
+{
+  "users": [
+    {
+      "key": "admin",
+      "mac_address": "f4:b5:20:46:b1:0f"
+    },
+    {
+      "key": "admin2",
+      "mac_address": "00:e2:69:78:2f:eb"
+    },
+    {
+      "key": "dfg",
+      "mac_address": "74:56:3c:6b:18:3e"
+    }
+  ]
+}
