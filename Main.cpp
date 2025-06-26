@@ -1,10 +1,18 @@
 #include "Head.h"
 #include "CS2_SDK.h"
-const float Rensen_Version = 1.0;//程序版本
-const string Rensen_ReleaseDate = "BR[2025-01-20 15:00]";//程序发布日期时间
+const float Rensen_Version = 4.94;//程序版本
+const string Rensen_ReleaseDate = "KR[2024-09-19 21:20]";//程序发布日期时间
 namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 {
-	EasyGUI::EasyGUI GUI_VAR; EasyGUI::EasyGUI_IO GUI_IO; BOOL Menu_Open = true; string Preset_Folder = "Configs";//菜单初始化变量
+	EasyGUI::EasyGUI GUI_VAR; EasyGUI::EasyGUI_IO GUI_IO; BOOL Menu_Open = true;
+	std::string GetPresetFolder() {
+		std::string folder = std::string(getenv("USERPROFILE")) + "\\Documents\\Rensen\\Configs";
+		CreateDirectoryA((std::string(getenv("USERPROFILE")) + "\\Documents\\Rensen").c_str(), NULL);
+		CreateDirectoryA(folder.c_str(), NULL);
+		return folder;
+	}
+	// Alteração: Definir o caminho para Documents\Rensen\Configs\
+	string Preset_Folder = GetPresetFolder();
 	//----------------------------------------------------------------------------------------------
 	BOOL UI_Legit_Aimbot = 0;
 	int UI_Legit_Aimbot_Key = 0;
@@ -30,16 +38,14 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 	BOOL UI_Legit_Triggerbot_AnyTarget = 0;
 	int UI_Legit_Triggerbot_ShootDelay = 1;
 	int UI_Legit_Triggerbot_ShootDuration = 1;
-	BOOL IsTriggerbotActive = false;
-	BOOL IsTriggerbotShooting = false;
 	BOOL UI_Legit_PreciseAim = 0;
 	float UI_Legit_PreciseAim_DefaultSensitivity = 0;
 	float UI_Legit_PreciseAim_EnableSensitivity = 0;
 	BOOL UI_Legit_RemoveRecoil = 0;
 	BOOL UI_Legit_RemoveRecoil_HorizontalRepair = 0;
 	int UI_Legit_RemoveRecoil_StartBullet = 1;
-	BOOL UI_Legit_Standalone = 0;
-	int UI_Legit_Standalone_Sensitivity = 0;
+	BOOL UI_Legit_Backtracking = 0;
+	int UI_Legit_Backtracking_MaximumTime = 0;
 	BOOL UI_Visual_ESP = 0;
 	int UI_Visual_ESP_Key = 0;
 	BOOL UI_Visual_ESP_Box = 0;
@@ -135,7 +141,7 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 	float UI_Legit_Armory_Smooth_SHOTGUN = 0;
 	int UI_Legit_Armory_TriggerDistance_SHOTGUN = 100;
 	int UI_Legit_MagnetAim_Range = 0;
-	int UI_Legit_Standalone_StartBullet = 0;
+	int UI_Legit_Backtracking_MinimumTime = 0;
 	int UI_Legit_RemoveRecoil_Sensitive = 0;
 	BOOL UI_Visual_HitMark_CustomColor = 0;
 	int UI_Legit_Aimbot_AutoShootHitChance = 0;
@@ -145,11 +151,11 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 	BOOL UI_Misc_MouseLowSensitivity = 0;
 	BOOL UI_Spoof_StepOnHead = 0;
 	//----------------------------------------------------------------------------------------------
-	void CreatePreset(string FileName = "") noexcept { if (FileName != "")System::Create_File(Preset_Folder + "\\" + FileName + ".cfg"); }//创建特定预设
-	void DeletePreset(string FileName = "") noexcept { System::Delete_File(Preset_Folder + "\\" + FileName + ".cfg"); }//删除特定预设
+	void CreatePreset(string FileName = "") noexcept { if (FileName != "")System::Create_File(GetPresetFolder() + "\\" + FileName + ".cfg"); }//创建特定预设
+	void DeletePreset(string FileName = "") noexcept { System::Delete_File(GetPresetFolder() + "\\" + FileName + ".cfg"); }//删除特定预设
 	void SavePreset(string FileName = "") noexcept//保存特定预设
 	{
-		System::Set_File(Preset_Folder + "\\" + FileName + ".cfg",
+		System::Set_File(GetPresetFolder() + "\\" + FileName + ".cfg",
 			to_string(UI_Legit_Aimbot) + "\n" +
 			to_string(UI_Legit_Aimbot_Key) + "\n" +
 			to_string(UI_Legit_Aimbot_JudgingWall) + "\n" +
@@ -180,8 +186,8 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 			to_string(UI_Legit_RemoveRecoil) + "\n" +
 			to_string(UI_Legit_RemoveRecoil_HorizontalRepair) + "\n" +
 			to_string(UI_Legit_RemoveRecoil_StartBullet) + "\n" +
-			to_string(UI_Legit_Standalone) + "\n" +
-			to_string(UI_Legit_Standalone_Sensitivity) + "\n" +
+			to_string(UI_Legit_Backtracking) + "\n" +
+			to_string(UI_Legit_Backtracking_MaximumTime) + "\n" +
 			to_string(UI_Visual_ESP) + "\n" +
 			to_string(UI_Visual_ESP_Key) + "\n" +
 			to_string(UI_Visual_ESP_Box) + "\n" +
@@ -286,7 +292,7 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 			to_string(UI_Legit_Armory_Smooth_SHOTGUN) + "\n" +
 			to_string(UI_Legit_Armory_TriggerDistance_SHOTGUN) + "\n" +
 			to_string(UI_Legit_MagnetAim_Range) + "\n" +
-			to_string(UI_Legit_Standalone_StartBullet) + "\n" +
+			to_string(UI_Legit_Backtracking_MinimumTime) + "\n" +
 			to_string(UI_Legit_RemoveRecoil_Sensitive) + "\n" +
 			to_string(UI_Visual_HitMark_CustomColor) + "\n" +
 			to_string(UI_Legit_Aimbot_AutoShootHitChance) + "\n" +
@@ -299,7 +305,7 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 	}
 	void LoadPreset(string FileName = "") noexcept//加载特定预设
 	{
-		FileName = Preset_Folder + "\\" + FileName + ".cfg"; if (System::Get_File(FileName, 1) == "")return;//不加载空配置
+		FileName = GetPresetFolder() + "\\" + FileName + ".cfg"; if (System::Get_File(FileName, 1) == "")return;//不加载空配置
 		UI_Legit_Aimbot = Variable::string_int_(System::Get_File(FileName, 1));
 		UI_Legit_Aimbot_Key = Variable::string_int_(System::Get_File(FileName, 2));
 		UI_Legit_Aimbot_JudgingWall = Variable::string_int_(System::Get_File(FileName, 3));
@@ -330,8 +336,8 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 		UI_Legit_RemoveRecoil = Variable::string_int_(System::Get_File(FileName, 28));
 		UI_Legit_RemoveRecoil_HorizontalRepair = Variable::string_int_(System::Get_File(FileName, 29));
 		UI_Legit_RemoveRecoil_StartBullet = Variable::string_int_(System::Get_File(FileName, 30));
-		UI_Legit_Standalone = Variable::string_int_(System::Get_File(FileName, 31));
-		UI_Legit_Standalone_Sensitivity = Variable::string_int_(System::Get_File(FileName, 32));
+		UI_Legit_Backtracking = Variable::string_int_(System::Get_File(FileName, 31));
+		UI_Legit_Backtracking_MaximumTime = Variable::string_int_(System::Get_File(FileName, 32));
 		UI_Visual_ESP = Variable::string_int_(System::Get_File(FileName, 33));
 		UI_Visual_ESP_Key = Variable::string_int_(System::Get_File(FileName, 34));
 		UI_Visual_ESP_Box = Variable::string_int_(System::Get_File(FileName, 35));
@@ -427,7 +433,7 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 		UI_Legit_Armory_Smooth_SHOTGUN = Variable::string_float_(System::Get_File(FileName, 134));
 		UI_Legit_Armory_TriggerDistance_SHOTGUN = Variable::string_int_(System::Get_File(FileName, 135));
 		UI_Legit_MagnetAim_Range = Variable::string_int_(System::Get_File(FileName, 136));
-		UI_Legit_Standalone_StartBullet = Variable::string_int_(System::Get_File(FileName, 137));
+		UI_Legit_Backtracking_MinimumTime = Variable::string_int_(System::Get_File(FileName, 137));
 		UI_Legit_RemoveRecoil_Sensitive = Variable::string_int_(System::Get_File(FileName, 138));
 		UI_Visual_HitMark_CustomColor = Variable::string_int_(System::Get_File(FileName, 139));
 		UI_Legit_Aimbot_AutoShootHitChance = Variable::string_int_(System::Get_File(FileName, 140));
@@ -437,7 +443,7 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 		UI_Misc_MouseLowSensitivity = Variable::string_int_(System::Get_File(FileName, 144));
 		UI_Spoof_StepOnHead = Variable::string_int_(System::Get_File(FileName, 145));
 	}
-	void LoadCloudPreset(string FileName = "", string NormalURL = "https://github.com/shitwareofc/shitware/blob/main/Cloud%20Files/") noexcept//加载特定Github云预设
+	void LoadCloudPreset(string FileName = "", string NormalURL = "https://github.com/Coslly/Rensen/blob/main/Cloud%20Files/") noexcept//加载特定Github云预设
 	{
 		System::URL_READ URL_PRESET = { "Cache_CloudPreset" };
 		if (URL_PRESET.StoreMem(NormalURL + FileName + (string)".cfg?raw=true"))
@@ -472,8 +478,8 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 			UI_Legit_RemoveRecoil = Variable::string_int_(URL_PRESET.Read(28));
 			UI_Legit_RemoveRecoil_HorizontalRepair = Variable::string_int_(URL_PRESET.Read(29));
 			UI_Legit_RemoveRecoil_StartBullet = Variable::string_int_(URL_PRESET.Read(30));
-			UI_Legit_Standalone = Variable::string_int_(URL_PRESET.Read(31));
-			UI_Legit_Standalone_Sensitivity = Variable::string_int_(URL_PRESET.Read(32));
+			UI_Legit_Backtracking = Variable::string_int_(URL_PRESET.Read(31));
+			UI_Legit_Backtracking_MaximumTime = Variable::string_int_(URL_PRESET.Read(32));
 			UI_Visual_ESP = Variable::string_int_(URL_PRESET.Read(33));
 			UI_Visual_ESP_Key = Variable::string_int_(URL_PRESET.Read(34));
 			UI_Visual_ESP_Box = Variable::string_int_(URL_PRESET.Read(35));
@@ -569,7 +575,7 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 			UI_Legit_Armory_Smooth_SHOTGUN = Variable::string_float_(URL_PRESET.Read(134));
 			UI_Legit_Armory_TriggerDistance_SHOTGUN = Variable::string_int_(URL_PRESET.Read(135));
 			UI_Legit_MagnetAim_Range = Variable::string_int_(URL_PRESET.Read(136));
-			UI_Legit_Standalone_StartBullet = Variable::string_int_(URL_PRESET.Read(137));
+			UI_Legit_Backtracking_MinimumTime = Variable::string_int_(URL_PRESET.Read(137));
 			UI_Legit_RemoveRecoil_Sensitive = Variable::string_int_(URL_PRESET.Read(138));
 			UI_Visual_HitMark_CustomColor = Variable::string_int_(URL_PRESET.Read(139));
 			UI_Legit_Aimbot_AutoShootHitChance = Variable::string_int_(URL_PRESET.Read(140));
@@ -596,7 +602,7 @@ using namespace Control_Var;
 void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义选项)
 {
 	System::Log("Load Thread: Thread_Menu()");
-	GUI_VAR.Window_Create(1010, 940, "Shitware - Menu", true);//创建置顶GUI绘制窗口
+	GUI_VAR.Window_Create(1010, 940, "Rensen - Menu", true);//创建置顶GUI绘制窗口
 	const auto LanguageID = System::Get_DefaultLanguage();//获取系统默认语言
 	while (LanguageID == 0x804 || LanguageID == 0x404 || LanguageID == 0xC04)//中文版菜单 (字符串一定要加上UTT不然会乱码)
 	{
@@ -615,7 +621,7 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_BackGround(4);//自定义颜色背景主题
 			}
 			else GUI_VAR.GUI_BackGround(3);//默认(彩虹)
-			GUI_VAR.GUI_Block(20, 20, 40, "", 110, false); GUI_VAR.In_DrawString(36, 35, "Shitware", GUI_IO.GUIColor.Min_Bri(200), "Verdana", 25);//Rensen标志
+			GUI_VAR.GUI_Block(20, 20, 40, "", 110, false); GUI_VAR.In_DrawString(36, 35, "Rensen", GUI_IO.GUIColor.Min_Bri(200), "Verdana", 25);//Rensen标志
 			GUI_VAR.GUI_Block_Panel<class CLASS_Block_Panel>(20, 70, 110, GUI_VAR.Window_GetSize().y - 90, "", { "合法UTT","视觉UTT","杂项UTT","设置UTT" }, UI_Panel, 25);//大体区块选择
 			if (UI_Panel == 0)//Legit
 			{
@@ -669,10 +675,10 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Checkbox({ Block_MagnetAim.x + 20,Block_MagnetAim.y }, 2, "只磁吸头线UTT", UI_Legit_MagnetAim_OnlyHeadLine);
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_MagnetAim_1>(Block_MagnetAim, 3, "范围UTT", 0, 100, UI_Legit_MagnetAim_Range, "%");
 				GUI_VAR.GUI_Slider<float, class CLASS_Block_MagnetAim_2>(Block_MagnetAim, 4, "平滑度UTT", 0, 10, UI_Legit_MagnetAim_Smooth);
-				const auto Block_Standalone = GUI_VAR.GUI_Block(580, 750, 130, "回溯UTT");
-				GUI_VAR.GUI_Checkbox(Block_Standalone, 1, "开启UTT", UI_Legit_Standalone);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Standalone_2>(Block_Standalone, 2, "开始子弹UTT", 1, 15, UI_Legit_Standalone_StartBullet);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Standalone_3>(Block_Standalone, 3, "最大延迟UTT", 0, 100, UI_Legit_Standalone_Sensitivity, "%");
+				const auto Block_Backtracking = GUI_VAR.GUI_Block(580, 750, 130, "回溯UTT");
+				GUI_VAR.GUI_Checkbox(Block_Backtracking, 1, "开启UTT", UI_Legit_Backtracking);
+				GUI_VAR.GUI_Slider<int, class CLASS_Block_Backtracking_1>(Block_Backtracking, 2, "最小延迟UTT", 0, 500, UI_Legit_Backtracking_MinimumTime, "ms");
+				GUI_VAR.GUI_Slider<int, class CLASS_Block_Backtracking_2>(Block_Backtracking, 3, "最大延迟UTT", UI_Legit_Backtracking_MinimumTime, 1000, UI_Legit_Backtracking_MaximumTime, "ms");
 				GUI_WindowSize = { 1010,940 };
 			}
 			else if (UI_Panel == 1)//Visual
@@ -768,9 +774,9 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				{
 					const auto Preset_ID = SelectedCloudPreset;//防止套用的预设套写变量
 					if (SelectedCloudPreset == 0)LoadCloudPreset("Legit");
-					else if (SelectedCloudPreset == 1)LoadCloudPreset("Skilled");
-					else if (SelectedCloudPreset == 2)LoadCloudPreset("Pro");
-					else if (SelectedCloudPreset == 3)LoadCloudPreset("Cheater");
+					else if (SelectedCloudPreset == 1)LoadCloudPreset("Rage");
+					else if (SelectedCloudPreset == 2)LoadCloudPreset("Legit No Visual");
+					else if (SelectedCloudPreset == 3)LoadCloudPreset("Robot");
 					SelectedCloudPreset = 0;//归位选择
 				}
 				auto Block_Spoof = GUI_VAR.GUI_Block(580, 440, 400, "恶搞UTT");
@@ -797,18 +803,18 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 			else if (UI_Panel == 3)//Setting
 			{
 				const auto Block_About = GUI_VAR.GUI_Block(150, 30, 220, "关于UTT");
-				GUI_VAR.GUI_Text(Block_About, 1, "Shitware", GUI_IO.GUIColor);
+				GUI_VAR.GUI_Text(Block_About, 1, "Rensen", GUI_IO.GUIColor);
 				GUI_VAR.GUI_Text({ Block_About.x + 47,Block_About.y }, 1, "for Counter-Strike 2UTT", { 100,100,100 });
 				GUI_VAR.GUI_Text(Block_About, 2, "版本: UTT" + Variable::Float_Precision(Rensen_Version), { 100,100,100 });
 				GUI_VAR.GUI_Text(Block_About, 3, "发布日期: UTT" + Rensen_ReleaseDate, { 100,100,100 });
-				GUI_VAR.GUI_Text(Block_About, 4, "作者: https://www.dfg.com.br/user/no_sht/listings", { 100,100,100 });
+				GUI_VAR.GUI_Text(Block_About, 4, "作者: https://github.com/CosllyUTT", { 100,100,100 });
 				GUI_VAR.GUI_Text(Block_About, 5, "交流QQ群: 486214313UTT", { 100,100,100 });
 				GUI_VAR.GUI_Text(Block_About, 6, "中国内地用户检查更新时需要使用VPN (确保可以连接Github)UTT", { 100,100,100 });
 				static BOOL OpenGithubURL, OpenQQGroupChat;
 				GUI_VAR.GUI_Button_Small({ Block_About.x + 10,Block_About.y }, 4, OpenGithubURL);
 				GUI_VAR.GUI_Button_Small({ Block_About.x + 10,Block_About.y }, 5, OpenQQGroupChat);
-				if (OpenGithubURL)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开作者Github主题页面
-				if (OpenQQGroupChat)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开QQ加入群聊链接
+				if (OpenGithubURL)System::Open_Website("https://github.com/Coslly");//打开作者Github主题页面
+				if (OpenQQGroupChat)System::Open_Website("https://qm.qq.com/q/67Ed5be1tS");//打开QQ加入群聊链接
 				const auto Block_Menu = GUI_VAR.GUI_Block(150, 270, 250, "菜单UTT");
 				GUI_VAR.GUI_Text(Block_Menu, 1, "菜单按键UTT");
 				GUI_VAR.GUI_KeySelector<class CLASS_Block_Menu_1>(Block_Menu, 1, UI_Setting_MenuKey);
@@ -822,20 +828,20 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				if (StartCS && CS2_MEM.Get_ProcessHWND() == 0)if (CS2_MEM.Get_ProcessHWND() == 0)System::Open_Website("steam://rungameid/730");//启动CS
 				if (QuitCS && CS2_MEM.Get_ProcessHWND() != 0)Window::Kill_Window(CS2_MEM.Get_ProcessHWND());//关闭CS
 				static BOOL GithubRepositories; GUI_VAR.GUI_Button(Block_Menu, 5, "Github 项目链接UTT", GithubRepositories, 70);
-				if (GithubRepositories)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开Github项目地址
+				if (GithubRepositories)System::Open_Website("https://github.com/Coslly/Rensen");//打开Github项目地址
 				static BOOL RestartMenu; GUI_VAR.GUI_Button(Block_Menu, 6, "重启菜单UTT", RestartMenu, 90);
-				if (RestartMenu) { GUI_VAR.Window_SetTitle("Shitware - Restarting"); System::Self_Restart(); }//重启菜单
+				if (RestartMenu) { GUI_VAR.Window_SetTitle("Rensen - Restarting"); System::Self_Restart(); }//重启菜单
 				static BOOL UnloadMenu; GUI_VAR.GUI_Button(Block_Menu, 7, "关闭菜单UTT", UnloadMenu, 90);
 				if (UnloadMenu)exit(0);//关闭菜单
 				const auto Block_Presets = GUI_VAR.GUI_Block(580, 30, 490, "本地预设UTT", 320);
-				static int SelectedPresetID = 0; static vector<string> FileList = System::Traversal_FindFile(Preset_Folder + "\\*", ".cfg", true, "UTT"); static string CreatePresetName; static BOOL Create, Load, Save, Delete;
+				static int SelectedPresetID = 0; static vector<string> FileList = System::Traversal_FindFile(GetPresetFolder() + "\\*", ".cfg", true, "UTT"); static string CreatePresetName; static BOOL Create, Load, Save, Delete;
 				GUI_VAR.GUI_List<class CLASS_Block_Presets_1>(Block_Presets, 1, FileList, SelectedPresetID, 11);
 				GUI_VAR.GUI_Button(Block_Presets, 11, "加载UTT", Load, 95); if (Load && SelectedPresetID != -1)LoadPreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
 				GUI_VAR.GUI_Button(Block_Presets, 12, "保存UTT", Save, 95); if (Save && SelectedPresetID != -1)SavePreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
 				GUI_VAR.GUI_InputText<class CLASS_Block_Presets_2>(Block_Presets, 13, CreatePresetName, "创建预设名称UTT");
 				GUI_VAR.GUI_Button(Block_Presets, 14, "创建UTT", Create, 95); if (Create) { CreatePreset(CreatePresetName); CreatePresetName = ""; }
 				GUI_VAR.GUI_Button(Block_Presets, 15, "删除UTT", Delete, 95); if (Delete && SelectedPresetID != -1)DeletePreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
-				if (Create || Load || Save || Delete)FileList = System::Traversal_FindFile(Preset_Folder + "\\*", ".cfg", true, "UTT");//刷新文件列表
+				if (Create || Load || Save || Delete)FileList = System::Traversal_FindFile(GetPresetFolder() + "\\*", ".cfg", true, "UTT");//刷新文件列表
 				GUI_WindowSize = { 930,550 };
 			}
 			GUI_VAR.Draw_GUI(Debug_Control_Var::Checkbox_2);//最终绘制GUI画板
@@ -844,6 +850,7 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 	}
 	while (true)//默认英文版菜单
 	{
+		
 		Window::Set_LimitWindowShow(GUI_VAR.Window_HWND(), UI_Misc_ByPassOBS);//绕过OBS
 		static int UI_Panel = 0;//大区块选择
 		static Variable::Vector2 GUI_WindowSize = { 0,0 };//窗体大小(用于开关动画)
@@ -857,26 +864,26 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_BackGround(4);//自定义颜色背景主题
 			}
 			else GUI_VAR.GUI_BackGround(3);//默认(彩虹)
-			GUI_VAR.GUI_Block(20, 20, 40, "", 110, false); GUI_VAR.In_DrawString(30, 35, "Shitware", GUI_IO.GUIColor.Min_Bri(200), "Verdana", 25);//Rensen标志
-			GUI_VAR.GUI_Block_Panel<class CLASS_Block_Panel>(20, 70, 110, GUI_VAR.Window_GetSize().y - 90, "", { "Legit","Visual","Misc","Infolist","Setting" }, UI_Panel, 25);//大体区块选择
+			GUI_VAR.GUI_Block(20, 20, 40, "", 110, false); GUI_VAR.In_DrawString(36, 35, "Rensen", GUI_IO.GUIColor.Min_Bri(200), "Verdana", 25);//Rensen标志
+			GUI_VAR.GUI_Block_Panel<class CLASS_Block_Panel>(20, 70, 110, GUI_VAR.Window_GetSize().y - 90, "", { "Legit","Visual","Misc","Infolist","Setting","Attach" }, UI_Panel, 25);//大体区块选择
 			if (UI_Panel == 0)//Legit
 			{
 				const auto Block_Aimbot = GUI_VAR.GUI_Block(150, 30, 370, "Aim bot");
 				GUI_VAR.GUI_Checkbox(Block_Aimbot, 1, "Enabled", UI_Legit_Aimbot);
 				GUI_VAR.GUI_KeySelector<class CLASS_Block_Aimbot_1>(Block_Aimbot, 1, UI_Legit_Aimbot_Key);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 2, "Visibility check", UI_Legit_Aimbot_JudgingWall);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 3, "Recoil in aimbot", UI_Legit_Aimbot_RemoveRecoil);
-				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 4, "Aim only at the player", UI_Legit_Aimbot_TriggerOnAim);
+				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 2, "Judging wall", UI_Legit_Aimbot_JudgingWall);
+				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 3, "Remove recoil", UI_Legit_Aimbot_RemoveRecoil);
+				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 4, "Trigger on aiming", UI_Legit_Aimbot_TriggerOnAim);
 				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 20,Block_Aimbot.y }, 5, "Auto shoot", UI_Legit_Aimbot_AutoShoot, { 255,150,150 });
 				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 40,Block_Aimbot.y }, 6, "Auto stop", UI_Legit_Aimbot_AutoStop, { 255,150,150 });
 				GUI_VAR.GUI_Checkbox({ Block_Aimbot.x + 40,Block_Aimbot.y }, 7, "Auto scope", UI_Legit_Aimbot_AutoScope, { 255,150,150 });
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_Aimbot_2>({ Block_Aimbot.x + 20,Block_Aimbot.y }, 8, "Auto shoot delay", 0, 500, UI_Legit_Aimbot_AutoShootDelay, "ms", { 255,150,150 });
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_Aimbot_3>({ Block_Aimbot.x + 20,Block_Aimbot.y }, 9, "Auto shoot hit chance", 0, 100, UI_Legit_Aimbot_AutoShootHitChance, "%", { 255,150,150 });
-				GUI_VAR.GUI_Checkbox(Block_Aimbot, 10, "Humanized aimbot", UI_Legit_AdaptiveAimbot, { 200,200,150 });
+				GUI_VAR.GUI_Checkbox(Block_Aimbot, 10, "Adaptive aimbot", UI_Legit_AdaptiveAimbot, { 200,200,150 });
 				GUI_VAR.GUI_Slider<float, class CLASS_Block_Aimbot_4>(Block_Aimbot, 11, "Initial smooth", 0, 20, UI_Legit_AdaptiveAimbot_InitialSmooth, "", { 200,200,150 });
-				const auto Block_Armory = GUI_VAR.GUI_Block(150, 420, 490, "Weapons");
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 1, "Show fov", UI_Legit_Armory_ShowAimbotRange);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 2, "Nearest bone", UI_Legit_Armory_HitSiteParser);
+				const auto Block_Armory = GUI_VAR.GUI_Block(150, 420, 490, "Armory");
+				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 1, "Show range", UI_Legit_Armory_ShowAimbotRange);
+				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 2, "Hit site parser", UI_Legit_Armory_HitSiteParser);
 				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 3, "[PISTOL] Body aim (else head)", UI_Legit_Armory_BodyAim_PISTOL);
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_1>({ Block_Armory.x - 10,Block_Armory.y }, 4, "[PISTOL] Range", 0, 100, UI_Legit_Armory_Range_PISTOL, "%");
 				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_2>({ Block_Armory.x - 10,Block_Armory.y }, 5, "[PISTOL] Smooth", 0, 40, UI_Legit_Armory_Smooth_PISTOL);
@@ -911,10 +918,10 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Checkbox({ Block_MagnetAim.x + 20,Block_MagnetAim.y }, 2, "Only aim headline", UI_Legit_MagnetAim_OnlyHeadLine);
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_MagnetAim_1>(Block_MagnetAim, 3, "Range", 0, 100, UI_Legit_MagnetAim_Range, "%");
 				GUI_VAR.GUI_Slider<float, class CLASS_Block_MagnetAim_2>(Block_MagnetAim, 4, "Smooth", 0, 10, UI_Legit_MagnetAim_Smooth);
-				const auto Block_Standalone = GUI_VAR.GUI_Block(580, 750, 130, "Soft recoil");
-				GUI_VAR.GUI_Checkbox(Block_Standalone, 1, "Enabled", UI_Legit_Standalone);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Standalone_1>(Block_Standalone, 2, "Start bullet", 1, 15, UI_Legit_Standalone_StartBullet);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Standalone_2>(Block_Standalone, 3, "Sensitive", 0, 100, UI_Legit_Standalone_Sensitivity, "%");
+				const auto Block_Backtracking = GUI_VAR.GUI_Block(580, 750, 130, "Back tracking");
+				GUI_VAR.GUI_Checkbox(Block_Backtracking, 1, "Enabled", UI_Legit_Backtracking);
+				GUI_VAR.GUI_Slider<int, class CLASS_Block_Backtracking_1>(Block_Backtracking, 2, "Minimum time", 0, 500, UI_Legit_Backtracking_MinimumTime, "ms");
+				GUI_VAR.GUI_Slider<int, class CLASS_Block_Backtracking_2>(Block_Backtracking, 3, "Maximum time", UI_Legit_Backtracking_MinimumTime, 1000, UI_Legit_Backtracking_MaximumTime, "ms");
 				GUI_VAR.GUI_Tips(Block_Aimbot, 1, "Help you quickly aim at the target.");
 				GUI_VAR.GUI_Tips({ Block_Aimbot.x + 10,Block_Aimbot.y }, 5, "Prefer Ragebot.", 0, { 255,150,150 });
 				GUI_VAR.GUI_Tips({ Block_Aimbot.x + 20,Block_Aimbot.y }, 9, "Chance of hitting the target. (Affects shooting speed)", 0, { 255,150,150 });
@@ -924,7 +931,7 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Tips({ Block_RemoveRecoil.x + 10,Block_RemoveRecoil.y }, 2, "Operations that only return landscape.");
 				GUI_VAR.GUI_Tips({ Block_RemoveRecoil.x + 10,Block_RemoveRecoil.y }, 4, "Corresponding game sensitivity value.");
 				GUI_VAR.GUI_Tips(Block_MagnetAim, 1, "Slow aiming without triggering key conditions.");
-				GUI_VAR.GUI_Tips(Block_Standalone, 1, "Humanizes the recoil of main rifles.");
+				GUI_VAR.GUI_Tips(Block_Backtracking, 1, "Take advantage of network latency to have a bigger hitbox.");
 				GUI_WindowSize = { 1010,940 };
 			}
 			else if (UI_Panel == 1)//Visual
@@ -1019,14 +1026,14 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Button(Block_Resolution, 5, "1280 * 960", Reslution_960, 83); if (Reslution_960)Window::Set_Resolution(1280, 960);
 				const auto Block_CloudPreset = GUI_VAR.GUI_Block(580, 240, 180, "Cloud preset");
 				static BOOL Load_CloudPreset; static int SelectedCloudPreset = 0; GUI_VAR.GUI_Button(Block_CloudPreset, 1, "Load preset", Load_CloudPreset, 80);
-				GUI_VAR.GUI_List<class CLASS_Block_CloudPreset_1>(Block_CloudPreset, 2, { "Legit","Skilled","Pro","Cheater" }, SelectedCloudPreset);
+				GUI_VAR.GUI_List<class CLASS_Block_CloudPreset_1>(Block_CloudPreset, 2, { "Legit","Rage","Legit - no visual","Robot" }, SelectedCloudPreset);
 				if (Load_CloudPreset)//加载Github上的云预设
 				{
 					const auto Preset_ID = SelectedCloudPreset;//防止套用的预设套写变量
 					if (SelectedCloudPreset == 0)LoadCloudPreset("Legit");
-					else if (SelectedCloudPreset == 1)LoadCloudPreset("Skilled");
-					else if (SelectedCloudPreset == 2)LoadCloudPreset("Pro");
-					else if (SelectedCloudPreset == 3)LoadCloudPreset("Cheater");
+					else if (SelectedCloudPreset == 1)LoadCloudPreset("Rage");
+					else if (SelectedCloudPreset == 2)LoadCloudPreset("Legit No Visual");
+					else if (SelectedCloudPreset == 3)LoadCloudPreset("Robot");
 					SelectedCloudPreset = 0;//归位选择
 				}
 				const auto Block_Spoof = GUI_VAR.GUI_Block(580, 440, 400, "Spoof");
@@ -1170,14 +1177,14 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 			else if (UI_Panel == 4)//Setting
 			{
 				const auto Block_About = GUI_VAR.GUI_Block(150, 30, 160, "About");
-				GUI_VAR.GUI_Text(Block_About, 1, "Shitware", GUI_IO.GUIColor);
+				GUI_VAR.GUI_Text(Block_About, 1, "Pastehook", GUI_IO.GUIColor);
 				GUI_VAR.GUI_Text({ Block_About.x + 47,Block_About.y }, 1, "for Counter-Strike 2", { 100,100,100 });
 				GUI_VAR.GUI_Text(Block_About, 2, "Version: " + Variable::Float_Precision(Rensen_Version), { 100,100,100 });
 				GUI_VAR.GUI_Text(Block_About, 3, "Release date: " + Rensen_ReleaseDate, { 100,100,100 });
-				GUI_VAR.GUI_Text(Block_About, 4, "Author: https://www.dfg.com.br/user/no_sht/listings", { 100,100,100 });
+				GUI_VAR.GUI_Text(Block_About, 4, "Author: nety.com", { 100,100,100 });
 				static BOOL OpenGithubURL; GUI_VAR.GUI_Button_Small({ Block_About.x + 10,Block_About.y }, 4, OpenGithubURL);
-				if (OpenGithubURL)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开作者Github主题页面
-				GUI_VAR.GUI_Tips({ Block_About.x + 10,Block_About.y }, 1, "No ban record!", 0, GUI_IO.GUIColor);
+				if (OpenGithubURL)System::Open_Website("nety.com");//打开作者Github主题页面
+				GUI_VAR.GUI_Tips({ Block_About.x + 10,Block_About.y }, 1, "No ban record so far in 2020!!!", 0, GUI_IO.GUIColor);
 				const auto Block_Menu = GUI_VAR.GUI_Block(150, 210, 310, "Menu");
 				GUI_VAR.GUI_Text(Block_Menu, 1, "Menu key");
 				GUI_VAR.GUI_KeySelector<class CLASS_Block_Menu_1>(Block_Menu, 1, UI_Setting_MenuKey);
@@ -1192,23 +1199,33 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				else GUI_VAR.GUI_Button(Block_Menu, 6, "Start CS", StartCS, 85);
 				if (StartCS && CS2_MEM.Get_ProcessHWND() == 0)if (CS2_MEM.Get_ProcessHWND() == 0)System::Open_Website("steam://rungameid/730");//启动CS
 				if (QuitCS && CS2_MEM.Get_ProcessHWND() != 0)Window::Kill_Window(CS2_MEM.Get_ProcessHWND());//关闭CS
-				static BOOL GithubRepositories; GUI_VAR.GUI_Button(Block_Menu, 7, "Store repositories", GithubRepositories, 60);
-				if (GithubRepositories)System::Open_Website("https://www.dfg.com.br/user/no_sht/listings");//打开Github项目地址
+				static BOOL GithubRepositories; GUI_VAR.GUI_Button(Block_Menu, 7, "Github repositories", GithubRepositories, 60);
+				if (GithubRepositories)System::Open_Website("nety.com");//打开Github项目地址
 				static BOOL RestartMenu; GUI_VAR.GUI_Button(Block_Menu, 8, "Restart menu", RestartMenu, 75);
-				if (RestartMenu) { GUI_VAR.Window_SetTitle("Shitware - Restarting"); System::Self_Restart(); }//重启菜单
+				if (RestartMenu) { GUI_VAR.Window_SetTitle("Rensen - Restarting"); System::Self_Restart(); }//重启菜单
 				static BOOL UnloadMenu; GUI_VAR.GUI_Button(Block_Menu, 9, "Unload", UnloadMenu, 95);
 				if (UnloadMenu)exit(0);//关闭菜单
 				const auto Block_Presets = GUI_VAR.GUI_Block(580, 30, 490, "Local presets", 320);
-				static int SelectedPresetID = 0; static vector<string> FileList = System::Traversal_FindFile(Preset_Folder + "\\*", ".cfg", true, "UTT"); static string CreatePresetName; static BOOL Create, Load, Save, Delete;
+				static int SelectedPresetID = 0; static vector<string> FileList = System::Traversal_FindFile(GetPresetFolder() + "\\*", ".cfg", true, "UTT"); static string CreatePresetName; static BOOL Create, Load, Save, Delete;
 				GUI_VAR.GUI_List<class CLASS_Block_Presets_1>(Block_Presets, 1, FileList, SelectedPresetID, 11);
 				GUI_VAR.GUI_Button(Block_Presets, 11, "Load", Load, 95); if (Load && SelectedPresetID != -1)LoadPreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
 				GUI_VAR.GUI_Button(Block_Presets, 12, "Save", Save, 95); if (Save && SelectedPresetID != -1)SavePreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
 				GUI_VAR.GUI_InputText<class CLASS_Block_Presets_2>(Block_Presets, 13, CreatePresetName, "Create preset name");
 				GUI_VAR.GUI_Button(Block_Presets, 14, "Create", Create, 90); if (Create) { CreatePreset(CreatePresetName); CreatePresetName = ""; }
 				GUI_VAR.GUI_Button(Block_Presets, 15, "Delete", Delete, 92); if (Delete && SelectedPresetID != -1)DeletePreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
-				if (Create || Load || Save || Delete)FileList = System::Traversal_FindFile(Preset_Folder + "\\*", ".cfg", true, "UTT");//刷新文件列表
+				if (Create || Load || Save || Delete)FileList = System::Traversal_FindFile(GetPresetFolder() + "\\*", ".cfg", true, "UTT");//刷新文件列表
 				GUI_VAR.GUI_Tips({ Block_Presets.x + 10,Block_Presets.y }, 1, "Customize and save your presets.");
 				GUI_WindowSize = { 930,550 };
+			}
+			else if (UI_Panel == 5)//Attach
+			{
+				const auto Block_Size = GUI_VAR.Window_GetSize().y - 60;
+				const auto Block_A = GUI_VAR.GUI_Block(150, 30, Block_Size, "Block_A");
+				//A区块控件代码区域
+				for (int i = 1; i <= Debug_Control_Var::Checkbox_Quantity; ++i)GUI_VAR.GUI_Checkbox(Block_A, i, "Checkbox " + to_string(i), Debug_Control_Var::Checkbox_Value[i]);
+				const auto Block_B = GUI_VAR.GUI_Block(580, 30, Block_Size, "Block_B");
+				//B区块控件代码区域
+				GUI_WindowSize = { 1010,900 };
 			}
 			GUI_VAR.Draw_GUI(Debug_Control_Var::Checkbox_2);//最终绘制GUI画板
 			if (UI_Misc_SavePerformance)Sleep(5);//节省电脑占用性能
@@ -1218,9 +1235,9 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 void Thread_Misc() noexcept//杂项线程 (一些菜单事件处理和杂项功能)
 {
 	System::Log("Load Thread: Thread_Misc()");
-	Window::Windows Window_Watermark; Window_Watermark.Create_RenderBlock_Alpha(Window::Get_Resolution().x, 50, "Shitware - Watermark");//创建水印透明窗口
+	Window::Windows Window_Watermark; Window_Watermark.Create_RenderBlock_Alpha(Window::Get_Resolution().x, 50, "Rensen - Watermark");//创建水印透明窗口
 	Window::Render Window_Watermark_Render; Window_Watermark_Render.CreatePaint(Window_Watermark.Get_HWND(), 0, 0, Window::Get_Resolution().x, 50);//创建水印绘制画板
-	Window::Windows Window_NightMode; Window_NightMode.Create_RenderBlock(Window::Get_Resolution().x, Window::Get_Resolution().y, "Shitware - NightMode");//夜晚模式窗口
+	Window::Windows Window_NightMode; Window_NightMode.Create_RenderBlock(Window::Get_Resolution().x, Window::Get_Resolution().y, "Rensen - NightMode");//夜晚模式窗口
 	Window_Watermark.Show_Window();//将水印修改为最前端绘制覆盖窗口
 	ReLoad(true);//刷新CS2_SDK内存数据 (快速初始化)
 	while (true)
@@ -1244,8 +1261,8 @@ void Thread_Misc() noexcept//杂项线程 (一些菜单事件处理和杂项功�
 				Window_Watermark.Set_WindowTitle(System::Rand_String(10));//随机水印窗口标题
 				static string WaterMark_String = "";
 				short WaterMark_String_Size = strlen(WaterMark_String.c_str()) * 4.85;
-				if (!CS2_HWND)WaterMark_String = "Shitware | CS not found | " + System::Get_UserName() + " | " + System::Time_String();
-				else { WaterMark_String = "Shitware | " + Advanced::LocalPlayer_Name() + " | " + System::Time_String(); WaterMark_String_Size = strlen(WaterMark_String.c_str()) * 5.2; }
+				if (!CS2_HWND)WaterMark_String = "Pastehook | CS not found | " + System::Get_UserName() + " | " + System::Time_String();
+				else { WaterMark_String = "Pastehook | " + Advanced::LocalPlayer_Name() + " | " + System::Time_String(); WaterMark_String_Size = strlen(WaterMark_String.c_str()) * 5.2; }
 				const Variable::Vector2 Watermark_Pos = { Window::Get_Resolution().x - WaterMark_String_Size - 10,10 };
 				Window_Watermark_Render.Render_SolidRect(0, 0, 9999, 9999, { 0,0,0 });
 				Window_Watermark_Render.RenderA_SolidRect(Watermark_Pos.x, Watermark_Pos.y, WaterMark_String_Size, 15, { 1,1,1,130 });
@@ -1497,163 +1514,81 @@ void Thread_Funtion_BunnyHop() noexcept//功能线程: 连跳
 		else Sleep(50);
 	}
 }
-void Thread_Funtion_Aimbot() noexcept //功能线程: 瞄准机器人
+void Thread_Funtion_Aimbot() noexcept//功能线程: 瞄准机器人
 {
 	System::Log("Load Thread: Thread_Funtion_Aimbot()");
 	while (true)
 	{
 		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Legit_Aimbot && (!UI_Legit_Aimbot_Key || System::Get_Key(UI_Legit_Aimbot_Key)))
 		{
-			System::Sleep_ns(1000); //比Sleep更快的函数为了更加自然平滑
-			static short Aim_Range, Aim_Parts;
-			static float Aim_Smooth; //瞄准范围,瞄准部位,瞄准平滑度
-			const auto LocalPlayer_ActiveWeapon_ID = Global_LocalPlayer.ActiveWeapon(); //本地人物手持武器ID
-			const auto LocalPlayer_ActiveWeapon_Type = Global_LocalPlayer.ActiveWeapon(true); //本地人物手持武器类型
-
-			// Lista de IDs de armas a serem excluídas do sistema de remoção de recuo
-			const std::vector<int> ExcludedWeapons = {
-				1,  // Deagle
-				2,  // Dual Berettas
-				4,  // Glock
-				30, // Tec9
-				31, // Taser
-				32, // P2000
-				36, // P250
-				61, // USP
-				63, // CZ75
-				64  // Revolver
-			};
-
-			if (LocalPlayer_ActiveWeapon_Type == 1) //手枪
+			System::Sleep_ns(1000);//比Sleep更快的函数为了更加自然平滑
+			static short Aim_Range, Aim_Parts; static float Aim_Smooth;//瞄准范围,瞄准部位,瞄准平滑度
+			const auto LocalPlayer_ActiveWeapon_ID = Global_LocalPlayer.ActiveWeapon();//本地人物手持武器ID
+			const auto LocalPlayer_ActiveWeapon_Type = Global_LocalPlayer.ActiveWeapon(true);//本地人物手持武器类型
+			if (LocalPlayer_ActiveWeapon_Type == 1)//手枪
 			{
-				if (UI_Legit_Armory_BodyAim_PISTOL) Aim_Parts = 3; else Aim_Parts = 6;
+				if (UI_Legit_Armory_BodyAim_PISTOL)Aim_Parts = 3; else Aim_Parts = 6;
 				Aim_Range = UI_Legit_Armory_Range_PISTOL / 3;
 				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_PISTOL;
 			}
-			else if (LocalPlayer_ActiveWeapon_Type == 2) //步枪
+			else if (LocalPlayer_ActiveWeapon_Type == 2)//步枪
 			{
-				if (UI_Legit_Armory_BodyAim_RIFLE) Aim_Parts = 3; else Aim_Parts = 6;
+				if (UI_Legit_Armory_BodyAim_RIFLE)Aim_Parts = 3; else Aim_Parts = 6;
 				Aim_Range = UI_Legit_Armory_Range_RIFLE / 3;
 				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_RIFLE;
 			}
-			else if (LocalPlayer_ActiveWeapon_Type == 3) //狙击枪
+			else if (LocalPlayer_ActiveWeapon_Type == 3)//狙击枪
 			{
-				if (UI_Legit_Armory_BodyAim_SNIPER) Aim_Parts = 3; else Aim_Parts = 6;
+				if (UI_Legit_Armory_BodyAim_SNIPER)Aim_Parts = 3; else Aim_Parts = 6;
 				Aim_Range = UI_Legit_Armory_Range_SNIPER / 3;
 				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_SNIPER;
 			}
-			else if (LocalPlayer_ActiveWeapon_Type == 4) //霰弹枪
+			else if (LocalPlayer_ActiveWeapon_Type == 4)//霰弹枪
 			{
-				if (UI_Legit_Armory_BodyAim_SHOTGUN) Aim_Parts = 3; else Aim_Parts = 6;
+				if (UI_Legit_Armory_BodyAim_SHOTGUN)Aim_Parts = 3; else Aim_Parts = 6;
 				Aim_Range = UI_Legit_Armory_Range_SHOTGUN / 3;
 				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_SHOTGUN;
 			}
-			else continue; //如果是无效的武器则重新来过 (刀,道具,电击枪等)
-
-			if (!Aim_Range) continue; //范围为0时则重新来过
-			if (!Aim_Smooth) Aim_Smooth = 1; //最小平滑度
-
+			else continue;//如果是无效的武器则重新来过 (刀,道具,电击枪等)
+			if (!Aim_Range)continue;//范围为0时则重新来过
+			if (!Aim_Smooth)Aim_Smooth = 1;//最小平滑度
 			const auto Local_AimPunchAngle = Global_LocalPlayer.AimPunchAngle();
 			Aim_Range = Aim_Range + -Local_AimPunchAngle.x;
-
-			static Variable::Vector3 Recoil_Angle; //后坐力角度
-			if (UI_Legit_Aimbot_RemoveRecoil && std::find(ExcludedWeapons.begin(), ExcludedWeapons.end(), LocalPlayer_ActiveWeapon_ID) == ExcludedWeapons.end())
+			static Variable::Vector3 Recoil_Angle;//后坐力角度
+			if (UI_Legit_Aimbot_RemoveRecoil)Recoil_Angle = Base::ViewAngles() + Local_AimPunchAngle * 2;//移除后坐力
+			else Recoil_Angle = Base::ViewAngles();
+			const auto CrosshairId = Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn());//瞄准的实体Pawn
+			struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; }; AimPlayerFOV EligiblePlayers = {};//记录变量和变量结构体 (寻找与准星距离最近的人物)
+			for (short i = 0; i < Global_ValidClassID.size(); ++i)//遍历所有实体 找到符合条件的人物Pawn 并且找到2D准星距离最近的实体
 			{
-				Recoil_Angle = Base::ViewAngles() + Local_AimPunchAngle * 2; //移除后坐力
-			}
-			else
-			{
-				Recoil_Angle = Base::ViewAngles();
-			}
-
-			const auto CrosshairId = Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn()); //瞄准的实体Pawn
-			struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; };
-			AimPlayerFOV EligiblePlayers = {}; //记录变量和变量结构体 (寻找与准星距离最近的人物)
-
-			for (short i = 0; i < Global_ValidClassID.size(); ++i) //遍历所有实体 找到符合条件的人物Pawn 并且找到2D准星距离最近的实体
-			{
-				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]); //遍历的人物Pawn
-				if (!Advanced::Check_Enemy(PlayerPawn) || (UI_Legit_Aimbot_TriggerOnAim && !CrosshairId) || (UI_Legit_Aimbot_JudgingWall && !PlayerPawn.Spotted())) continue;
-				if (LocalPlayer_ActiveWeapon_Type == 4 && Variable::Coor_Dis_3D(PlayerPawn.Origin(), Global_LocalPlayer.Origin()) > UI_Legit_Armory_TriggerDistance_SHOTGUN) continue; //霰弹枪最大触发范围
-				if ((LocalPlayer_ActiveWeapon_Type == 1 && UI_Legit_Armory_BodyAim_PISTOL) ||
-					(LocalPlayer_ActiveWeapon_Type == 2 && UI_Legit_Armory_BodyAim_RIFLE) ||
-					(LocalPlayer_ActiveWeapon_Type == 3 && UI_Legit_Armory_BodyAim_SNIPER) ||
-					(LocalPlayer_ActiveWeapon_Type == 4 && UI_Legit_Armory_BodyAim_SHOTGUN))
+				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
+				if (!Advanced::Check_Enemy(PlayerPawn) || (UI_Legit_Aimbot_TriggerOnAim && !CrosshairId) || (UI_Legit_Aimbot_JudgingWall && !PlayerPawn.Spotted()))continue;
+				if (LocalPlayer_ActiveWeapon_Type == 4 && Variable::Coor_Dis_3D(PlayerPawn.Origin(), Global_LocalPlayer.Origin()) > UI_Legit_Armory_TriggerDistance_SHOTGUN)continue;//霰弹枪最大触发范围
+				if (UI_Legit_Armory_HitSiteParser && PlayerPawn.Health() <= Global_LocalPlayer.ActiveWeaponDamage())Aim_Parts = 4;//部位解析器
+				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Parts), Recoil_Angle);//最终瞄准角度
+				const auto Fov = hypot(NeedAngle.x, NeedAngle.y);//准星与角度的距离
+				if (Fov < EligiblePlayers.MinFov)//范围判断
 				{
-					Aim_Parts = 3; // Se "Body Aim" estiver ativado, sempre mira no torso
-				}
-				else
-				{
-					if (UI_Legit_Armory_HitSiteParser)
-					{
-						const auto HeadFOV = hypot(
-							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Recoil_Angle).x,
-							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Recoil_Angle).y
-						);
-						const auto NeckFOV = hypot(
-							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(5), Recoil_Angle).x,
-							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(5), Recoil_Angle).y
-						);
-						const auto ChestFOV = hypot(
-							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(3), Recoil_Angle).x,
-							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(3), Recoil_Angle).y
-						);
-						const auto PelvisFOV = hypot(
-							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(0), Recoil_Angle).x,
-							Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(0), Recoil_Angle).y
-						);
-
-						if (HeadFOV < NeckFOV && HeadFOV < ChestFOV && HeadFOV < PelvisFOV)
-							Aim_Parts = 6; // Head
-						else if (NeckFOV < ChestFOV && NeckFOV < PelvisFOV)
-							Aim_Parts = 5; // Neck
-						else if (ChestFOV < PelvisFOV)
-							Aim_Parts = 3; // Chest
-						else
-							Aim_Parts = 0; // Pelvis
-					}
-					else
-					{
-						Aim_Parts = 6; // Se Hit Parser estiver desativado, sempre mira na cabeça
-					}
-				}
-				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Parts), Recoil_Angle); //最终瞄准角度
-				const auto Fov = hypot(NeedAngle.x, NeedAngle.y); //准星与角度的距离
-
-				if (Fov < EligiblePlayers.MinFov) //范围判断
-				{
-					EligiblePlayers.Pawn = PlayerPawn; //刷新PlayerPawn
-					EligiblePlayers.MinFov = Fov; //刷新最短Fov
-					EligiblePlayers.AimAngle = NeedAngle; //刷新最终瞄准的Angle
+					EligiblePlayers.Pawn = PlayerPawn;//刷新PlayerPawn
+					EligiblePlayers.MinFov = Fov;//刷新最短Fov
+					EligiblePlayers.AimAngle = NeedAngle;//刷新最终瞄准的Angle
 				}
 			}
-
-			if (EligiblePlayers.MinFov <= Aim_Range) //如果玩家在范围内则触发
+			if (EligiblePlayers.MinFov <= Aim_Range)//如果玩家在范围内则触发
 			{
-				// Verificação para garantir que o Triggerbot não esteja disparando
-				if (IsTriggerbotShooting)
+				if (Global_LocalPlayer.Scoped() && LocalPlayer_ActiveWeapon_Type == 3)System::Mouse_Move(-EligiblePlayers.AimAngle.y * Aim_Smooth * 3.5, EligiblePlayers.AimAngle.x * Aim_Smooth * 3.5, UI_Misc_MouseLowSensitivity);//加快开镜时灵敏度
+				else System::Mouse_Move(-EligiblePlayers.AimAngle.y * Aim_Smooth, EligiblePlayers.AimAngle.x * Aim_Smooth, UI_Misc_MouseLowSensitivity);
+				if (UI_Legit_Aimbot_AutoShoot && CrosshairId && (!UI_Legit_Aimbot_AutoStop || LocalPlayer_ActiveWeapon_Type == 4 || Advanced::Stop_Move()))//AutoShoot & CrosshairId & AutoStop
 				{
-					Sleep(1);
-					continue; // Impede o Aimbot de agir enquanto o Triggerbot estiver disparando
-				}
-
-				if (Global_LocalPlayer.Scoped() && LocalPlayer_ActiveWeapon_Type == 3)
-					System::Mouse_Move(-EligiblePlayers.AimAngle.y * Aim_Smooth * 3.5, EligiblePlayers.AimAngle.x * Aim_Smooth * 3.5, UI_Misc_MouseLowSensitivity); //加快开镜时灵敏度
-				else
-					System::Mouse_Move(-EligiblePlayers.AimAngle.y * Aim_Smooth, EligiblePlayers.AimAngle.x * Aim_Smooth, UI_Misc_MouseLowSensitivity);
-
-				if (UI_Legit_Aimbot_AutoShoot && CrosshairId && (!UI_Legit_Aimbot_AutoStop || LocalPlayer_ActiveWeapon_Type == 4 || Advanced::Stop_Move())) //AutoShoot & CrosshairId & AutoStop
-				{
-					if (UI_Legit_Aimbot_AutoScope && LocalPlayer_ActiveWeapon_Type == 3 && !Global_LocalPlayer.Scoped()) { ExecuteCommand("+attack2"); Sleep(1); ExecuteCommand("-attack2"); Sleep(100); } //手持狙击枪时自动开镜
-					if (EligiblePlayers.MinFov <= (101 - UI_Legit_Aimbot_AutoShootHitChance) * 0.01 || UI_Legit_Aimbot_AutoShootHitChance == 0) //最大边缘点 (为了更加精准的瞄准到目标部位)
+					if (UI_Legit_Aimbot_AutoScope && LocalPlayer_ActiveWeapon_Type == 3 && !Global_LocalPlayer.Scoped()) { ExecuteCommand("+attack2"); Sleep(1); ExecuteCommand("-attack2"); Sleep(100); }//手持狙击枪时自动开镜
+					if (EligiblePlayers.MinFov <= (101 - UI_Legit_Aimbot_AutoShootHitChance) * 0.01 || UI_Legit_Aimbot_AutoShootHitChance == 0)//最大边缘点 (为了更加精准的瞄准到目标部位)
 					{
-						ExecuteCommand("+attack"); //开枪!!!
-						if (LocalPlayer_ActiveWeapon_ID == 64) Sleep(250); //R8左轮无法开枪修复 (无法跟紧目标点)
+						ExecuteCommand("+attack");//开枪!!!
+						if (LocalPlayer_ActiveWeapon_ID == 64)Sleep(250);//R8左轮无法开枪修复 (无法跟紧目标点)
 						else Sleep(1);
 						ExecuteCommand("-attack");
-						if (LocalPlayer_ActiveWeapon_Type == 3 && LocalPlayer_ActiveWeapon_ID != 11 && LocalPlayer_ActiveWeapon_ID != 38)
-							System::Key_Con(UI_Legit_Aimbot_Key); //单发狙击枪射击后释放触发按键
-						if (Global_LocalPlayer.ShotsFired() != 0) Sleep(UI_Legit_Aimbot_AutoShootDelay); //自动开枪延迟 (缓解后座力)
+						if (LocalPlayer_ActiveWeapon_Type == 3 && LocalPlayer_ActiveWeapon_ID != 11 && LocalPlayer_ActiveWeapon_ID != 38)System::Key_Con(UI_Legit_Aimbot_Key);//单发狙击枪射击后释放触发按键
+						if (Global_LocalPlayer.ShotsFired() != 0)Sleep(UI_Legit_Aimbot_AutoShootDelay);//自动开枪延迟 (缓解后座力)
 					}
 				}
 			}
@@ -1668,335 +1603,122 @@ void Thread_Funtion_AdaptiveAimbot() noexcept//功能线程: 生物瞄准机器�
 	{
 		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Legit_AdaptiveAimbot && System::Get_Key(VK_LBUTTON) && Global_LocalPlayer.ActiveWeapon(true) == 2)//当CS窗口在最前端 && 本地人物活着 && 按键按下 && 步枪
 		{
-			// Verificação para garantir que o Triggerbot não esteja disparando
-			if (IsTriggerbotShooting)
+			System::Sleep_ns(1500);//比Sleep更快的函数为了更加自然平滑
+			float Aim_Range = 5; int Aim_Bone = 6; const auto PunchAngle = Global_LocalPlayer.AimPunchAngle();
+			if (abs(PunchAngle.x) * 2 >= Aim_Range)Aim_Range = abs(PunchAngle.x) * 1.5;//计算开枪之后附加后坐力的范围
+			struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; }; AimPlayerFOV Target = {};//记录变量和变量结构体 (寻找与准星距离最近的人物)
+			for (short i = 0; i < Global_ValidClassID.size(); ++i)//遍历所有实体 找到符合条件的人物Pawn 并且找到2D准星距离最近的实体
 			{
-				Sleep(1);
-				continue; // Impede o Aimbot de agir enquanto o Triggerbot estiver disparando
-			}
-
-			System::Sleep_ns(1500); // 比Sleep更快的函数为了更加自然平滑
-			float Aim_Range = 5;
-			int Aim_Bone = 6;
-			const auto PunchAngle = Global_LocalPlayer.AimPunchAngle();
-			if (abs(PunchAngle.x) * 2 >= Aim_Range)
-				Aim_Range = abs(PunchAngle.x) * 1.5; // 计算开枪之后附加后坐力的范围
-
-			struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; };
-			AimPlayerFOV Target = {}; // 记录变量和变量结构体 (寻找与准星距离最近的人物)
-
-			for (short i = 0; i < Global_ValidClassID.size(); ++i) //遍历所有实体 找到符合条件的人物Pawn 并且找到2D准星距离最近的实体
-			{
-				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]); //遍历的人物Pawn
-				if (!Advanced::Check_Enemy(PlayerPawn) || !PlayerPawn.Spotted())
-					continue; // 当没有被发现则重新来过
-				const auto HeadAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Base::ViewAngles() + PunchAngle * 2);
-				const auto NeckAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(5), Base::ViewAngles() + PunchAngle * 2);
-				const auto ChestAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(3), Base::ViewAngles() + PunchAngle * 2);
-				const auto PelvisAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(0), Base::ViewAngles() + PunchAngle * 2);
-
-				std::vector<std::pair<int, float>> BoneFOVs = {
-					{6, hypot(HeadAngle.x, HeadAngle.y)},
-					{5, hypot(NeckAngle.x, NeckAngle.y)},
-					{3, hypot(ChestAngle.x, ChestAngle.y)},
-					{0, hypot(PelvisAngle.x, PelvisAngle.y)}
-				};
-
-				// Ordena para pegar o osso mais próximo do FOV
-				std::sort(BoneFOVs.begin(), BoneFOVs.end(), [](const auto& a, const auto& b) {
-					return a.second < b.second;
-					});
-
-				Aim_Bone = BoneFOVs.front().first;
-				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Bone), Base::ViewAngles() + PunchAngle * 2);
-				if (BoneFOVs.front().second < Target.MinFov) // 范围判断
+				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
+				if (!Advanced::Check_Enemy(PlayerPawn) || !PlayerPawn.Spotted())continue;//当没有被发现则重新来过
+				if (PlayerPawn.Health() <= 50)Aim_Bone = 4;//低血时瞄准躯干 (降低爆头率)
+				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Bone), Base::ViewAngles() + PunchAngle * 2);//最终瞄准角度 (6: 头部)
+				const auto Fov = hypot(NeedAngle.x, NeedAngle.y);//圆圈范围计算
+				if (Fov < Target.MinFov)//范围判断
 				{
-					Target.Pawn = PlayerPawn; // 刷新PlayerPawn
-					Target.MinFov = BoneFOVs.front().second; // 刷新最短Fov
-					Target.AimAngle = NeedAngle; // 刷新最终瞄准的Angle
+					Target.Pawn = PlayerPawn;//刷新PlayerPawn
+					Target.MinFov = Fov;//刷新最短Fov
+					Target.AimAngle = NeedAngle;//刷新最终瞄准的Angle
 				}
 			}
-
-			if (Target.MinFov <= Aim_Range) // 如果玩家在范围内则触发
+			if (Target.MinFov <= Aim_Range)//如果玩家在范围内则触发
 			{
-				if (Global_LocalPlayer.ShotsFired() > 2 && Target.MinFov <= Aim_Range / 2 && Target.Pawn.MoveSpeed() <= 130)
-					System::Mouse_Move(-Target.AimAngle.y * 30, Target.AimAngle.x * 30, UI_Misc_MouseLowSensitivity);
-				else
-					System::Mouse_Move(-Target.AimAngle.y * (20 - UI_Legit_AdaptiveAimbot_InitialSmooth), Target.AimAngle.x * (20 - UI_Legit_AdaptiveAimbot_InitialSmooth), UI_Misc_MouseLowSensitivity);
+				if (Global_LocalPlayer.ShotsFired() > 2 && Target.MinFov <= Aim_Range / 2 && Target.Pawn.MoveSpeed() <= 130)System::Mouse_Move(-Target.AimAngle.y * 30, Target.AimAngle.x * 30, UI_Misc_MouseLowSensitivity);
+				else System::Mouse_Move(-Target.AimAngle.y * (20 - UI_Legit_AdaptiveAimbot_InitialSmooth), Target.AimAngle.x * (20 - UI_Legit_AdaptiveAimbot_InitialSmooth), UI_Misc_MouseLowSensitivity);
 			}
-
-			if (System::Get_ValueChangeState<int, class AdaptiveAimbot_KilledDelay_>(Advanced::Local_RoundDamage(true)))
-				Sleep(300); //击杀目标后睡眠线程 防止以极快的速度击杀围在一起的目标们
+			if (System::Get_ValueChangeState<int, class AdaptiveAimbot_KilledDelay_>(Advanced::Local_RoundDamage(true)))Sleep(300);//击杀目标后睡眠线程 防止以极快的速度击杀围在一起的目标们
 		}
-		else
-			Sleep(10);
+		else Sleep(10);
 	}
 }
-void Thread_Funtion_Triggerbot() noexcept
+void Thread_Funtion_Triggerbot() noexcept//功能线程: 自动扳机
 {
 	System::Log("Load Thread: Thread_Funtion_Triggerbot()");
 	while (true)
 	{
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Legit_Triggerbot && System::Get_Key(UI_Legit_Triggerbot_Key))
+		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && UI_Legit_Triggerbot && System::Get_Key(UI_Legit_Triggerbot_Key))//当CS窗口在最前端 && 本地人物活着 && 按键按下
 		{
-			System::Sleep_ns(500);
-			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();
-			const auto Local_ActiveWeaponType = Global_LocalPlayer.ActiveWeapon(true);
-			if (Local_ActiveWeaponID == 42 || Local_ActiveWeaponID == 59 || Local_ActiveWeaponID >= 500 || Local_ActiveWeaponID == 31) continue;
-			else if (((UI_Legit_Triggerbot_AnyTarget && Global_LocalPlayer.IDEntIndex() != -1) || Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn())) && (!UI_Legit_Triggerbot_ShootWhenAccurate || Local_ActiveWeaponType == 1 || Local_ActiveWeaponType == 4 || Advanced::Stop_Move(50, true)))
+			System::Sleep_ns(500);//纳秒级延时
+			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();//本地人物手持武器序号
+			const auto Local_ActiveWeaponType = Global_LocalPlayer.ActiveWeapon(true);//本地人物手持武器类型
+			if (Local_ActiveWeaponID == 42 || Local_ActiveWeaponID == 59 || Local_ActiveWeaponID >= 500 || Local_ActiveWeaponID == 31)continue;//过滤特殊武器 (刀子, 电击枪)
+			else if (((UI_Legit_Triggerbot_AnyTarget && Global_LocalPlayer.IDEntIndex() != -1) || Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn())) && (!UI_Legit_Triggerbot_ShootWhenAccurate || Local_ActiveWeaponType == 1 || Local_ActiveWeaponType == 4 || Advanced::Stop_Move(50, false)))
 			{
-				IsTriggerbotActive = true; // Ativa o flag do triggerbot
-				IsTriggerbotShooting = true; // Indica que o triggerbot está disparando
-				ExecuteCommand("+attack");
-				if (Local_ActiveWeaponType == 1 || Local_ActiveWeaponType == 3 || Local_ActiveWeaponType == 4) Sleep(1);
+				ExecuteCommand("+attack");//Shoot!! 开枪!!
+				if (Local_ActiveWeaponType == 1 || Local_ActiveWeaponType == 3 || Local_ActiveWeaponType == 4)Sleep(1);//单发强不进行长按处理
 				else Sleep(UI_Legit_Triggerbot_ShootDuration);
 				ExecuteCommand("-attack");
-				IsTriggerbotActive = false; // Desativa o flag do triggerbot
-				IsTriggerbotShooting = false; // Indica que o triggerbot não está disparando
 				Sleep(UI_Legit_Triggerbot_ShootDelay);
 			}
 		}
 		else Sleep(50);
 	}
 }
-void Thread_Funtion_AssisteAim() noexcept //功能线程: 精确瞄准
+void Thread_Funtion_AssisteAim() noexcept//功能线程: 精确瞄准
 {
 	System::Log("Load Thread: Thread_Funtion_AssisteAim()");
 	while (true)
 	{
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health()) //当CS窗口在最前端 && 本地人物活着
+		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health())//当CS窗口在最前端 && 本地人物活着
 		{
-			Sleep(1); //降低CPU利用率
-			if (UI_Legit_PreciseAim) //精确瞄准
+			Sleep(1);//降低CPU利用率
+			if (UI_Legit_PreciseAim)//精确瞄准
 			{
-				const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon(); //本地人物手持武器ID
-				if (Local_ActiveWeaponID == 42 || Local_ActiveWeaponID == 59 || Local_ActiveWeaponID >= 500)
-				{
-					ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_DefaultSensitivity));
-					Sleep(10);
-					continue; //过滤特殊武器 (刀类)
-				}
-				if (Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn()))
-					ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_EnableSensitivity));
-				else
-					ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_DefaultSensitivity));
+				const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();//本地人物手持武器ID
+				if (Local_ActiveWeaponID == 42 || Local_ActiveWeaponID == 59 || Local_ActiveWeaponID >= 500) { ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_DefaultSensitivity)); Sleep(10); continue; }//过滤特殊武器 (刀类)
+				if (Advanced::Check_Enemy(Global_LocalPlayer.IDEntIndex_Pawn()))ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_EnableSensitivity));
+				else ExecuteCommand("m_yaw " + to_string(UI_Legit_PreciseAim_DefaultSensitivity));
 			}
-
-			if (UI_Legit_MagnetAim && !System::Get_Key(VK_LBUTTON) && Global_LocalPlayer.ActiveWeapon() != 0 && Global_LocalPlayer.ActiveWeapon(true) != 3 && Global_LocalPlayer.MoveSpeed() <= 150) //磁吸瞄准
+			if (UI_Legit_MagnetAim && !System::Get_Key(VK_LBUTTON) && Global_LocalPlayer.ActiveWeapon() != 0 && Global_LocalPlayer.ActiveWeapon(true) != 3 && Global_LocalPlayer.MoveSpeed() <= 150)//磁吸瞄准
 			{
-				const float Aim_Range = UI_Legit_MagnetAim_Range / 5; //瞄准范围
-				struct AimPlayerFOV
+				const float Aim_Range = UI_Legit_MagnetAim_Range / 5;//瞄准范围
+				struct AimPlayerFOV { Base::PlayerPawn Pawn = 0; float MinFov = 1337; Variable::Vector3 AimAngle = {}; }; AimPlayerFOV EligiblePlayers = {};//记录变量和变量结构体 (寻找与准星距离最近的人物)
+				for (short i = 0; i < Global_ValidClassID.size(); ++i)//人物ID遍历
 				{
-					Base::PlayerPawn Pawn = 0;
-					float MinFov = 1337;
-					Variable::Vector3 AimAngle = {};
-				};
-				AimPlayerFOV EligiblePlayers = {}; //记录变量和变量结构体 (寻找与准星距离最近的人物)
-				for (short i = 0; i < Global_ValidClassID.size(); ++i) //人物ID遍历
-				{
-					const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]); //遍历的人物Pawn
-					if (!Advanced::Check_Enemy(PlayerPawn)) continue; // 判断是否敌人
-
-					// Check adicional para Spotted (caso "Judging Wall" esteja ativado)
-					if (UI_Legit_Aimbot_JudgingWall && !PlayerPawn.Spotted()) continue;
-
+					const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
+					if (!Advanced::Check_Enemy(PlayerPawn) || !PlayerPawn.Spotted())continue;//简单的实体判断
 					const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(6), Base::ViewAngles());
 					const auto Fov = hypot(NeedAngle.x, NeedAngle.y);
-					if (Fov < EligiblePlayers.MinFov) //范围判断
+					if (Fov < EligiblePlayers.MinFov)//范围判断
 					{
-						EligiblePlayers.Pawn = PlayerPawn; //刷新PlayerPawn
-						EligiblePlayers.MinFov = Fov;      //刷新最短Fov
-						EligiblePlayers.AimAngle = NeedAngle; //刷新最终瞄准的Angle
+						EligiblePlayers.Pawn = PlayerPawn;//刷新PlayerPawn
+						EligiblePlayers.MinFov = Fov;//刷新最短Fov
+						EligiblePlayers.AimAngle = NeedAngle;//刷新最终瞄准的Angle
 					}
 				}
-
-				if (UI_Legit_MagnetAim_OnlyHeadLine) EligiblePlayers.AimAngle.y = 0; //只处理Y坐标 (只磁吸爆头线)
-				if (EligiblePlayers.MinFov <= Aim_Range && EligiblePlayers.MinFov >= 0.5)
-					System::Mouse_Move(-EligiblePlayers.AimAngle.y * (10 - UI_Legit_MagnetAim_Smooth), EligiblePlayers.AimAngle.x * (10 - UI_Legit_MagnetAim_Smooth) * 0.7, UI_Misc_MouseLowSensitivity);
+				if (UI_Legit_MagnetAim_OnlyHeadLine)EligiblePlayers.AimAngle.y = 0;//只处理Y坐标 (只磁吸爆头线)
+				if (EligiblePlayers.MinFov <= Aim_Range && EligiblePlayers.MinFov >= 0.5)System::Mouse_Move(-EligiblePlayers.AimAngle.y * (10 - UI_Legit_MagnetAim_Smooth), EligiblePlayers.AimAngle.x * (10 - UI_Legit_MagnetAim_Smooth) * 0.7, UI_Misc_MouseLowSensitivity);
 			}
 		}
-		else
-			Sleep(50);
+		else Sleep(50);
 	}
 }
-void Thread_Funtion_RemoveRecoil() noexcept
+void Thread_Funtion_RemoveRecoil() noexcept//功能线程: 移除后坐力
 {
 	System::Log("Load Thread: Thread_Funtion_RemoveRecoil()");
-	static int BulletCount = 0;
-
 	while (true)
 	{
 		static auto OldPunch = Variable::Vector3{};
-		if (CS2_HWND && Global_IsShowWindow && UI_Legit_RemoveRecoil && Global_LocalPlayer.Health() && System::Get_Key(VK_LBUTTON))
+		if (CS2_HWND && Global_IsShowWindow && UI_Legit_RemoveRecoil && Global_LocalPlayer.Health() && System::Get_Key(VK_LBUTTON))//移除后坐力
 		{
-			if (IsTriggerbotActive)
+			if (Global_LocalPlayer.ShotsFired() >= UI_Legit_RemoveRecoil_StartBullet)//判断开出的子弹数
 			{
-				Sleep(1);
-				continue;
+				const auto AimPunch = Global_LocalPlayer.AimPunchAngle();//原始后坐力角度
+				auto NewPunch = Variable::Vector3{ OldPunch.x - AimPunch.x * 2,OldPunch.y - AimPunch.y * 2,0 };//计算后坐力之后的角度
+				if (UI_Legit_RemoveRecoil_HorizontalRepair)NewPunch.x = 0;//只处理X坐标
+				System::Mouse_Move(-NewPunch.y * UI_Legit_RemoveRecoil_Sensitive, NewPunch.x * (UI_Legit_RemoveRecoil_Sensitive / 2 + 5));//修改计算后坐力之后的角度
+				OldPunch = AimPunch * 2;
 			}
-
-			const std::vector<int> ExcludedWeapons = { 1, 2, 4, 30, 31, 32, 36, 61, 63, 64 };
-			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();
-
-			if (UI_Legit_Standalone)
-			{
-				if (Local_ActiveWeaponID == 7 || Local_ActiveWeaponID == 16 || Local_ActiveWeaponID == 60)
-				{
-					Sleep(10);
-					continue;
-				}
-			}
-			else
-			{
-				if (std::find(ExcludedWeapons.begin(), ExcludedWeapons.end(), Local_ActiveWeaponID) != ExcludedWeapons.end())
-				{
-					Sleep(10);
-					continue;
-				}
-			}
-
-			if (UI_Legit_Standalone && std::find(ExcludedWeapons.begin(), ExcludedWeapons.end(), Local_ActiveWeaponID) != ExcludedWeapons.end())
-			{
-				Sleep(10);
-				continue;
-			}
-
-			// Resetar contador ao iniciar o disparo
-			if (System::Get_Key(VK_LBUTTON))
-			{
-				BulletCount = 0;
-			}
-			BulletCount++;
-
-			// Aplicar remoção de recoil apenas após o número mínimo de balas disparadas
-			if (BulletCount < UI_Legit_RemoveRecoil_StartBullet)
-			{
-				Sleep(1);
-				continue;
-			}
-
-			const auto AimPunch = Global_LocalPlayer.AimPunchAngle();
-			auto NewPunch = Variable::Vector3{ OldPunch.x - AimPunch.x * 2, OldPunch.y - AimPunch.y * 2, 0 };
-
-			if (UI_Legit_RemoveRecoil_HorizontalRepair)
-				NewPunch.x = 0;
-
-			System::Mouse_Move(
-				-NewPunch.y * UI_Legit_RemoveRecoil_Sensitive,
-				NewPunch.x * (UI_Legit_RemoveRecoil_Sensitive / 2 + 5)
-			);
-
-			OldPunch = AimPunch * 2;
+			else OldPunch = { 0,0,0 };
 			Sleep(1);
 		}
-		else
-		{
-			OldPunch = { 0, 0, 0 };
-			BulletCount = 0;
-			Sleep(50);
-		}
-	}
-}
-void Thread_Funtion_Standalone() noexcept
-{
-	System::Log("Load Thread: Thread_Funtion_Standalone()");
-	while (true)
-	{
-		static auto OldPunch = Variable::Vector3{};
-		if (CS2_HWND && Global_IsShowWindow && Global_LocalPlayer.Health() && System::Get_Key(VK_LBUTTON))
-		{
-			// Ignora standalone enquanto o triggerbot está ativo
-			if (IsTriggerbotActive)
-			{
-				Sleep(1);
-				continue;
-			}
-
-			// Verificar se a checkbox do standalone está marcada
-			if (!UI_Legit_Standalone)  // Se a checkbox não estiver marcada, pula a execução
-			{
-				Sleep(10);
-				continue;
-			}
-
-			const auto Local_ActiveWeaponID = Global_LocalPlayer.ActiveWeapon();
-			const std::vector<int> StandaloneWeapons = { 7, 16, 60 };  // AK47, M4A4, M4A1-S
-
-			// Se a arma for AK47, M4A4 ou M4A1-S, aplique o padrão de recoil standalone
-			if (std::find(StandaloneWeapons.begin(), StandaloneWeapons.end(), Local_ActiveWeaponID) != StandaloneWeapons.end())
-			{
-				int RawX[31], RawY[31];  // Arrays de movimento de recoil
-				// Padrão de recoil da AK-47
-				if (Local_ActiveWeaponID == 7)
-				{
-					int AK47_RawX[31] = { 0, 0, 0, 0, 0, 40, 40, -40, -90, -30, -20, -20, -20, 0, 80, 30, 50, 50, 30, 20, -20, -10, 0, 10, 0, -40, -90, -70, -30, -10, 0 };
-					int AK47_RawY[31] = { 0, 40, 40, 80, 80, 80, 80,  20, -10, 20, 0, 0, -10, 20, 30, -10, 20, 0, -10, -10, 10, 10, 10, 0, 10, -10, 0, -50, 10, -10, 0 };
-					std::copy(std::begin(AK47_RawX), std::end(AK47_RawX), RawX);
-					std::copy(std::begin(AK47_RawY), std::end(AK47_RawY), RawY);
-				}
-				// Padrão de recoil da M4A4
-				else if (Local_ActiveWeaponID == 16)
-				{
-					int M4A4_RawX[31] = { 0, 0, 0, 0, 0, -10, 10, 20, 20, 30, -40, -40, -40, -40, -40, -50, 0, 30, 30, 20, 60, 30, 40, 20, 10, 0, 0, 10, 10, 0, 0 };
-					int M4A4_RawY[31] = { 0, 10, 30, 40, 40, 60, 60, 60, 30, 20, 20,  20, 0, -10, 0, 10, 10, 0, 0, 0, 10, 0, 0, 10, 0, 10, 10, 0, 0, 0, 0 };
-					std::copy(std::begin(M4A4_RawX), std::end(M4A4_RawX), RawX);
-					std::copy(std::begin(M4A4_RawY), std::end(M4A4_RawY), RawY);
-				}
-				// Padrão de recoil da M4A1-S
-				else if (Local_ActiveWeaponID == 60)
-				{
-					int M4A1S_RawX[31] = { 0, 0, 0, 0 , 0, -10, 0, 30, 10, 30, -10, -40, -20, -30, -20, -20, -30, -30, 10, -10, 0, 20, 40, 60, 10, 0 };
-					int M4A1S_RawY[31] = { 0, 10, 10, 30 , 30, 40, 40, 50, 10, 10, 10, 20, 0, -10, 0, 0, -10, 0, 10, 0, 10, 0, 0, 20, 0, 0 };
-					std::copy(std::begin(M4A1S_RawX), std::end(M4A1S_RawX), RawX);
-					std::copy(std::begin(M4A1S_RawY), std::end(M4A1S_RawY), RawY);
-				}
-
-				static int BulletCount = 0;
-
-				// Resetar contador ao iniciar o disparo
-				if (System::Get_Key(VK_LBUTTON))
-				{
-					BulletCount = 0;
-				}
-				BulletCount++;
-
-				// Aplicar padrão de recoil apenas após o número mínimo de balas disparadas
-				if (BulletCount < UI_Legit_Standalone_StartBullet)
-				{
-					Sleep(1);
-					continue;
-				}
-
-				// Calcular o índice com base no número de tiros
-				int ShotIndex = Global_LocalPlayer.ShotsFired() % 31; // Usamos diretamente o tamanho do array
-
-				// Pega a sensibilidade da interface
-				float sensitivity = static_cast<float>(UI_Legit_Standalone_Sensitivity) / 1000.0f;
-
-				// Ajuste do movimento do mouse com base no recoil
-				int moveX = RawX[ShotIndex] * sensitivity;
-				int moveY = RawY[ShotIndex] * sensitivity;
-
-				// Movimenta o mouse
-				System::Mouse_Move(moveX, moveY);
-
-				Sleep(1);
-			}
-			else
-			{
-				Sleep(10);
-			}
-		}
-		else
-		{
-			Sleep(50);
-		}
+		else { OldPunch = { 0,0,0 }; Sleep(50); }
 	}
 }
 void Thread_Funtion_PlayerESP() noexcept//功能线程: 透视和一些视觉杂项
 {
 	System::Log("Load Thread: Thread_Funtion_PlayerESP()");
-	Window::Windows RenderWindow; RenderWindow.Create_RenderBlock_Alpha(Window::Get_Resolution().x, Window::Get_Resolution().y, "Shitware - PlayerESP");//创建绘制覆盖窗口
+	Window::Windows RenderWindow; RenderWindow.Create_RenderBlock_Alpha(Window::Get_Resolution().x, Window::Get_Resolution().y, "Rensen - PlayerESP");//创建绘制覆盖窗口
 	Window::Render ESP_Paint; ESP_Paint.CreatePaint(RenderWindow.Get_HWND(), 0, 0, Window::Get_Resolution().x, Window::Get_Resolution().y);//创建内存画板
 	while (true)
 	{
@@ -2211,7 +1933,7 @@ void Thread_Funtion_PlayerESP() noexcept//功能线程: 透视和一些视觉杂
 void Thread_Funtion_EntityESP() noexcept//功能线程: 实体透视
 {
 	System::Log("Load Thread: Thread_Funtion_EntityESP()");
-	Window::Windows RenderWindow; RenderWindow.Create_RenderBlock(Window::Get_Resolution().x, Window::Get_Resolution().y, "Shitware - EntityESP");
+	Window::Windows RenderWindow; RenderWindow.Create_RenderBlock(Window::Get_Resolution().x, Window::Get_Resolution().y, "Rensen - EntityESP");
 	Window::Render WEP_Render; WEP_Render.CreatePaint(RenderWindow.Get_HWND(), 0, 0, Window::Get_Resolution().x, Window::Get_Resolution().y);
 	while (true)
 	{
@@ -2292,7 +2014,7 @@ void Thread_Funtion_EntityESP() noexcept//功能线程: 实体透视
 void Thread_Funtion_Radar() noexcept//功能线程: 雷达
 {
 	System::Log("Load Thread: Thread_Funtion_Radar()");
-	Window::Windows Radar_Window; Radar_Window.Create_Window(UI_Visual_Radar_Size, UI_Visual_Radar_Size + 15, "Shitware - Radar", true);//创建雷达绘制窗口
+	Window::Windows Radar_Window; Radar_Window.Create_Window(UI_Visual_Radar_Size, UI_Visual_Radar_Size + 15, "Rensen - Radar", true);//创建雷达绘制窗口
 	Window::Render Radar_Paint; Radar_Paint.CreatePaint(Radar_Window.Get_HWND(), 0, 0, 800, 800 + 15);//创建绘制画板
 	Radar_Window.Set_WindowPos(UI_Visual_Radar_Pos.x, UI_Visual_Radar_Pos.y);//套用预设的雷达位置
 	while (true)
@@ -2332,8 +2054,8 @@ void Thread_Funtion_Radar() noexcept//功能线程: 雷达
 				}
 				Radar_Paint.Render_GradientRect(0, 0, Radar_Window.Get_WindowSize().x, 14, GUI_IO.GUIColor / 2, GUI_IO.GUIColor / 4, false);
 				Radar_Paint.Render_GradientRect(0, 14, Radar_Window.Get_WindowSize().x, 1, GUI_IO.GUIColor / 4, GUI_IO.GUIColor / 2, false);//标题背景
-				Radar_Paint.Render_String(3 + 1, 1 + 1, "Shitware - Radar", "Small Fonts", 12, { 0,0,1 }, false);//标题阴影
-				Radar_Paint.Render_String(3, 1, "Shitware - Radar", "Small Fonts", 12, GUI_IO.GUIColor.Min_Bri(150), false);//标题
+				Radar_Paint.Render_String(3 + 1, 1 + 1, "Rensen - Radar", "Small Fonts", 12, { 0,0,1 }, false);//标题阴影
+				Radar_Paint.Render_String(3, 1, "Rensen - Radar", "Small Fonts", 12, GUI_IO.GUIColor.Min_Bri(150), false);//标题
 				Radar_Paint.DrawPaint();//最终绘制雷达画板
 			}
 		}
@@ -2412,7 +2134,7 @@ int main() noexcept//主线程 (加载多线程, 一些杂项功能)
 {
 	System::Anti_Debugger("Debugging is disabled after compilation is completed.", true);//防止逆向破解
 	//----------------------------------------------------------------------------------------------------------------------------------
-	if (FindWindow(0, L"Shitware - Menu")) { Window::Message_Box("Shitware Error", "The program is already running.", MB_ICONSTOP); exit(0); }//防止多开程序
+	if (FindWindow(0, L"Pastehook - Menu")) { Window::Message_Box("Pastehook Error", "The program is already running.", MB_ICONSTOP); exit(0); }//防止多开程序
 	//----------------------------------------------------------------------------------------------------------------------------------
 	System::URL_READ UserID_READ = { "Cache_UserID" }; BOOL Attest = false;//认证变量
 	if (UserID_READ.StoreMem("https://github.com/shitwareofc/shitware/blob/main/Cloud%20Files/UserID.uid?raw=true"))//Github读取有效用户ID
@@ -2421,23 +2143,23 @@ int main() noexcept//主线程 (加载多线程, 一些杂项功能)
 		UserID_READ.Release();//释放缓存
 	}
 	Attest = true;//公开版直接通过验证
-	if (!Attest) { Window::Message_Box("Shitware Attest - " + System::Get_UserName(), "Your identity cannot be passed.\n\nUnable to access from Chinese IP.\n\nAuthor: https://www.dfg.com.br/user/no_sht/listings\n", MB_ICONSTOP); exit(0); }//未被认证则直接退出
+	if (!Attest) { Window::Message_Box("Rensen Attest - " + System::Get_UserName(), "Your identity cannot be passed.\n\nUnable to access from Chinese IP.\n\nAuthor: https://github.com/Coslly\n", MB_ICONSTOP); exit(0); }//未被认证则直接退出
 	//----------------------------------------------------------------------------------------------------------------------------------
 	System::URL_READ AutoUpdate = { "Cache_Update" };//自动更新系统 (中国IP用户需要挂梯子)
-	if (AutoUpdate.StoreMem("https://github.com/shitwareofc/shitware/blob/main/Main.cpp?raw=true"))//版本号更新检查
+	if (AutoUpdate.StoreMem("https://github.com/Coslly/Rensen/blob/main/Rensen/Rensen/Main.cpp?raw=true"))//版本号更新检查
 	{
 		auto Version = AutoUpdate.Read(3); Version.erase(0, 29); Version.erase(Version.size() - 15, 999);//擦除无用字符只获取版本号
 		AutoUpdate.Release();//释放缓存
-		if (Variable::string_float_(Version) > Rensen_Version && Window::Message_Box("Shitware Update", "A new version has been released.\nYou will be updated to Ver[" + Version + "]\n\nDo you want to update now?\nIt may take tens of seconds.\n", MB_YESNO | MB_ICONASTERISK) == 6)
+		if (Variable::string_float_(Version) > Rensen_Version && Window::Message_Box("Rensen Update", "A new version has been released.\nYou will be updated to Ver[" + Version + "]\n\nDo you want to update now?\nIt may take tens of seconds.\n", MB_YESNO | MB_ICONASTERISK) == 6)
 		{
-			System::Open_Website("Shitware"); exit(0);//打开下载链接并且关闭程序
+			System::Open_Website("Pastehook"); exit(0);//打开下载链接并且关闭程序
 		}
 	}
 	//----------------------------------------------------------------------------------------------------------------------------------
 	Window::Hide_ConsoleWindow();//隐藏控制台
 	System::Set_ProcessPriority();//将Rensen程序优先级设置为高 (防止崩溃)
 	Window::Initialization_ConsoleWindow();//初始化控制台窗口 (初始化窗口大小, 清除字符)
-	printf("Welcome to Shitware for Counter-Strike 2 cheat.\nThe Shitware project is a version converted from EXTERNAL.\nBy: NoSHIT\nThe following information returned is debugging information.\n");//作者留言
+	printf("Welcome to Pastehook for Counter-Strike 2 cheat.\nThe Rensen project is a version converted from FreeCS.\nNo team author By: Pastehook\nThe following information returned is debugging information.\n");//作者留言
 	System::Log("Load Thread: main()");
 	thread Thread_Menu_ = thread(Thread_Menu); Sleep(30);
 	thread Thread_Misc_ = thread(Thread_Misc); Sleep(30);
@@ -2447,13 +2169,12 @@ int main() noexcept//主线程 (加载多线程, 一些杂项功能)
 	thread Thread_Funtion_Triggerbot_ = thread(Thread_Funtion_Triggerbot); Sleep(30);
 	thread Thread_Funtion_AssisteAim_ = thread(Thread_Funtion_AssisteAim); Sleep(30);
 	thread Thread_Funtion_RemoveRecoil_ = thread(Thread_Funtion_RemoveRecoil); Sleep(30);
-	thread Thread_Funtion_Standalone_ = thread(Thread_Funtion_Standalone); Sleep(30);
 	thread Thread_Funtion_PlayerESP_ = thread(Thread_Funtion_PlayerESP); Sleep(30);
 	thread Thread_Funtion_EntityESP_ = thread(Thread_Funtion_EntityESP); Sleep(30);
 	thread Thread_Funtion_Radar_ = thread(Thread_Funtion_Radar); Sleep(30);
 	thread Thread_Funtion_Sonar_ = thread(Thread_Funtion_Sonar); Sleep(30);
 	thread Thread_Funtion_WalkingBot_ = thread(Thread_Funtion_WalkingBot); Sleep(30);
-	if (!System::Judge_File(Preset_Folder))System::Create_Folder(Preset_Folder);//没有参数文件夹时创建参数文件夹
+	if (!System::Judge_File(GetPresetFolder()))System::Create_Folder(GetPresetFolder());//没有参数文件夹时创建参数文件夹
 	while (true)//菜单动画和关闭快捷键
 	{
 		if (!Attest)exit(0);//过滤未认证用户
