@@ -1,17 +1,17 @@
 //2025-04-21 15:36
 
 //dwLocalPlayerController
-0x1A6E9C0
+0x1A50AD0
 //dwLocalPlayerPawn
-0x1874050
+0x18560D0
 //dwEntityList
-0x1A1F730
+0x1A020A8
 //dwViewAngles
-0x1A933C0
+0x1A75620
 //dwViewMatrix
-0x1A89130
+0x1A6B230
 //m_hPlayerPawn
-0x814
+0x824
 //m_iTeamNum
 0x3E3
 //m_ArmorValue
