@@ -4,18 +4,10 @@ const float Rensen_Version = 4.94;//程序版本
 const string Rensen_ReleaseDate = "KR[2024-09-19 21:20]";//程序发布日期时间
 namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 {
-	EasyGUI::EasyGUI GUI_VAR; EasyGUI::EasyGUI_IO GUI_IO; BOOL Menu_Open = true;
-	std::string GetPresetFolder() {
-		std::string folder = std::string(getenv("USERPROFILE")) + "\\Documents\\Rensen\\Configs";
-		CreateDirectoryA((std::string(getenv("USERPROFILE")) + "\\Documents\\Rensen").c_str(), NULL);
-		CreateDirectoryA(folder.c_str(), NULL);
-		return folder;
-	}
-	// Alteração: Definir o caminho para Documents\Rensen\Configs\
-	string Preset_Folder = GetPresetFolder();
+	EasyGUI::EasyGUI GUI_VAR; EasyGUI::EasyGUI_IO GUI_IO; BOOL Menu_Open = true; string Preset_Folder = "Configs";//菜单初始化变量
 	//----------------------------------------------------------------------------------------------
 	BOOL UI_Legit_Aimbot = 0;
-	int UI_Legit_Aimbot_Key = 0;
+	BOOL UI_Legit_Aimbot_Key = 0;
 	BOOL UI_Legit_Aimbot_JudgingWall = 0;
 	BOOL UI_Legit_Aimbot_RemoveRecoil = 0;
 	BOOL UI_Legit_Aimbot_TriggerOnAim = 0;
@@ -25,13 +17,13 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 	BOOL UI_Legit_AdaptiveAimbot = 0;
 	BOOL UI_Legit_Armory_ShowAimbotRange = 0;
 	BOOL UI_Legit_Armory_BodyAim_PISTOL = 0;
-	int UI_Legit_Armory_Range_PISTOL = 0;
+	BOOL UI_Legit_Armory_Range_PISTOL = 0;
 	float UI_Legit_Armory_Smooth_PISTOL = 0;
 	BOOL UI_Legit_Armory_BodyAim_RIFLE = 0;
-	int UI_Legit_Armory_Range_RIFLE = 0;
+	BOOL UI_Legit_Armory_Range_RIFLE = 0;
 	float UI_Legit_Armory_Smooth_RIFLE = 0;
 	BOOL UI_Legit_Armory_BodyAim_SNIPER = 0;
-	int UI_Legit_Armory_Range_SNIPER = 0;
+	BOOL UI_Legit_Armory_Range_SNIPER = 0;
 	float UI_Legit_Armory_Smooth_SNIPER = 0;
 	BOOL UI_Legit_Triggerbot = 0;
 	int UI_Legit_Triggerbot_Key = 0;
@@ -119,6 +111,13 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 	BOOL UI_Misc_ByPassOBS = 0;
 	BOOL UI_Misc_SavePerformance = 0;
 	BOOL UI_Legit_Aimbot_AutoScope = 0;
+	
+	// Add bone selection variables for each weapon type
+	int UI_Legit_Armory_BoneSelect_PISTOL = 0;  // 0 = Head by default
+	int UI_Legit_Armory_BoneSelect_RIFLE = 0;   // 0 = Head by default
+	int UI_Legit_Armory_BoneSelect_SNIPER = 0;  // 0 = Head by default
+	int UI_Legit_Armory_BoneSelect_SHOTGUN = 0; // 0 = Head by default
+	
 	BOOL UI_Misc_NightMode = 0;
 	int UI_Misc_NightMode_Alpha = 100;
 	BOOL UI_Spoof_LearnPlayer = 0;
@@ -140,6 +139,9 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 	int UI_Legit_Armory_Range_SHOTGUN = 0;
 	float UI_Legit_Armory_Smooth_SHOTGUN = 0;
 	int UI_Legit_Armory_TriggerDistance_SHOTGUN = 100;
+	int UI_Legit_Armory_TriggerDistance_PISTOL = 100;
+	int UI_Legit_Armory_TriggerDistance_RIFLE = 100;
+	int UI_Legit_Armory_TriggerDistance_SNIPER = 100;
 	int UI_Legit_MagnetAim_Range = 0;
 	int UI_Legit_Backtracking_MinimumTime = 0;
 	int UI_Legit_RemoveRecoil_Sensitive = 0;
@@ -151,11 +153,11 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 	BOOL UI_Misc_MouseLowSensitivity = 0;
 	BOOL UI_Spoof_StepOnHead = 0;
 	//----------------------------------------------------------------------------------------------
-	void CreatePreset(string FileName = "") noexcept { if (FileName != "")System::Create_File(GetPresetFolder() + "\\" + FileName + ".cfg"); }//创建特定预设
-	void DeletePreset(string FileName = "") noexcept { System::Delete_File(GetPresetFolder() + "\\" + FileName + ".cfg"); }//删除特定预设
+	void CreatePreset(string FileName = "") noexcept { if (FileName != "")System::Create_File(Preset_Folder + "\\" + FileName + ".cfg"); }//创建特定预设
+	void DeletePreset(string FileName = "") noexcept { System::Delete_File(Preset_Folder + "\\" + FileName + ".cfg"); }//删除特定预设
 	void SavePreset(string FileName = "") noexcept//保存特定预设
 	{
-		System::Set_File(GetPresetFolder() + "\\" + FileName + ".cfg",
+		System::Set_File(Preset_Folder + "\\" + FileName + ".cfg",
 			to_string(UI_Legit_Aimbot) + "\n" +
 			to_string(UI_Legit_Aimbot_Key) + "\n" +
 			to_string(UI_Legit_Aimbot_JudgingWall) + "\n" +
@@ -169,12 +171,19 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 			to_string(UI_Legit_Armory_BodyAim_PISTOL) + "\n" +
 			to_string(UI_Legit_Armory_Range_PISTOL) + "\n" +
 			to_string(UI_Legit_Armory_Smooth_PISTOL) + "\n" +
+			to_string(UI_Legit_Armory_TriggerDistance_PISTOL) + "\n" +
 			to_string(UI_Legit_Armory_BodyAim_RIFLE) + "\n" +
 			to_string(UI_Legit_Armory_Range_RIFLE) + "\n" +
 			to_string(UI_Legit_Armory_Smooth_RIFLE) + "\n" +
+			to_string(UI_Legit_Armory_TriggerDistance_RIFLE) + "\n" +
 			to_string(UI_Legit_Armory_BodyAim_SNIPER) + "\n" +
 			to_string(UI_Legit_Armory_Range_SNIPER) + "\n" +
 			to_string(UI_Legit_Armory_Smooth_SNIPER) + "\n" +
+			to_string(UI_Legit_Armory_TriggerDistance_SNIPER) + "\n" +
+			to_string(UI_Legit_Armory_BodyAim_SHOTGUN) + "\n" +
+			to_string(UI_Legit_Armory_Range_SHOTGUN) + "\n" +
+			to_string(UI_Legit_Armory_Smooth_SHOTGUN) + "\n" +
+			to_string(UI_Legit_Armory_TriggerDistance_SHOTGUN) + "\n" +
 			to_string(UI_Legit_Triggerbot) + "\n" +
 			to_string(UI_Legit_Triggerbot_Key) + "\n" +
 			to_string(UI_Legit_Triggerbot_AnyTarget) + "\n" +
@@ -287,10 +296,6 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 			to_string(UI_Misc_CursorESP_Key) + "\n" +
 			to_string(UI_Legit_Armory_HitSiteParser) + "\n" +
 			to_string(UI_Visual_ESP_DrawAlpha) + "\n" +
-			to_string(UI_Legit_Armory_BodyAim_SHOTGUN) + "\n" +
-			to_string(UI_Legit_Armory_Range_SHOTGUN) + "\n" +
-			to_string(UI_Legit_Armory_Smooth_SHOTGUN) + "\n" +
-			to_string(UI_Legit_Armory_TriggerDistance_SHOTGUN) + "\n" +
 			to_string(UI_Legit_MagnetAim_Range) + "\n" +
 			to_string(UI_Legit_Backtracking_MinimumTime) + "\n" +
 			to_string(UI_Legit_RemoveRecoil_Sensitive) + "\n" +
@@ -305,7 +310,15 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 	}
 	void LoadPreset(string FileName = "") noexcept//加载特定预设
 	{
-		FileName = GetPresetFolder() + "\\" + FileName + ".cfg"; if (System::Get_File(FileName, 1) == "")return;//不加载空配置
+		FileName = Preset_Folder + "\\" + FileName + ".cfg"; 
+		if (System::Get_File(FileName, 1) == "") return; //不加载空配置
+		
+		// Set default values for trigger distances
+		UI_Legit_Armory_TriggerDistance_PISTOL = 100;
+		UI_Legit_Armory_TriggerDistance_RIFLE = 100;
+		UI_Legit_Armory_TriggerDistance_SNIPER = 100;
+		UI_Legit_Armory_TriggerDistance_SHOTGUN = 100;
+		
 		UI_Legit_Aimbot = Variable::string_int_(System::Get_File(FileName, 1));
 		UI_Legit_Aimbot_Key = Variable::string_int_(System::Get_File(FileName, 2));
 		UI_Legit_Aimbot_JudgingWall = Variable::string_int_(System::Get_File(FileName, 3));
@@ -319,273 +332,136 @@ namespace Control_Var//套用到菜单的调试变量 (例如功能开关)
 		UI_Legit_Armory_BodyAim_PISTOL = Variable::string_int_(System::Get_File(FileName, 11));
 		UI_Legit_Armory_Range_PISTOL = Variable::string_int_(System::Get_File(FileName, 12));
 		UI_Legit_Armory_Smooth_PISTOL = Variable::string_float_(System::Get_File(FileName, 13));
-		UI_Legit_Armory_BodyAim_RIFLE = Variable::string_int_(System::Get_File(FileName, 14));
-		UI_Legit_Armory_Range_RIFLE = Variable::string_int_(System::Get_File(FileName, 15));
-		UI_Legit_Armory_Smooth_RIFLE = Variable::string_float_(System::Get_File(FileName, 16));
-		UI_Legit_Armory_BodyAim_SNIPER = Variable::string_int_(System::Get_File(FileName, 17));
-		UI_Legit_Armory_Range_SNIPER = Variable::string_int_(System::Get_File(FileName, 18));
-		UI_Legit_Armory_Smooth_SNIPER = Variable::string_float_(System::Get_File(FileName, 19));
-		UI_Legit_Triggerbot = Variable::string_int_(System::Get_File(FileName, 20));
-		UI_Legit_Triggerbot_Key = Variable::string_int_(System::Get_File(FileName, 21));
-		UI_Legit_Triggerbot_AnyTarget = Variable::string_int_(System::Get_File(FileName, 22));
-		UI_Legit_Triggerbot_ShootDelay = Variable::string_int_(System::Get_File(FileName, 23));
-		UI_Legit_Triggerbot_ShootDuration = Variable::string_int_(System::Get_File(FileName, 24));
-		UI_Legit_PreciseAim = Variable::string_int_(System::Get_File(FileName, 25));
-		UI_Legit_PreciseAim_DefaultSensitivity = Variable::string_float_(System::Get_File(FileName, 26));
-		UI_Legit_PreciseAim_EnableSensitivity = Variable::string_float_(System::Get_File(FileName, 27));
-		UI_Legit_RemoveRecoil = Variable::string_int_(System::Get_File(FileName, 28));
-		UI_Legit_RemoveRecoil_HorizontalRepair = Variable::string_int_(System::Get_File(FileName, 29));
-		UI_Legit_RemoveRecoil_StartBullet = Variable::string_int_(System::Get_File(FileName, 30));
-		UI_Legit_Backtracking = Variable::string_int_(System::Get_File(FileName, 31));
-		UI_Legit_Backtracking_MaximumTime = Variable::string_int_(System::Get_File(FileName, 32));
-		UI_Visual_ESP = Variable::string_int_(System::Get_File(FileName, 33));
-		UI_Visual_ESP_Key = Variable::string_int_(System::Get_File(FileName, 34));
-		UI_Visual_ESP_Box = Variable::string_int_(System::Get_File(FileName, 35));
-		UI_Visual_ESP_Health = Variable::string_int_(System::Get_File(FileName, 36));
-		UI_Visual_ESP_ActiveWeapon = Variable::string_int_(System::Get_File(FileName, 37));
-		UI_Visual_ESP_Line = Variable::string_int_(System::Get_File(FileName, 38));
-		UI_Visual_ESP_Skeleton = Variable::string_int_(System::Get_File(FileName, 39));
-		UI_Visual_ESP_HeadDot = Variable::string_int_(System::Get_File(FileName, 40));
-		UI_Visual_ESP_State = Variable::string_int_(System::Get_File(FileName, 41));
-		UI_Visual_ESP_Name = Variable::string_int_(System::Get_File(FileName, 42));
-		UI_Visual_ESP_Drops = Variable::string_int_(System::Get_File(FileName, 43));
-		UI_Visual_ESP_OutFOV = Variable::string_int_(System::Get_File(FileName, 44));
-		UI_Visual_ESP_OutFOV_Size = Variable::string_int_(System::Get_File(FileName, 45));
-		UI_Visual_ESP_OutFOV_Radius = Variable::string_int_(System::Get_File(FileName, 46));
-		UI_Visual_ESP_CustomColor = Variable::string_int_(System::Get_File(FileName, 47));
-		UI_Visual_ESP_CustomColor_Color = { Variable::string_int_(System::Get_File(FileName, 48)),Variable::string_int_(System::Get_File(FileName, 49)),Variable::string_int_(System::Get_File(FileName, 50)),Variable::string_int_(System::Get_File(FileName, 51)) };
-		UI_Visual_ESP_DrawDelay = Variable::string_int_(System::Get_File(FileName, 52));
-		UI_Visual_Radar = Variable::string_int_(System::Get_File(FileName, 53));
-		UI_Visual_Radar_FollowAngle = Variable::string_int_(System::Get_File(FileName, 54));
-		UI_Visual_Radar_Range = Variable::string_float_(System::Get_File(FileName, 55));
-		UI_Visual_Radar_Size = Variable::string_int_(System::Get_File(FileName, 56));
-		UI_Visual_Radar_Alpha = Variable::string_int_(System::Get_File(FileName, 57));
-		UI_Visual_Radar_Pos = { Variable::string_int_(System::Get_File(FileName, 58)), Variable::string_int_(System::Get_File(FileName, 59)) };
-		UI_Misc_BunnyHop = Variable::string_int_(System::Get_File(FileName, 60));
-		UI_Misc_HitSound = Variable::string_int_(System::Get_File(FileName, 61));
-		UI_Misc_HitSound_Tone = Variable::string_int_(System::Get_File(FileName, 62));
-		UI_Misc_HitSound_Length = Variable::string_int_(System::Get_File(FileName, 63));
-		UI_Visual_HitMark = Variable::string_int_(System::Get_File(FileName, 64));
-		UI_Visual_HitMark_Damage = Variable::string_int_(System::Get_File(FileName, 65));
-		UI_Visual_HitMark_Range = Variable::string_int_(System::Get_File(FileName, 66));
-		UI_Visual_HitMark_Length = Variable::string_int_(System::Get_File(FileName, 67));
-		UI_Misc_AutoKnife = Variable::string_int_(System::Get_File(FileName, 68));
-		UI_Misc_AutoTaser = Variable::string_int_(System::Get_File(FileName, 69));
-		UI_Misc_AutoKnife_Key = Variable::string_int_(System::Get_File(FileName, 70));
-		UI_Misc_AutoTaser_Key = Variable::string_int_(System::Get_File(FileName, 71));
-		UI_Misc_Watermark = Variable::string_int_(System::Get_File(FileName, 72));
-		UI_Misc_SniperCrosshair = Variable::string_int_(System::Get_File(FileName, 73));
-		UI_Misc_TeamCheck = Variable::string_int_(System::Get_File(FileName, 74));
-		UI_Misc_LockGameWindow = Variable::string_int_(System::Get_File(FileName, 75));
-		UI_Debug_ShowDebugWindow = Variable::string_int_(System::Get_File(FileName, 76));
-		UI_Misc_Sonar = Variable::string_int_(System::Get_File(FileName, 77));
-		UI_Misc_Sonar_Key = Variable::string_int_(System::Get_File(FileName, 78));
-		UI_Misc_Sonar_Range_Far = Variable::string_int_(System::Get_File(FileName, 79));
-		UI_Misc_Sonar_Range_Near = Variable::string_int_(System::Get_File(FileName, 80));
-		UI_Setting_MenuKey = Variable::string_int_(System::Get_File(FileName, 81));
-		UI_Setting_CustomColor = Variable::string_int_(System::Get_File(FileName, 82));
-		UI_Setting_MainColor = { Variable::string_int_(System::Get_File(FileName, 83)),Variable::string_int_(System::Get_File(FileName, 84)),Variable::string_int_(System::Get_File(FileName, 85)),Variable::string_int_(System::Get_File(FileName, 86)) };
-		UI_Visual_HitMark_Color = { Variable::string_int_(System::Get_File(FileName, 87)),Variable::string_int_(System::Get_File(FileName, 88)),Variable::string_int_(System::Get_File(FileName, 89)) };
-		UI_Visual_HitMark_Thickness = Variable::string_int_(System::Get_File(FileName, 90));
-		UI_Legit_Triggerbot_ShootWhenAccurate = Variable::string_int_(System::Get_File(FileName, 91));
-		UI_Misc_AntiAFKKick = Variable::string_int_(System::Get_File(FileName, 92));
-		UI_Legit_MagnetAim = Variable::string_int_(System::Get_File(FileName, 93));
-		UI_Legit_MagnetAim_Smooth = Variable::string_float_(System::Get_File(FileName, 94));
-		UI_Legit_AdaptiveAimbot_InitialSmooth = Variable::string_float_(System::Get_File(FileName, 95));
-		UI_Misc_SniperCrosshair_Size = Variable::string_int_(System::Get_File(FileName, 96));
-		UI_Spoof_Spoof = Variable::string_int_(System::Get_File(FileName, 97));
-		UI_Spoof_AimbotTeam = Variable::string_int_(System::Get_File(FileName, 98));
-		UI_Spoof_AimbotTeam_Key = Variable::string_int_(System::Get_File(FileName, 99));
-		UI_Spoof_AimbotTeam_Smooth = Variable::string_float_(System::Get_File(FileName, 100));
-		UI_Spoof_IncreaseRecoil = Variable::string_int_(System::Get_File(FileName, 101));
-		UI_Spoof_IncreaseRecoil_Value = Variable::string_int_(System::Get_File(FileName, 102));
-		UI_Spoof_DropC4 = Variable::string_int_(System::Get_File(FileName, 103));
-		UI_Spoof_FakeAntiAim = Variable::string_int_(System::Get_File(FileName, 104));
-		UI_Spoof_FakeAntiAim_Key = Variable::string_int_(System::Get_File(FileName, 105));
-		UI_Spoof_KillDropSniper = Variable::string_int_(System::Get_File(FileName, 106));
-		UI_Setting_MenuAnimation = Variable::string_float_(System::Get_File(FileName, 107));
-		UI_Visual_HitMark_KillEffect = Variable::string_int_(System::Get_File(FileName, 108));
-		UI_Visual_HitMark_KillEffect_Quantity = Variable::string_int_(System::Get_File(FileName, 109));
-		UI_Visual_HitMark_KillEffect_Range = Variable::string_int_(System::Get_File(FileName, 110));
-		UI_Visual_ESP_Skeleton_Thickness = Variable::string_int_(System::Get_File(FileName, 111));
-		UI_Misc_ByPassOBS = Variable::string_int_(System::Get_File(FileName, 112));
-		UI_Misc_SavePerformance = Variable::string_int_(System::Get_File(FileName, 113));
-		UI_Legit_Aimbot_AutoScope = Variable::string_int_(System::Get_File(FileName, 114));
-		UI_Misc_NightMode = Variable::string_int_(System::Get_File(FileName, 115));
-		UI_Misc_NightMode_Alpha = Variable::string_int_(System::Get_File(FileName, 116));
-		UI_Spoof_LearnPlayer = Variable::string_int_(System::Get_File(FileName, 117));
-		UI_Spoof_LearnPlayer_Key = Variable::string_int_(System::Get_File(FileName, 118));
-		UI_Misc_AutoPeek = Variable::string_int_(System::Get_File(FileName, 119));
-		UI_Misc_AutoPeek_Key = Variable::string_int_(System::Get_File(FileName, 120));
-		UI_Spoof_FakeRageBot = Variable::string_int_(System::Get_File(FileName, 121));
-		UI_Spoof_FakeRageBot_Key = Variable::string_int_(System::Get_File(FileName, 122));
-		UI_Spoof_FakeRageBot_Target = Variable::string_int_(System::Get_File(FileName, 123));
-		UI_Misc_QuickStop = Variable::string_int_(System::Get_File(FileName, 124));
-		UI_Setting_MenuFont = System::Get_File(FileName, 125);
-		UI_Setting_MenuFontSize = Variable::string_int_(System::Get_File(FileName, 126));
-		UI_Misc_AutoKillCeasefire = Variable::string_int_(System::Get_File(FileName, 127));
-		UI_Misc_CursorESP = Variable::string_int_(System::Get_File(FileName, 128));
-		UI_Misc_CursorESP_Key = Variable::string_int_(System::Get_File(FileName, 129));
-		UI_Legit_Armory_HitSiteParser = Variable::string_int_(System::Get_File(FileName, 130));
-		UI_Visual_ESP_DrawAlpha = Variable::string_int_(System::Get_File(FileName, 131));
-		UI_Legit_Armory_BodyAim_SHOTGUN = Variable::string_int_(System::Get_File(FileName, 132));
-		UI_Legit_Armory_Range_SHOTGUN = Variable::string_int_(System::Get_File(FileName, 133));
-		UI_Legit_Armory_Smooth_SHOTGUN = Variable::string_float_(System::Get_File(FileName, 134));
-		UI_Legit_Armory_TriggerDistance_SHOTGUN = Variable::string_int_(System::Get_File(FileName, 135));
-		UI_Legit_MagnetAim_Range = Variable::string_int_(System::Get_File(FileName, 136));
-		UI_Legit_Backtracking_MinimumTime = Variable::string_int_(System::Get_File(FileName, 137));
-		UI_Legit_RemoveRecoil_Sensitive = Variable::string_int_(System::Get_File(FileName, 138));
-		UI_Visual_HitMark_CustomColor = Variable::string_int_(System::Get_File(FileName, 139));
-		UI_Legit_Aimbot_AutoShootHitChance = Variable::string_int_(System::Get_File(FileName, 140));
-		UI_Legit_MagnetAim_OnlyHeadLine = Variable::string_int_(System::Get_File(FileName, 141));
-		UI_Misc_WalkingBot = Variable::string_int_(System::Get_File(FileName, 142));
-		UI_Misc_WalkingBot_Map = Variable::string_int_(System::Get_File(FileName, 143));
-		UI_Misc_MouseLowSensitivity = Variable::string_int_(System::Get_File(FileName, 144));
-		UI_Spoof_StepOnHead = Variable::string_int_(System::Get_File(FileName, 145));
+		UI_Legit_Armory_TriggerDistance_PISTOL = Variable::string_int_(System::Get_File(FileName, 14));
+		UI_Legit_Armory_BodyAim_RIFLE = Variable::string_int_(System::Get_File(FileName, 15));
+		UI_Legit_Armory_Range_RIFLE = Variable::string_int_(System::Get_File(FileName, 16));
+		UI_Legit_Armory_Smooth_RIFLE = Variable::string_float_(System::Get_File(FileName, 17));
+		UI_Legit_Armory_TriggerDistance_RIFLE = Variable::string_int_(System::Get_File(FileName, 18));
+		UI_Legit_Armory_BodyAim_SNIPER = Variable::string_int_(System::Get_File(FileName, 19));
+		UI_Legit_Armory_Range_SNIPER = Variable::string_int_(System::Get_File(FileName, 20));
+		UI_Legit_Armory_Smooth_SNIPER = Variable::string_float_(System::Get_File(FileName, 21));
+		UI_Legit_Armory_TriggerDistance_SNIPER = Variable::string_int_(System::Get_File(FileName, 22));
+		UI_Legit_Armory_BodyAim_SHOTGUN = Variable::string_int_(System::Get_File(FileName, 23));
+		UI_Legit_Armory_Range_SHOTGUN = Variable::string_int_(System::Get_File(FileName, 24));
+		UI_Legit_Armory_Smooth_SHOTGUN = Variable::string_float_(System::Get_File(FileName, 25));
+		UI_Legit_Armory_TriggerDistance_SHOTGUN = Variable::string_int_(System::Get_File(FileName, 26));
+		UI_Legit_Triggerbot = Variable::string_int_(System::Get_File(FileName, 27));
+		UI_Legit_Triggerbot_Key = Variable::string_int_(System::Get_File(FileName, 28));
+		UI_Legit_Triggerbot_AnyTarget = Variable::string_int_(System::Get_File(FileName, 29));
+		UI_Legit_Triggerbot_ShootDelay = Variable::string_int_(System::Get_File(FileName, 30));
+		UI_Legit_Triggerbot_ShootDuration = Variable::string_int_(System::Get_File(FileName, 31));
+		UI_Legit_PreciseAim = Variable::string_int_(System::Get_File(FileName, 32));
+		UI_Legit_PreciseAim_DefaultSensitivity = Variable::string_float_(System::Get_File(FileName, 33));
+		UI_Legit_PreciseAim_EnableSensitivity = Variable::string_float_(System::Get_File(FileName, 34));
+		UI_Legit_RemoveRecoil = Variable::string_int_(System::Get_File(FileName, 35));
+		UI_Legit_RemoveRecoil_HorizontalRepair = Variable::string_int_(System::Get_File(FileName, 36));
+		UI_Legit_RemoveRecoil_StartBullet = Variable::string_int_(System::Get_File(FileName, 37));
+		UI_Legit_Backtracking = Variable::string_int_(System::Get_File(FileName, 38));
+		UI_Legit_Backtracking_MaximumTime = Variable::string_int_(System::Get_File(FileName, 39));
+		UI_Visual_ESP = Variable::string_int_(System::Get_File(FileName, 40));
+		UI_Visual_ESP_Key = Variable::string_int_(System::Get_File(FileName, 41));
+		UI_Visual_ESP_Box = Variable::string_int_(System::Get_File(FileName, 42));
+		UI_Visual_ESP_Health = Variable::string_int_(System::Get_File(FileName, 43));
+		UI_Visual_ESP_ActiveWeapon = Variable::string_int_(System::Get_File(FileName, 44));
+		UI_Visual_ESP_Line = Variable::string_int_(System::Get_File(FileName, 45));
+		UI_Visual_ESP_Skeleton = Variable::string_int_(System::Get_File(FileName, 46));
+		UI_Visual_ESP_HeadDot = Variable::string_int_(System::Get_File(FileName, 47));
+		UI_Visual_ESP_State = Variable::string_int_(System::Get_File(FileName, 48));
+		UI_Visual_ESP_Name = Variable::string_int_(System::Get_File(FileName, 49));
+		UI_Visual_ESP_Drops = Variable::string_int_(System::Get_File(FileName, 50));
+		UI_Visual_ESP_OutFOV = Variable::string_int_(System::Get_File(FileName, 51));
+		UI_Visual_ESP_OutFOV_Size = Variable::string_int_(System::Get_File(FileName, 52));
+		UI_Visual_ESP_OutFOV_Radius = Variable::string_int_(System::Get_File(FileName, 53));
+		UI_Visual_ESP_CustomColor = Variable::string_int_(System::Get_File(FileName, 54));
+		UI_Visual_ESP_CustomColor_Color = { Variable::string_int_(System::Get_File(FileName, 55)),Variable::string_int_(System::Get_File(FileName, 56)),Variable::string_int_(System::Get_File(FileName, 57)),Variable::string_int_(System::Get_File(FileName, 58)) };
+		UI_Visual_ESP_DrawDelay = Variable::string_int_(System::Get_File(FileName, 59));
+		UI_Visual_Radar = Variable::string_int_(System::Get_File(FileName, 60));
+		UI_Visual_Radar_FollowAngle = Variable::string_int_(System::Get_File(FileName, 61));
+		UI_Visual_Radar_Range = Variable::string_float_(System::Get_File(FileName, 62));
+		UI_Visual_Radar_Size = Variable::string_int_(System::Get_File(FileName, 63));
+		UI_Visual_Radar_Alpha = Variable::string_int_(System::Get_File(FileName, 64));
+		UI_Visual_Radar_Pos = { Variable::string_int_(System::Get_File(FileName, 65)), Variable::string_int_(System::Get_File(FileName, 66)) };
+		UI_Misc_BunnyHop = Variable::string_int_(System::Get_File(FileName, 67));
+		UI_Misc_HitSound = Variable::string_int_(System::Get_File(FileName, 68));
+		UI_Misc_HitSound_Tone = Variable::string_int_(System::Get_File(FileName, 69));
+		UI_Misc_HitSound_Length = Variable::string_int_(System::Get_File(FileName, 70));
+		UI_Visual_HitMark = Variable::string_int_(System::Get_File(FileName, 71));
+		UI_Visual_HitMark_Damage = Variable::string_int_(System::Get_File(FileName, 72));
+		UI_Visual_HitMark_Range = Variable::string_int_(System::Get_File(FileName, 73));
+		UI_Visual_HitMark_Length = Variable::string_int_(System::Get_File(FileName, 74));
+		UI_Misc_AutoKnife = Variable::string_int_(System::Get_File(FileName, 75));
+		UI_Misc_AutoTaser = Variable::string_int_(System::Get_File(FileName, 76));
+		UI_Misc_AutoKnife_Key = Variable::string_int_(System::Get_File(FileName, 77));
+		UI_Misc_AutoTaser_Key = Variable::string_int_(System::Get_File(FileName, 78));
+		UI_Misc_Watermark = Variable::string_int_(System::Get_File(FileName, 79));
+		UI_Misc_SniperCrosshair = Variable::string_int_(System::Get_File(FileName, 80));
+		UI_Misc_TeamCheck = Variable::string_int_(System::Get_File(FileName, 81));
+		UI_Misc_LockGameWindow = Variable::string_int_(System::Get_File(FileName, 82));
+		UI_Debug_ShowDebugWindow = Variable::string_int_(System::Get_File(FileName, 83));
+		UI_Misc_Sonar = Variable::string_int_(System::Get_File(FileName, 84));
+		UI_Misc_Sonar_Key = Variable::string_int_(System::Get_File(FileName, 85));
+		UI_Misc_Sonar_Range_Far = Variable::string_int_(System::Get_File(FileName, 86));
+		UI_Misc_Sonar_Range_Near = Variable::string_int_(System::Get_File(FileName, 87));
+		UI_Setting_MenuKey = Variable::string_int_(System::Get_File(FileName, 88));
+		UI_Setting_CustomColor = Variable::string_int_(System::Get_File(FileName, 89));
+		UI_Setting_MainColor = { Variable::string_int_(System::Get_File(FileName, 90)),Variable::string_int_(System::Get_File(FileName, 91)),Variable::string_int_(System::Get_File(FileName, 92)),Variable::string_int_(System::Get_File(FileName, 93)) };
+		UI_Visual_HitMark_Color = { Variable::string_int_(System::Get_File(FileName, 94)),Variable::string_int_(System::Get_File(FileName, 95)),Variable::string_int_(System::Get_File(FileName, 96)) };
+		UI_Visual_HitMark_Thickness = Variable::string_int_(System::Get_File(FileName, 97));
+		UI_Legit_Triggerbot_ShootWhenAccurate = Variable::string_int_(System::Get_File(FileName, 98));
+		UI_Misc_AntiAFKKick = Variable::string_int_(System::Get_File(FileName, 99));
+		UI_Legit_MagnetAim = Variable::string_int_(System::Get_File(FileName, 100));
+		UI_Legit_MagnetAim_Smooth = Variable::string_float_(System::Get_File(FileName, 101));
+		UI_Legit_AdaptiveAimbot_InitialSmooth = Variable::string_float_(System::Get_File(FileName, 102));
+		UI_Misc_SniperCrosshair_Size = Variable::string_int_(System::Get_File(FileName, 103));
+		UI_Spoof_Spoof = Variable::string_int_(System::Get_File(FileName, 104));
+		UI_Spoof_AimbotTeam = Variable::string_int_(System::Get_File(FileName, 105));
+		UI_Spoof_AimbotTeam_Key = Variable::string_int_(System::Get_File(FileName, 106));
+		UI_Spoof_AimbotTeam_Smooth = Variable::string_float_(System::Get_File(FileName, 107));
+		UI_Spoof_IncreaseRecoil = Variable::string_int_(System::Get_File(FileName, 108));
+		UI_Spoof_IncreaseRecoil_Value = Variable::string_int_(System::Get_File(FileName, 109));
+		UI_Spoof_DropC4 = Variable::string_int_(System::Get_File(FileName, 110));
+		UI_Spoof_FakeAntiAim = Variable::string_int_(System::Get_File(FileName, 111));
+		UI_Spoof_FakeAntiAim_Key = Variable::string_int_(System::Get_File(FileName, 112));
+		UI_Spoof_KillDropSniper = Variable::string_int_(System::Get_File(FileName, 113));
+		UI_Setting_MenuAnimation = Variable::string_float_(System::Get_File(FileName, 114));
+		UI_Visual_HitMark_KillEffect = Variable::string_int_(System::Get_File(FileName, 115));
+		UI_Visual_HitMark_KillEffect_Quantity = Variable::string_int_(System::Get_File(FileName, 116));
+		UI_Visual_HitMark_KillEffect_Range = Variable::string_int_(System::Get_File(FileName, 117));
+		UI_Visual_ESP_Skeleton_Thickness = Variable::string_int_(System::Get_File(FileName, 118));
+		UI_Misc_ByPassOBS = Variable::string_int_(System::Get_File(FileName, 119));
+		UI_Misc_SavePerformance = Variable::string_int_(System::Get_File(FileName, 120));
+		UI_Legit_Aimbot_AutoScope = Variable::string_int_(System::Get_File(FileName, 121));
+		UI_Misc_NightMode = Variable::string_int_(System::Get_File(FileName, 122));
+		UI_Misc_NightMode_Alpha = Variable::string_int_(System::Get_File(FileName, 123));
+		UI_Spoof_LearnPlayer = Variable::string_int_(System::Get_File(FileName, 124));
+		UI_Spoof_LearnPlayer_Key = Variable::string_int_(System::Get_File(FileName, 125));
+		UI_Misc_AutoPeek = Variable::string_int_(System::Get_File(FileName, 126));
+		UI_Misc_AutoPeek_Key = Variable::string_int_(System::Get_File(FileName, 127));
+		UI_Spoof_FakeRageBot = Variable::string_int_(System::Get_File(FileName, 128));
+		UI_Spoof_FakeRageBot_Key = Variable::string_int_(System::Get_File(FileName, 129));
+		UI_Spoof_FakeRageBot_Target = Variable::string_int_(System::Get_File(FileName, 130));
+		UI_Misc_QuickStop = Variable::string_int_(System::Get_File(FileName, 131));
+		UI_Setting_MenuFont = System::Get_File(FileName, 132);
+		UI_Setting_MenuFontSize = Variable::string_int_(System::Get_File(FileName, 133));
+		UI_Misc_AutoKillCeasefire = Variable::string_int_(System::Get_File(FileName, 134));
+		UI_Misc_CursorESP = Variable::string_int_(System::Get_File(FileName, 135));
+		UI_Misc_CursorESP_Key = Variable::string_int_(System::Get_File(FileName, 136));
+		UI_Legit_Armory_HitSiteParser = Variable::string_int_(System::Get_File(FileName, 137));
+		UI_Visual_ESP_DrawAlpha = Variable::string_int_(System::Get_File(FileName, 138));
+		UI_Legit_MagnetAim_Range = Variable::string_int_(System::Get_File(FileName, 139));
+		UI_Legit_Backtracking_MinimumTime = Variable::string_int_(System::Get_File(FileName, 140));
+		UI_Legit_RemoveRecoil_Sensitive = Variable::string_int_(System::Get_File(FileName, 141));
+		UI_Visual_HitMark_CustomColor = Variable::string_int_(System::Get_File(FileName, 142));
+		UI_Legit_Aimbot_AutoShootHitChance = Variable::string_int_(System::Get_File(FileName, 143));
+		UI_Legit_MagnetAim_OnlyHeadLine = Variable::string_int_(System::Get_File(FileName, 144));
+		UI_Misc_WalkingBot = Variable::string_int_(System::Get_File(FileName, 145));
+		UI_Misc_WalkingBot_Map = Variable::string_int_(System::Get_File(FileName, 146));
+		UI_Misc_MouseLowSensitivity = Variable::string_int_(System::Get_File(FileName, 147));
+		UI_Spoof_StepOnHead = Variable::string_int_(System::Get_File(FileName, 148));
 	}
 	void LoadCloudPreset(string FileName = "", string NormalURL = "https://github.com/Coslly/Rensen/blob/main/Cloud%20Files/") noexcept//加载特定Github云预设
 	{
-		System::URL_READ URL_PRESET = { "Cache_CloudPreset" };
-		if (URL_PRESET.StoreMem(NormalURL + FileName + (string)".cfg?raw=true"))
-		{
-			UI_Legit_Aimbot = Variable::string_int_(URL_PRESET.Read(1));
-			UI_Legit_Aimbot_Key = Variable::string_int_(URL_PRESET.Read(2));
-			UI_Legit_Aimbot_JudgingWall = Variable::string_int_(URL_PRESET.Read(3));
-			UI_Legit_Aimbot_RemoveRecoil = Variable::string_int_(URL_PRESET.Read(4));
-			UI_Legit_Aimbot_TriggerOnAim = Variable::string_int_(URL_PRESET.Read(5));
-			UI_Legit_Aimbot_AutoShoot = Variable::string_int_(URL_PRESET.Read(6));
-			UI_Legit_Aimbot_AutoStop = Variable::string_int_(URL_PRESET.Read(7));
-			UI_Legit_Aimbot_AutoShootDelay = Variable::string_int_(URL_PRESET.Read(8));
-			UI_Legit_AdaptiveAimbot = Variable::string_int_(URL_PRESET.Read(9));
-			UI_Legit_Armory_ShowAimbotRange = Variable::string_int_(URL_PRESET.Read(10));
-			UI_Legit_Armory_BodyAim_PISTOL = Variable::string_int_(URL_PRESET.Read(11));
-			UI_Legit_Armory_Range_PISTOL = Variable::string_int_(URL_PRESET.Read(12));
-			UI_Legit_Armory_Smooth_PISTOL = Variable::string_float_(URL_PRESET.Read(13));
-			UI_Legit_Armory_BodyAim_RIFLE = Variable::string_int_(URL_PRESET.Read(14));
-			UI_Legit_Armory_Range_RIFLE = Variable::string_int_(URL_PRESET.Read(15));
-			UI_Legit_Armory_Smooth_RIFLE = Variable::string_float_(URL_PRESET.Read(16));
-			UI_Legit_Armory_BodyAim_SNIPER = Variable::string_int_(URL_PRESET.Read(17));
-			UI_Legit_Armory_Range_SNIPER = Variable::string_int_(URL_PRESET.Read(18));
-			UI_Legit_Armory_Smooth_SNIPER = Variable::string_float_(URL_PRESET.Read(19));
-			UI_Legit_Triggerbot = Variable::string_int_(URL_PRESET.Read(20));
-			UI_Legit_Triggerbot_Key = Variable::string_int_(URL_PRESET.Read(21));
-			UI_Legit_Triggerbot_AnyTarget = Variable::string_int_(URL_PRESET.Read(22));
-			UI_Legit_Triggerbot_ShootDelay = Variable::string_int_(URL_PRESET.Read(23));
-			UI_Legit_Triggerbot_ShootDuration = Variable::string_int_(URL_PRESET.Read(24));
-			UI_Legit_PreciseAim = Variable::string_int_(URL_PRESET.Read(25));
-			UI_Legit_PreciseAim_DefaultSensitivity = Variable::string_float_(URL_PRESET.Read(26));
-			UI_Legit_PreciseAim_EnableSensitivity = Variable::string_float_(URL_PRESET.Read(27));
-			UI_Legit_RemoveRecoil = Variable::string_int_(URL_PRESET.Read(28));
-			UI_Legit_RemoveRecoil_HorizontalRepair = Variable::string_int_(URL_PRESET.Read(29));
-			UI_Legit_RemoveRecoil_StartBullet = Variable::string_int_(URL_PRESET.Read(30));
-			UI_Legit_Backtracking = Variable::string_int_(URL_PRESET.Read(31));
-			UI_Legit_Backtracking_MaximumTime = Variable::string_int_(URL_PRESET.Read(32));
-			UI_Visual_ESP = Variable::string_int_(URL_PRESET.Read(33));
-			UI_Visual_ESP_Key = Variable::string_int_(URL_PRESET.Read(34));
-			UI_Visual_ESP_Box = Variable::string_int_(URL_PRESET.Read(35));
-			UI_Visual_ESP_Health = Variable::string_int_(URL_PRESET.Read(36));
-			UI_Visual_ESP_ActiveWeapon = Variable::string_int_(URL_PRESET.Read(37));
-			UI_Visual_ESP_Line = Variable::string_int_(URL_PRESET.Read(38));
-			UI_Visual_ESP_Skeleton = Variable::string_int_(URL_PRESET.Read(39));
-			UI_Visual_ESP_HeadDot = Variable::string_int_(URL_PRESET.Read(40));
-			UI_Visual_ESP_State = Variable::string_int_(URL_PRESET.Read(41));
-			UI_Visual_ESP_Name = Variable::string_int_(URL_PRESET.Read(42));
-			UI_Visual_ESP_Drops = Variable::string_int_(URL_PRESET.Read(43));
-			UI_Visual_ESP_OutFOV = Variable::string_int_(URL_PRESET.Read(44));
-			UI_Visual_ESP_OutFOV_Size = Variable::string_int_(URL_PRESET.Read(45));
-			UI_Visual_ESP_OutFOV_Radius = Variable::string_int_(URL_PRESET.Read(46));
-			UI_Visual_ESP_CustomColor = Variable::string_int_(URL_PRESET.Read(47));
-			UI_Visual_ESP_CustomColor_Color = { Variable::string_int_(URL_PRESET.Read(48)),Variable::string_int_(URL_PRESET.Read(49)),Variable::string_int_(URL_PRESET.Read(50)),Variable::string_int_(URL_PRESET.Read(51)) };
-			UI_Visual_ESP_DrawDelay = Variable::string_int_(URL_PRESET.Read(52));
-			UI_Visual_Radar = Variable::string_int_(URL_PRESET.Read(53));
-			UI_Visual_Radar_FollowAngle = Variable::string_int_(URL_PRESET.Read(54));
-			UI_Visual_Radar_Range = Variable::string_float_(URL_PRESET.Read(55));
-			UI_Visual_Radar_Size = Variable::string_int_(URL_PRESET.Read(56));
-			UI_Visual_Radar_Alpha = Variable::string_int_(URL_PRESET.Read(57));
-			UI_Visual_Radar_Pos = { Variable::string_int_(URL_PRESET.Read(58)), Variable::string_int_(URL_PRESET.Read(59)) };
-			UI_Misc_BunnyHop = Variable::string_int_(URL_PRESET.Read(60));
-			UI_Misc_HitSound = Variable::string_int_(URL_PRESET.Read(61));
-			UI_Misc_HitSound_Tone = Variable::string_int_(URL_PRESET.Read(62));
-			UI_Misc_HitSound_Length = Variable::string_int_(URL_PRESET.Read(63));
-			UI_Visual_HitMark = Variable::string_int_(URL_PRESET.Read(64));
-			UI_Visual_HitMark_Damage = Variable::string_int_(URL_PRESET.Read(65));
-			UI_Visual_HitMark_Range = Variable::string_int_(URL_PRESET.Read(66));
-			UI_Visual_HitMark_Length = Variable::string_int_(URL_PRESET.Read(67));
-			UI_Misc_AutoKnife = Variable::string_int_(URL_PRESET.Read(68));
-			UI_Misc_AutoTaser = Variable::string_int_(URL_PRESET.Read(69));
-			UI_Misc_AutoKnife_Key = Variable::string_int_(URL_PRESET.Read(70));
-			UI_Misc_AutoTaser_Key = Variable::string_int_(URL_PRESET.Read(71));
-			UI_Misc_Watermark = Variable::string_int_(URL_PRESET.Read(72));
-			UI_Misc_SniperCrosshair = Variable::string_int_(URL_PRESET.Read(73));
-			UI_Misc_TeamCheck = Variable::string_int_(URL_PRESET.Read(74));
-			UI_Misc_LockGameWindow = Variable::string_int_(URL_PRESET.Read(75));
-			UI_Debug_ShowDebugWindow = Variable::string_int_(URL_PRESET.Read(76));
-			UI_Misc_Sonar = Variable::string_int_(URL_PRESET.Read(77));
-			UI_Misc_Sonar_Key = Variable::string_int_(URL_PRESET.Read(78));
-			UI_Misc_Sonar_Range_Far = Variable::string_int_(URL_PRESET.Read(79));
-			UI_Misc_Sonar_Range_Near = Variable::string_int_(URL_PRESET.Read(80));
-			UI_Setting_MenuKey = Variable::string_int_(URL_PRESET.Read(81));
-			UI_Setting_CustomColor = Variable::string_int_(URL_PRESET.Read(82));
-			UI_Setting_MainColor = { Variable::string_int_(URL_PRESET.Read(83)),Variable::string_int_(URL_PRESET.Read(84)),Variable::string_int_(URL_PRESET.Read(85)),Variable::string_int_(URL_PRESET.Read(86)) };
-			UI_Visual_HitMark_Color = { Variable::string_int_(URL_PRESET.Read(87)) ,Variable::string_int_(URL_PRESET.Read(88)) ,Variable::string_int_(URL_PRESET.Read(89)) };
-			UI_Visual_HitMark_Thickness = Variable::string_int_(URL_PRESET.Read(90));
-			UI_Legit_Triggerbot_ShootWhenAccurate = Variable::string_int_(URL_PRESET.Read(91));
-			UI_Misc_AntiAFKKick = Variable::string_int_(URL_PRESET.Read(92));
-			UI_Legit_MagnetAim = Variable::string_int_(URL_PRESET.Read(93));
-			UI_Legit_MagnetAim_Smooth = Variable::string_float_(URL_PRESET.Read(94));
-			UI_Legit_AdaptiveAimbot_InitialSmooth = Variable::string_float_(URL_PRESET.Read(95));
-			UI_Misc_SniperCrosshair_Size = Variable::string_int_(URL_PRESET.Read(96));
-			UI_Spoof_Spoof = Variable::string_int_(URL_PRESET.Read(97));
-			UI_Spoof_AimbotTeam = Variable::string_int_(URL_PRESET.Read(98));
-			UI_Spoof_AimbotTeam_Key = Variable::string_int_(URL_PRESET.Read(99));
-			UI_Spoof_AimbotTeam_Smooth = Variable::string_float_(URL_PRESET.Read(100));
-			UI_Spoof_IncreaseRecoil = Variable::string_int_(URL_PRESET.Read(101));
-			UI_Spoof_IncreaseRecoil_Value = Variable::string_int_(URL_PRESET.Read(102));
-			UI_Spoof_DropC4 = Variable::string_int_(URL_PRESET.Read(103));
-			UI_Spoof_FakeAntiAim = Variable::string_int_(URL_PRESET.Read(104));
-			UI_Spoof_FakeAntiAim_Key = Variable::string_int_(URL_PRESET.Read(105));
-			UI_Spoof_KillDropSniper = Variable::string_int_(URL_PRESET.Read(106));
-			UI_Setting_MenuAnimation = Variable::string_float_(URL_PRESET.Read(107));
-			UI_Visual_HitMark_KillEffect = Variable::string_int_(URL_PRESET.Read(108));
-			UI_Visual_HitMark_KillEffect_Quantity = Variable::string_int_(URL_PRESET.Read(109));
-			UI_Visual_HitMark_KillEffect_Range = Variable::string_int_(URL_PRESET.Read(110));
-			UI_Visual_ESP_Skeleton_Thickness = Variable::string_int_(URL_PRESET.Read(111));
-			UI_Misc_ByPassOBS = Variable::string_int_(URL_PRESET.Read(112));
-			UI_Misc_SavePerformance = Variable::string_int_(URL_PRESET.Read(113));
-			UI_Legit_Aimbot_AutoScope = Variable::string_int_(URL_PRESET.Read(114));
-			UI_Misc_NightMode = Variable::string_int_(URL_PRESET.Read(115));
-			UI_Misc_NightMode_Alpha = Variable::string_int_(URL_PRESET.Read(116));
-			UI_Spoof_LearnPlayer = Variable::string_int_(URL_PRESET.Read(117));
-			UI_Spoof_LearnPlayer_Key = Variable::string_int_(URL_PRESET.Read(118));
-			UI_Misc_AutoPeek = Variable::string_int_(URL_PRESET.Read(119));
-			UI_Misc_AutoPeek_Key = Variable::string_int_(URL_PRESET.Read(120));
-			UI_Spoof_FakeRageBot = Variable::string_int_(URL_PRESET.Read(121));
-			UI_Spoof_FakeRageBot_Key = Variable::string_int_(URL_PRESET.Read(122));
-			UI_Spoof_FakeRageBot_Target = Variable::string_int_(URL_PRESET.Read(123));
-			UI_Misc_QuickStop = Variable::string_int_(URL_PRESET.Read(124));
-			UI_Setting_MenuFont = URL_PRESET.Read(125);
-			UI_Setting_MenuFontSize = Variable::string_int_(URL_PRESET.Read(126));
-			UI_Misc_AutoKillCeasefire = Variable::string_int_(URL_PRESET.Read(127));
-			UI_Misc_CursorESP = Variable::string_int_(URL_PRESET.Read(128));
-			UI_Misc_CursorESP_Key = Variable::string_int_(URL_PRESET.Read(129));
-			UI_Legit_Armory_HitSiteParser = Variable::string_int_(URL_PRESET.Read(130));
-			UI_Visual_ESP_DrawAlpha = Variable::string_int_(URL_PRESET.Read(131));
-			UI_Legit_Armory_BodyAim_SHOTGUN = Variable::string_int_(URL_PRESET.Read(132));
-			UI_Legit_Armory_Range_SHOTGUN = Variable::string_int_(URL_PRESET.Read(133));
-			UI_Legit_Armory_Smooth_SHOTGUN = Variable::string_float_(URL_PRESET.Read(134));
-			UI_Legit_Armory_TriggerDistance_SHOTGUN = Variable::string_int_(URL_PRESET.Read(135));
-			UI_Legit_MagnetAim_Range = Variable::string_int_(URL_PRESET.Read(136));
-			UI_Legit_Backtracking_MinimumTime = Variable::string_int_(URL_PRESET.Read(137));
-			UI_Legit_RemoveRecoil_Sensitive = Variable::string_int_(URL_PRESET.Read(138));
-			UI_Visual_HitMark_CustomColor = Variable::string_int_(URL_PRESET.Read(139));
-			UI_Legit_Aimbot_AutoShootHitChance = Variable::string_int_(URL_PRESET.Read(140));
-			UI_Legit_MagnetAim_OnlyHeadLine = Variable::string_int_(URL_PRESET.Read(141));
-			UI_Misc_WalkingBot = Variable::string_int_(URL_PRESET.Read(142));
-			UI_Misc_WalkingBot_Map = Variable::string_int_(URL_PRESET.Read(143));
-			UI_Misc_MouseLowSensitivity = Variable::string_int_(URL_PRESET.Read(144));
-			UI_Spoof_StepOnHead = Variable::string_int_(URL_PRESET.Read(145));
-			URL_PRESET.Release();
-		}
+		// Removed cloud loading functionality
 	}
 	//----------------------------------------------------------------------------------------------
 	namespace Debug_Control_Var//测试调试用的控件变量 (按钮 滑条 选择框 按键选择框 控制台控件)
@@ -638,22 +514,42 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				GUI_VAR.GUI_Slider<int, class CLASS_Block_Aimbot_3>({ Block_Aimbot.x + 20,Block_Aimbot.y }, 9, "自动开火命中几率UTT", 0, 100, UI_Legit_Aimbot_AutoShootHitChance, "%", { 255,150,150 });
 				GUI_VAR.GUI_Checkbox(Block_Aimbot, 10, "自适应自瞄 (左键触发)UTT", UI_Legit_AdaptiveAimbot, { 200,200,150 });
 				GUI_VAR.GUI_Slider<float, class CLASS_Block_Aimbot_4>(Block_Aimbot, 11, "初始平滑度UTT", 0, 20, UI_Legit_AdaptiveAimbot_InitialSmooth, "", { 200,200,150 });
-				const auto Block_Armory = GUI_VAR.GUI_Block(150, 420, 490, "瞄准机器人各武器设置UTT");
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 1, "显示范围圆圈UTT", UI_Legit_Armory_ShowAimbotRange);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 2, "打击点解析器UTT", UI_Legit_Armory_HitSiteParser);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 3, "[手枪] 只打胸部 (反之头部)UTT", UI_Legit_Armory_BodyAim_PISTOL);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_1>({ Block_Armory.x - 10,Block_Armory.y }, 4, "[手枪] 范围UTT", 0, 100, UI_Legit_Armory_Range_PISTOL, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_2>({ Block_Armory.x - 10,Block_Armory.y }, 5, "[手枪] 平滑度UTT", 0, 40, UI_Legit_Armory_Smooth_PISTOL);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 6, "[步枪] 只打胸部 (反之头部)UTT", UI_Legit_Armory_BodyAim_RIFLE);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_3>({ Block_Armory.x - 10,Block_Armory.y }, 7, "[步枪] 范围UTT", 0, 100, UI_Legit_Armory_Range_RIFLE, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_4>({ Block_Armory.x - 10,Block_Armory.y }, 8, "[步枪] 平滑度UTT", 0, 40, UI_Legit_Armory_Smooth_RIFLE);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 9, "[狙击枪] 只打胸部 (反之头部)UTT", UI_Legit_Armory_BodyAim_SNIPER);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_5>({ Block_Armory.x - 10,Block_Armory.y }, 10, "[狙击枪] 范围UTT", 0, 100, UI_Legit_Armory_Range_SNIPER, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_6>({ Block_Armory.x - 10,Block_Armory.y }, 11, "[狙击枪] 平滑度UTT", 0, 40, UI_Legit_Armory_Smooth_SNIPER);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 12, "[霰弹枪] 只打胸部 (反之头部)UTT", UI_Legit_Armory_BodyAim_SHOTGUN);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_7>({ Block_Armory.x - 10,Block_Armory.y }, 13, "[霰弹枪] 范围UTT", 0, 100, UI_Legit_Armory_Range_SHOTGUN, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_8>({ Block_Armory.x - 10,Block_Armory.y }, 14, "[霰弹枪] 平滑度UTT", 0, 40, UI_Legit_Armory_Smooth_SHOTGUN);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_9>({ Block_Armory.x - 10,Block_Armory.y }, 15, "[霰弹枪] 触发距离UTT", 100, 2000, UI_Legit_Armory_TriggerDistance_SHOTGUN);
+				const auto Block_Armory = GUI_VAR.GUI_Block(150, 420, 490, "Armory");
+				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 1, "Show range", UI_Legit_Armory_ShowAimbotRange);
+				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 2, "Hit site parser", UI_Legit_Armory_HitSiteParser);
+				
+				// Add weapon selector combo box
+				static int selectedWeapon = 0;
+				GUI_VAR.GUI_List<class CLASS_Block_Armory_Selector>({ Block_Armory.x - 10,Block_Armory.y }, 3, { "Pistol", "Rifle", "Sniper", "Shotgun" }, selectedWeapon);
+
+				// Keep large spacing after combo box but make sliders very close together
+				const int sliderStartY = Block_Armory.y + 100; // Keep initial spacing at 100 pixels
+				const int sliderSpacing = 8; // Minimal spacing between sliders
+
+				if (selectedWeapon == 0) { // Pistol
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_1>({ Block_Armory.x - 10, sliderStartY }, 4, "Range", 0, 100, UI_Legit_Armory_Range_PISTOL, "%");
+					GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_2>({ Block_Armory.x - 10, sliderStartY + sliderSpacing }, 5, "Smooth", 0, 40, UI_Legit_Armory_Smooth_PISTOL);
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_10>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 2) }, 6, "Trigger distance", 100, 2000, UI_Legit_Armory_TriggerDistance_PISTOL);
+					GUI_VAR.GUI_List<class CLASS_Block_Armory_13>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 3) }, 7, { "Head", "Neck", "Chest", "Body" }, UI_Legit_Armory_BoneSelect_PISTOL);
+				}
+				else if (selectedWeapon == 1) { // Rifle
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_3>({ Block_Armory.x - 10, sliderStartY }, 4, "Range", 0, 100, UI_Legit_Armory_Range_RIFLE, "%");
+					GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_4>({ Block_Armory.x - 10, sliderStartY + sliderSpacing }, 5, "Smooth", 0, 40, UI_Legit_Armory_Smooth_RIFLE);
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_11>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 2) }, 6, "Trigger distance", 100, 2000, UI_Legit_Armory_TriggerDistance_RIFLE);
+					GUI_VAR.GUI_List<class CLASS_Block_Armory_14>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 3) }, 7, { "Head", "Neck", "Chest", "Body" }, UI_Legit_Armory_BoneSelect_RIFLE);
+				}
+				else if (selectedWeapon == 2) { // Sniper
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_5>({ Block_Armory.x - 10, sliderStartY }, 4, "Range", 0, 100, UI_Legit_Armory_Range_SNIPER, "%");
+					GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_6>({ Block_Armory.x - 10, sliderStartY + sliderSpacing }, 5, "Smooth", 0, 40, UI_Legit_Armory_Smooth_SNIPER);
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_12>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 2) }, 6, "Trigger distance", 100, 2000, UI_Legit_Armory_TriggerDistance_SNIPER);
+					GUI_VAR.GUI_List<class CLASS_Block_Armory_15>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 3) }, 7, { "Head", "Neck", "Chest", "Body" }, UI_Legit_Armory_BoneSelect_SNIPER);
+				}
+				else if (selectedWeapon == 3) { // Shotgun
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_7>({ Block_Armory.x - 10, sliderStartY }, 4, "Range", 0, 100, UI_Legit_Armory_Range_SHOTGUN, "%");
+					GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_8>({ Block_Armory.x - 10, sliderStartY + sliderSpacing }, 5, "Smooth", 0, 40, UI_Legit_Armory_Smooth_SHOTGUN);
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_9>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 2) }, 6, "Trigger distance", 100, 2000, UI_Legit_Armory_TriggerDistance_SHOTGUN);
+					GUI_VAR.GUI_List<class CLASS_Block_Armory_16>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 3) }, 7, { "Head", "Neck", "Chest", "Body" }, UI_Legit_Armory_BoneSelect_SHOTGUN);
+				}
 				const auto Block_Triggerbot = GUI_VAR.GUI_Block(580, 30, 190, "自动扳机UTT");
 				GUI_VAR.GUI_Checkbox(Block_Triggerbot, 1, "启用UTT", UI_Legit_Triggerbot);
 				GUI_VAR.GUI_KeySelector<class CLASS_Block_Triggerbot_1>(Block_Triggerbot, 1, UI_Legit_Triggerbot_Key);
@@ -834,14 +730,14 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				static BOOL UnloadMenu; GUI_VAR.GUI_Button(Block_Menu, 7, "关闭菜单UTT", UnloadMenu, 90);
 				if (UnloadMenu)exit(0);//关闭菜单
 				const auto Block_Presets = GUI_VAR.GUI_Block(580, 30, 490, "本地预设UTT", 320);
-				static int SelectedPresetID = 0; static vector<string> FileList = System::Traversal_FindFile(GetPresetFolder() + "\\*", ".cfg", true, "UTT"); static string CreatePresetName; static BOOL Create, Load, Save, Delete;
+				static int SelectedPresetID = 0; static vector<string> FileList = System::Traversal_FindFile(Preset_Folder + "\\*", ".cfg", true, "UTT"); static string CreatePresetName; static BOOL Create, Load, Save, Delete;
 				GUI_VAR.GUI_List<class CLASS_Block_Presets_1>(Block_Presets, 1, FileList, SelectedPresetID, 11);
 				GUI_VAR.GUI_Button(Block_Presets, 11, "加载UTT", Load, 95); if (Load && SelectedPresetID != -1)LoadPreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
 				GUI_VAR.GUI_Button(Block_Presets, 12, "保存UTT", Save, 95); if (Save && SelectedPresetID != -1)SavePreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
 				GUI_VAR.GUI_InputText<class CLASS_Block_Presets_2>(Block_Presets, 13, CreatePresetName, "创建预设名称UTT");
 				GUI_VAR.GUI_Button(Block_Presets, 14, "创建UTT", Create, 95); if (Create) { CreatePreset(CreatePresetName); CreatePresetName = ""; }
 				GUI_VAR.GUI_Button(Block_Presets, 15, "删除UTT", Delete, 95); if (Delete && SelectedPresetID != -1)DeletePreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
-				if (Create || Load || Save || Delete)FileList = System::Traversal_FindFile(GetPresetFolder() + "\\*", ".cfg", true, "UTT");//刷新文件列表
+				if (Create || Load || Save || Delete)FileList = System::Traversal_FindFile(Preset_Folder + "\\*", ".cfg", true, "UTT");//刷新文件列表
 				GUI_WindowSize = { 930,550 };
 			}
 			GUI_VAR.Draw_GUI(Debug_Control_Var::Checkbox_2);//最终绘制GUI画板
@@ -850,7 +746,6 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 	}
 	while (true)//默认英文版菜单
 	{
-		
 		Window::Set_LimitWindowShow(GUI_VAR.Window_HWND(), UI_Misc_ByPassOBS);//绕过OBS
 		static int UI_Panel = 0;//大区块选择
 		static Variable::Vector2 GUI_WindowSize = { 0,0 };//窗体大小(用于开关动画)
@@ -884,19 +779,39 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				const auto Block_Armory = GUI_VAR.GUI_Block(150, 420, 490, "Armory");
 				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 1, "Show range", UI_Legit_Armory_ShowAimbotRange);
 				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 2, "Hit site parser", UI_Legit_Armory_HitSiteParser);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 3, "[PISTOL] Body aim (else head)", UI_Legit_Armory_BodyAim_PISTOL);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_1>({ Block_Armory.x - 10,Block_Armory.y }, 4, "[PISTOL] Range", 0, 100, UI_Legit_Armory_Range_PISTOL, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_2>({ Block_Armory.x - 10,Block_Armory.y }, 5, "[PISTOL] Smooth", 0, 40, UI_Legit_Armory_Smooth_PISTOL);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 6, "[RIFLE] Body aim (else head)", UI_Legit_Armory_BodyAim_RIFLE);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_3>({ Block_Armory.x - 10,Block_Armory.y }, 7, "[RIFLE] Range", 0, 100, UI_Legit_Armory_Range_RIFLE, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_4>({ Block_Armory.x - 10,Block_Armory.y }, 8, "[RIFLE] Smooth", 0, 40, UI_Legit_Armory_Smooth_RIFLE);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 9, "[SNIPER] Body aim (else head)", UI_Legit_Armory_BodyAim_SNIPER);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_5>({ Block_Armory.x - 10,Block_Armory.y }, 10, "[SNIPER] Range", 0, 100, UI_Legit_Armory_Range_SNIPER, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_6>({ Block_Armory.x - 10,Block_Armory.y }, 11, "[SNIPER] Smooth", 0, 40, UI_Legit_Armory_Smooth_SNIPER);
-				GUI_VAR.GUI_Checkbox({ Block_Armory.x - 10,Block_Armory.y }, 12, "[SHOTGUN] Body aim (else head)", UI_Legit_Armory_BodyAim_SHOTGUN);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_7>({ Block_Armory.x - 10,Block_Armory.y }, 13, "[SHOTGUN] Range", 0, 100, UI_Legit_Armory_Range_SHOTGUN, "%");
-				GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_8>({ Block_Armory.x - 10,Block_Armory.y }, 14, "[SHOTGUN] Smooth", 0, 40, UI_Legit_Armory_Smooth_SHOTGUN);
-				GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_9>({ Block_Armory.x - 10,Block_Armory.y }, 15, "[SHOTGUN] trigger distance", 100, 2000, UI_Legit_Armory_TriggerDistance_SHOTGUN);
+				
+				// Add weapon selector combo box
+				static int selectedWeapon = 0;
+				GUI_VAR.GUI_List<class CLASS_Block_Armory_Selector>({ Block_Armory.x - 10,Block_Armory.y }, 3, { "Pistol", "Rifle", "Sniper", "Shotgun" }, selectedWeapon);
+
+				// Keep large spacing after combo box but make sliders very close together
+				const int sliderStartY = Block_Armory.y + 100; // Keep initial spacing at 100 pixels
+				const int sliderSpacing = 8; // Minimal spacing between sliders
+
+				if (selectedWeapon == 0) { // Pistol
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_1>({ Block_Armory.x - 10, sliderStartY }, 4, "Range", 0, 100, UI_Legit_Armory_Range_PISTOL, "%");
+					GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_2>({ Block_Armory.x - 10, sliderStartY + sliderSpacing }, 5, "Smooth", 0, 40, UI_Legit_Armory_Smooth_PISTOL);
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_10>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 2) }, 6, "Trigger distance", 100, 2000, UI_Legit_Armory_TriggerDistance_PISTOL);
+					GUI_VAR.GUI_List<class CLASS_Block_Armory_13>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 3) }, 7, { "Head", "Neck", "Chest", "Body" }, UI_Legit_Armory_BoneSelect_PISTOL);
+				}
+				else if (selectedWeapon == 1) { // Rifle
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_3>({ Block_Armory.x - 10, sliderStartY }, 4, "Range", 0, 100, UI_Legit_Armory_Range_RIFLE, "%");
+					GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_4>({ Block_Armory.x - 10, sliderStartY + sliderSpacing }, 5, "Smooth", 0, 40, UI_Legit_Armory_Smooth_RIFLE);
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_11>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 2) }, 6, "Trigger distance", 100, 2000, UI_Legit_Armory_TriggerDistance_RIFLE);
+					GUI_VAR.GUI_List<class CLASS_Block_Armory_14>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 3) }, 7, { "Head", "Neck", "Chest", "Body" }, UI_Legit_Armory_BoneSelect_RIFLE);
+				}
+				else if (selectedWeapon == 2) { // Sniper
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_5>({ Block_Armory.x - 10, sliderStartY }, 4, "Range", 0, 100, UI_Legit_Armory_Range_SNIPER, "%");
+					GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_6>({ Block_Armory.x - 10, sliderStartY + sliderSpacing }, 5, "Smooth", 0, 40, UI_Legit_Armory_Smooth_SNIPER);
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_12>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 2) }, 6, "Trigger distance", 100, 2000, UI_Legit_Armory_TriggerDistance_SNIPER);
+					GUI_VAR.GUI_List<class CLASS_Block_Armory_15>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 3) }, 7, { "Head", "Neck", "Chest", "Body" }, UI_Legit_Armory_BoneSelect_SNIPER);
+				}
+				else if (selectedWeapon == 3) { // Shotgun
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_7>({ Block_Armory.x - 10, sliderStartY }, 4, "Range", 0, 100, UI_Legit_Armory_Range_SHOTGUN, "%");
+					GUI_VAR.GUI_Slider<float, class CLASS_Block_Armory_8>({ Block_Armory.x - 10, sliderStartY + sliderSpacing }, 5, "Smooth", 0, 40, UI_Legit_Armory_Smooth_SHOTGUN);
+					GUI_VAR.GUI_Slider<int, class CLASS_Block_Armory_9>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 2) }, 6, "Trigger distance", 100, 2000, UI_Legit_Armory_TriggerDistance_SHOTGUN);
+					GUI_VAR.GUI_List<class CLASS_Block_Armory_16>({ Block_Armory.x - 10, sliderStartY + (sliderSpacing * 3) }, 7, { "Head", "Neck", "Chest", "Body" }, UI_Legit_Armory_BoneSelect_SHOTGUN);
+				}
 				const auto Block_Triggerbot = GUI_VAR.GUI_Block(580, 30, 190, "Trigger bot");
 				GUI_VAR.GUI_Checkbox(Block_Triggerbot, 1, "Enabled", UI_Legit_Triggerbot);
 				GUI_VAR.GUI_KeySelector<class CLASS_Block_Triggerbot_1>(Block_Triggerbot, 1, UI_Legit_Triggerbot_Key);
@@ -1206,14 +1121,14 @@ void Thread_Menu() noexcept//菜单线程 (提供给使用者丰富的自定义�
 				static BOOL UnloadMenu; GUI_VAR.GUI_Button(Block_Menu, 9, "Unload", UnloadMenu, 95);
 				if (UnloadMenu)exit(0);//关闭菜单
 				const auto Block_Presets = GUI_VAR.GUI_Block(580, 30, 490, "Local presets", 320);
-				static int SelectedPresetID = 0; static vector<string> FileList = System::Traversal_FindFile(GetPresetFolder() + "\\*", ".cfg", true, "UTT"); static string CreatePresetName; static BOOL Create, Load, Save, Delete;
+				static int SelectedPresetID = 0; static vector<string> FileList = System::Traversal_FindFile(Preset_Folder + "\\*", ".cfg", true, "UTT"); static string CreatePresetName; static BOOL Create, Load, Save, Delete;
 				GUI_VAR.GUI_List<class CLASS_Block_Presets_1>(Block_Presets, 1, FileList, SelectedPresetID, 11);
 				GUI_VAR.GUI_Button(Block_Presets, 11, "Load", Load, 95); if (Load && SelectedPresetID != -1)LoadPreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
 				GUI_VAR.GUI_Button(Block_Presets, 12, "Save", Save, 95); if (Save && SelectedPresetID != -1)SavePreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
 				GUI_VAR.GUI_InputText<class CLASS_Block_Presets_2>(Block_Presets, 13, CreatePresetName, "Create preset name");
 				GUI_VAR.GUI_Button(Block_Presets, 14, "Create", Create, 90); if (Create) { CreatePreset(CreatePresetName); CreatePresetName = ""; }
 				GUI_VAR.GUI_Button(Block_Presets, 15, "Delete", Delete, 92); if (Delete && SelectedPresetID != -1)DeletePreset(Variable::String_Delete(FileList[SelectedPresetID], "UTT"));
-				if (Create || Load || Save || Delete)FileList = System::Traversal_FindFile(GetPresetFolder() + "\\*", ".cfg", true, "UTT");//刷新文件列表
+				if (Create || Load || Save || Delete)FileList = System::Traversal_FindFile(Preset_Folder + "\\*", ".cfg", true, "UTT");//刷新文件列表
 				GUI_VAR.GUI_Tips({ Block_Presets.x + 10,Block_Presets.y }, 1, "Customize and save your presets.");
 				GUI_WindowSize = { 930,550 };
 			}
@@ -1279,7 +1194,6 @@ void Thread_Misc() noexcept//杂项线程 (一些菜单事件处理和杂项功�
 				if (Menu_Open)//菜单开启时绘制调试信息
 				{
 					Window_Watermark_Render.RenderA_SmpStr(2, 2, "Release " + Rensen_ReleaseDate, GUI_IO.GUIColor.D_Alpha(200).Min_Bri(200), { 1,0,0,150 });//编译日期绘制
-					Window_Watermark_Render.RenderA_SmpStr(2, 2 + 14, "Offsets " + CS2_Offsets::Offsets_Date, GUI_IO.GUIColor.D_Alpha(200).Min_Bri(200), { 1,0,0,150 });//云偏移更新日期绘制
 				}
 				Window_Watermark_Render.DrawPaint(true);//最终绘制
 			}
@@ -1525,27 +1439,89 @@ void Thread_Funtion_Aimbot() noexcept//功能线程: 瞄准机器人
 			static short Aim_Range, Aim_Parts; static float Aim_Smooth;//瞄准范围,瞄准部位,瞄准平滑度
 			const auto LocalPlayer_ActiveWeapon_ID = Global_LocalPlayer.ActiveWeapon();//本地人物手持武器ID
 			const auto LocalPlayer_ActiveWeapon_Type = Global_LocalPlayer.ActiveWeapon(true);//本地人物手持武器类型
+			const auto ViewAngles = Base::ViewAngles();
+			const auto PunchAngle = UI_Legit_Aimbot_RemoveRecoil ? Global_LocalPlayer.AimPunchAngle() * 2 : Variable::Vector3{ 0,0,0 };
+			const auto FinalViewAngles = ViewAngles + PunchAngle;
+
+			struct AimTarget 
+			{ 
+				Base::PlayerPawn Pawn = Base::PlayerPawn(0); // Initialize with null PlayerPawn
+				float MinFov = 1337.0f;
+				Variable::Vector3 AimAngle = Variable::Vector3{0, 0, 0};
+				short BestBone = 6;
+
+				AimTarget() = default; // Explicitly declare default constructor
+			} BestTarget;
+
+			for (short i = 0; i < Global_ValidClassID.size(); ++i)
+			{
+				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);
+				if (!Advanced::Check_Enemy(PlayerPawn))continue;
+
+				// Check all target bones
+				// 6 = head, 0 = pelvis, 5 = neck
+				// 8 = left arm, 9 = right arm
+				// 7 = chest (added as center mass target)
+				// 30 = left leg, 32 = right leg
+				const short bones[] = { 6, 0, 5, 8, 9, 7, 30, 32 };
+				float currentBestFov = 1337.0f;
+				short currentBestBone = 6;
+				Variable::Vector3 currentBestAngle;
+
+				for (const auto& bone : bones)
+				{
+					const auto angle = Variable::CalculateAngle(
+						Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), 
+						PlayerPawn.BonePos(bone), 
+						FinalViewAngles
+					);
+					
+					const float fov = sqrt(angle.x * angle.x + angle.y * angle.y);
+					
+					// Add weight to certain bones to prioritize them
+					float adjustedFov = fov;
+					if (bone == 6) adjustedFov *= 0.8f;  // Prioritize headshots
+					else if (bone == 5) adjustedFov *= 0.9f;  // Neck shots second priority
+					else if (bone == 7) adjustedFov *= 0.95f; // Chest shots third priority
+					
+					if (adjustedFov < currentBestFov)
+					{
+						currentBestFov = adjustedFov;
+						currentBestBone = bone;
+						currentBestAngle = angle;
+					}
+				}
+
+				if (currentBestFov < BestTarget.MinFov)
+				{
+					BestTarget.Pawn = PlayerPawn;
+					BestTarget.MinFov = currentBestFov;
+					BestTarget.BestBone = currentBestBone;
+					BestTarget.AimAngle = currentBestAngle;
+				}
+			}
+
 			if (LocalPlayer_ActiveWeapon_Type == 1)//手枪
 			{
-				if (UI_Legit_Armory_BodyAim_PISTOL)Aim_Parts = 3; else Aim_Parts = 6;
+				Aim_Parts = BestTarget.BestBone;
 				Aim_Range = UI_Legit_Armory_Range_PISTOL / 3;
 				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_PISTOL;
 			}
 			else if (LocalPlayer_ActiveWeapon_Type == 2)//步枪
 			{
-				if (UI_Legit_Armory_BodyAim_RIFLE)Aim_Parts = 3; else Aim_Parts = 6;
+				Aim_Parts = BestTarget.BestBone;
 				Aim_Range = UI_Legit_Armory_Range_RIFLE / 3;
 				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_RIFLE;
 			}
 			else if (LocalPlayer_ActiveWeapon_Type == 3)//狙击枪
 			{
-				if (UI_Legit_Armory_BodyAim_SNIPER)Aim_Parts = 3; else Aim_Parts = 6;
+				Aim_Parts = BestTarget.BestBone;
 				Aim_Range = UI_Legit_Armory_Range_SNIPER / 3;
 				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_SNIPER;
 			}
 			else if (LocalPlayer_ActiveWeapon_Type == 4)//霰弹枪
 			{
-				if (UI_Legit_Armory_BodyAim_SHOTGUN)Aim_Parts = 3; else Aim_Parts = 6;
+				Aim_Parts = BestTarget.BestBone;
 				Aim_Range = UI_Legit_Armory_Range_SHOTGUN / 3;
 				Aim_Smooth = 40 - UI_Legit_Armory_Smooth_SHOTGUN;
 			}
@@ -1563,7 +1539,14 @@ void Thread_Funtion_Aimbot() noexcept//功能线程: 瞄准机器人
 			{
 				const auto PlayerPawn = Advanced::Traverse_Player(Global_ValidClassID[i]);//遍历的人物Pawn
 				if (!Advanced::Check_Enemy(PlayerPawn) || (UI_Legit_Aimbot_TriggerOnAim && !CrosshairId) || (UI_Legit_Aimbot_JudgingWall && !PlayerPawn.Spotted()))continue;
-				if (LocalPlayer_ActiveWeapon_Type == 4 && Variable::Coor_Dis_3D(PlayerPawn.Origin(), Global_LocalPlayer.Origin()) > UI_Legit_Armory_TriggerDistance_SHOTGUN)continue;//霰弹枪最大触发范围
+				
+				// Check trigger distance for all weapon types
+				const int playerDistance = Variable::Coor_Dis_3D(PlayerPawn.Origin(), Global_LocalPlayer.Origin());
+				if (LocalPlayer_ActiveWeapon_Type == 1 && playerDistance > UI_Legit_Armory_TriggerDistance_PISTOL) continue; // Pistol
+				if (LocalPlayer_ActiveWeapon_Type == 2 && playerDistance > UI_Legit_Armory_TriggerDistance_RIFLE) continue; // Rifle
+				if (LocalPlayer_ActiveWeapon_Type == 3 && playerDistance > UI_Legit_Armory_TriggerDistance_SNIPER) continue; // Sniper
+				if (LocalPlayer_ActiveWeapon_Type == 4 && playerDistance > UI_Legit_Armory_TriggerDistance_SHOTGUN) continue; // Shotgun
+				
 				if (UI_Legit_Armory_HitSiteParser && PlayerPawn.Health() <= Global_LocalPlayer.ActiveWeaponDamage())Aim_Parts = 4;//部位解析器
 				const auto NeedAngle = Variable::CalculateAngle(Global_LocalPlayer.Origin() + Global_LocalPlayer.ViewOffset(), PlayerPawn.BonePos(Aim_Parts), Recoil_Angle);//最终瞄准角度
 				const auto Fov = hypot(NeedAngle.x, NeedAngle.y);//准星与角度的距离
@@ -2136,14 +2119,7 @@ int main() noexcept//主线程 (加载多线程, 一些杂项功能)
 	//----------------------------------------------------------------------------------------------------------------------------------
 	if (FindWindow(0, L"Pastehook - Menu")) { Window::Message_Box("Pastehook Error", "The program is already running.", MB_ICONSTOP); exit(0); }//防止多开程序
 	//----------------------------------------------------------------------------------------------------------------------------------
-	System::URL_READ UserID_READ = { "Cache_UserID" }; BOOL Attest = false;//认证变量
-	if (UserID_READ.StoreMem("https://github.com/shitwareofc/shitware/blob/main/Cloud%20Files/UserID.uid?raw=true"))//Github读取有效用户ID
-	{
-		for (short i = 0; i <= 10000; ++i) { if (System::Get_UserName() == UserID_READ.Read(i) || Variable::String_Upper(UserID_READ.Read(i)) == "BYPASS") { Attest = true; break; } }//遍历检测并修改认证
-		UserID_READ.Release();//释放缓存
-	}
-	Attest = true;//公开版直接通过验证
-	if (!Attest) { Window::Message_Box("Rensen Attest - " + System::Get_UserName(), "Your identity cannot be passed.\n\nUnable to access from Chinese IP.\n\nAuthor: https://github.com/Coslly\n", MB_ICONSTOP); exit(0); }//未被认证则直接退出
+	BOOL Attest = true;
 	//----------------------------------------------------------------------------------------------------------------------------------
 	System::URL_READ AutoUpdate = { "Cache_Update" };//自动更新系统 (中国IP用户需要挂梯子)
 	if (AutoUpdate.StoreMem("https://github.com/Coslly/Rensen/blob/main/Rensen/Rensen/Main.cpp?raw=true"))//版本号更新检查
@@ -2174,7 +2150,7 @@ int main() noexcept//主线程 (加载多线程, 一些杂项功能)
 	thread Thread_Funtion_Radar_ = thread(Thread_Funtion_Radar); Sleep(30);
 	thread Thread_Funtion_Sonar_ = thread(Thread_Funtion_Sonar); Sleep(30);
 	thread Thread_Funtion_WalkingBot_ = thread(Thread_Funtion_WalkingBot); Sleep(30);
-	if (!System::Judge_File(GetPresetFolder()))System::Create_Folder(GetPresetFolder());//没有参数文件夹时创建参数文件夹
+	if (!System::Judge_File(Preset_Folder))System::Create_Folder(Preset_Folder);//没有参数文件夹时创建参数文件夹
 	while (true)//菜单动画和关闭快捷键
 	{
 		if (!Attest)exit(0);//过滤未认证用户
