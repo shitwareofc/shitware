@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Octane Atlas — Wiki de Carros Excepcionais</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --background: #0b0f17;
+        --surface: #141a26;
+        --surface-light: #1b2333;
+        --glass: rgba(20, 28, 40, 0.7);
+        --accent: #64f4ff;
+        --accent-strong: #62a5ff;
+        --text: #f7f9ff;
+        --muted: #9aa4b2;
+        --border: rgba(255, 255, 255, 0.08);
+        --shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Manrope", sans-serif;
+      }
+
+      body {
+        background: radial-gradient(circle at top, #17233a, #0b0f17 55%);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button {
+        border: none;
+        background: none;
+        color: inherit;
+        cursor: pointer;
+      }
+
+      .hero {
+        padding: 48px 6vw 96px;
+        background: linear-gradient(135deg, rgba(100, 244, 255, 0.14), transparent 60%),
+          radial-gradient(circle at right, rgba(98, 165, 255, 0.25), transparent 50%);
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 32px;
+        margin-bottom: 64px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .brand__mark {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        color: #041019;
+      }
+
+      .brand__name {
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
+
+      .brand__tag {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .nav__actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .button {
+        padding: 12px 22px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .button--primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+        color: #031018;
+        box-shadow: 0 12px 35px rgba(100, 244, 255, 0.25);
+      }
+
+      .button--ghost {
+        border: 1px solid var(--border);
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .hero__content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 48px;
+        align-items: center;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.6rem, 4vw, 3.8rem);
+        line-height: 1.1;
+        margin-bottom: 16px;
+      }
+
+      .hero__subtitle {
+        color: var(--muted);
+        font-size: 1.1rem;
+        margin-bottom: 32px;
+      }
+
+      .hero__cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .hero__stats {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 32px;
+        display: grid;
+        gap: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .stat h3 {
+        font-size: 2rem;
+      }
+
+      .stat p {
+        color: var(--muted);
+      }
+
+      .section {
+        padding: 80px 6vw;
+      }
+
+      .section--glass {
+        background: linear-gradient(135deg, rgba(100, 244, 255, 0.12), rgba(98, 165, 255, 0.12));
+      }
+
+      .section__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 24px;
+        margin-bottom: 32px;
+      }
+
+      .section__header h2 {
+        font-size: clamp(1.8rem, 3vw, 2.6rem);
+      }
+
+      .eyebrow {
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        margin-bottom: 12px;
+        font-size: 0.8rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 24px;
+      }
+
+      .grid--wide {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      }
+
+      .card {
+        background: var(--surface);
+        border-radius: 20px;
+        padding: 24px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+      }
+
+      .card--feature {
+        background: linear-gradient(160deg, rgba(98, 165, 255, 0.2), rgba(20, 26, 38, 0.95));
+      }
+
+      .card__tag {
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 0.85rem;
+      }
+
+      .card p {
+        color: var(--muted);
+      }
+
+      .card__meta {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 18px;
+        font-size: 0.85rem;
+        color: var(--text);
+      }
+
+      .forum {
+        display: grid;
+        gap: 18px;
+      }
+
+      .forum__topic {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 20px 24px;
+        border-radius: 18px;
+        background: var(--glass);
+        border: 1px solid var(--border);
+      }
+
+      .forum__topic p {
+        color: var(--muted);
+      }
+
+      .auth {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 24px;
+      }
+
+      .auth__panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 28px;
+        border-radius: 20px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .auth__panel--accent {
+        background: linear-gradient(160deg, rgba(100, 244, 255, 0.14), rgba(20, 26, 38, 0.95));
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      input,
+      select {
+        background: var(--surface-light);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+        color: var(--text);
+      }
+
+      input::placeholder {
+        color: #6e7a8a;
+      }
+
+      .muted {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      .footer {
+        padding: 48px 6vw;
+        border-top: 1px solid var(--border);
+        display: grid;
+        gap: 16px;
+        background: #070a11;
+      }
+
+      .footer__links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        color: var(--muted);
+      }
+
+      .footer__copy {
+        color: #5b6474;
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 720px) {
+        .section__header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .nav {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .nav__actions {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <nav class="nav">
+        <div class="brand">
+          <span class="brand__mark">OA</span>
+          <div>
+            <p class="brand__name">Octane Atlas</p>
+            <p class="brand__tag">Wiki premium de carros extraordinários</p>
+          </div>
+        </div>
+        <div class="nav__actions">
+          <button class="button button--ghost">Entrar</button>
+          <button class="button button--primary">Criar conta</button>
+        </div>
+      </nav>
+
+      <div class="hero__content">
+        <div>
+          <p class="eyebrow">Curadoria de compra</p>
+          <h1>
+            O guia definitivo para decidir qual carro comprar — de raridades antigas a
+            hipercarros contemporâneos.
+          </h1>
+          <p class="hero__subtitle">
+            Explore fichas técnicas, valor de mercado, histórias e análises para modelos
+            que fogem do comum. Tudo com experiência premium, comunidade e conteúdo vivo.
+          </p>
+          <div class="hero__cta">
+            <button class="button button--primary" data-scroll="#raridades">Explorar a coleção</button>
+            <button class="button button--ghost" data-scroll="#comunidade">Ver calendário de lançamentos</button>
+          </div>
+        </div>
+        <div class="hero__stats">
+          <div class="stat">
+            <h3>1.400+</h3>
+            <p>Modelos catalogados</p>
+          </div>
+          <div class="stat">
+            <h3>92</h3>
+            <p>Guias de compra premium</p>
+          </div>
+          <div class="stat">
+            <h3>36</h3>
+            <p>Especialistas e colecionadores</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section" id="raridades">
+        <div class="section__header">
+          <div>
+            <p class="eyebrow">Raridades antigas</p>
+            <h2>Clássicos de coleção com história e exclusividade</h2>
+          </div>
+          <button class="button button--ghost">Ver todas as raridades</button>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <p class="card__tag">Pré-guerra</p>
+            <h3>Mercedes-Benz 540K (1936)</h3>
+            <p>
+              Ícone das carrocerias artesanais, valorizado pela complexidade mecânica e presença cinematográfica.
+            </p>
+          </article>
+          <article class="card">
+            <p class="card__tag">Italiano raro</p>
+            <h3>Alfa Romeo 8C 2900</h3>
+            <p>
+              Um dos clássicos mais disputados em leilões globais. Produção limitada e linhagem esportiva impecável.
+            </p>
+          </article>
+          <article class="card">
+            <p class="card__tag">Curadoria</p>
+            <h3>Ferrari 250 GTO</h3>
+            <p>
+              Sinônimo de exclusividade absoluta: apenas 36 unidades, histórico de competição e valor recorde.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="luxo">
+        <div class="section__header">
+          <div>
+            <p class="eyebrow">Luxo moderno</p>
+            <h2>Gran turismos e sedãs premium para o dia a dia extraordinário</h2>
+          </div>
+          <button class="button button--ghost">Ver comparativos de luxo</button>
+        </div>
+        <div class="grid grid--wide">
+          <article class="card card--feature">
+            <p class="card__tag">Novo ícone</p>
+            <h3>Rolls-Royce Spectre</h3>
+            <p>
+              Coupé elétrico com interior sob medida, suspensão mágica e presença magnética para quem busca exclusividade.
+            </p>
+            <div class="card__meta">
+              <span>Autonomia: 530 km</span>
+              <span>0-100 km/h: 4,5s</span>
+            </div>
+          </article>
+          <article class="card card--feature">
+            <p class="card__tag">Performance & conforto</p>
+            <h3>Mercedes-AMG GT 63 S E</h3>
+            <p>
+              Híbrido plug-in com torque instantâneo e cabine ultra digital, sem abrir mão da sofisticação.
+            </p>
+            <div class="card__meta">
+              <span>Potência: 843 cv</span>
+              <span>Modo elétrico: 12 km</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="esportivos">
+        <div class="section__header">
+          <div>
+            <p class="eyebrow">Esportivos fora do normal</p>
+            <h2>Hipercarros e máquinas para colecionadores ousados</h2>
+          </div>
+          <button class="button button--ghost">Ver ranking de desempenho</button>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <p class="card__tag">Edição limitada</p>
+            <h3>Bugatti Chiron Super Sport 300+</h3>
+            <p>
+              Aerodinâmica extrema, motor W16 e velocidade máxima acima de 490 km/h.
+            </p>
+          </article>
+          <article class="card">
+            <p class="card__tag">Track-ready</p>
+            <h3>McLaren Senna</h3>
+            <p>
+              Foco total em pista, downforce elevado e experiência visceral para colecionadores experientes.
+            </p>
+          </article>
+          <article class="card">
+            <p class="card__tag">Híbrido radical</p>
+            <h3>Ferrari SF90 XX</h3>
+            <p>
+              1.030 cv em uma experiência eletrificada com DNA de competição.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section--glass" id="comunidade">
+        <div class="section__header">
+          <div>
+            <p class="eyebrow">Comunidade & Fórum</p>
+            <h2>Debata, recomende e compartilhe experiências de compra</h2>
+          </div>
+          <button class="button button--ghost">Acessar fórum</button>
+        </div>
+        <div class="forum">
+          <div class="forum__topic">
+            <div>
+              <h3>Qual clássico italiano tem o melhor potencial de valorização?</h3>
+              <p>96 respostas · Atualizado há 2h</p>
+            </div>
+            <button class="button button--ghost">Entrar</button>
+          </div>
+          <div class="forum__topic">
+            <div>
+              <h3>Comparativo: GT elétricos versus V8 biturbo</h3>
+              <p>54 respostas · Atualizado há 6h</p>
+            </div>
+            <button class="button button--ghost">Entrar</button>
+          </div>
+          <div class="forum__topic">
+            <div>
+              <h3>Carros japoneses raros para importar em 2025</h3>
+              <p>128 respostas · Atualizado há 1 dia</p>
+            </div>
+            <button class="button button--ghost">Entrar</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="conta">
+        <div class="section__header">
+          <div>
+            <p class="eyebrow">Conta & Acesso</p>
+            <h2>Login e registro com experiência premium</h2>
+          </div>
+        </div>
+        <div class="auth">
+          <div class="auth__panel">
+            <h3>Entrar</h3>
+            <label>
+              E-mail
+              <input type="email" placeholder="voce@octaneatlas.com" />
+            </label>
+            <label>
+              Senha
+              <input type="password" placeholder="••••••••" />
+            </label>
+            <button class="button button--primary">Acessar conta</button>
+            <p class="muted">Login social disponível com Apple, Google e GitHub.</p>
+          </div>
+          <div class="auth__panel auth__panel--accent">
+            <h3>Criar conta</h3>
+            <label>
+              Nome completo
+              <input type="text" placeholder="Seu nome" />
+            </label>
+            <label>
+              Cidade & país
+              <input type="text" placeholder="São Paulo, Brasil" />
+            </label>
+            <label>
+              Perfil de compra
+              <select>
+                <option>Quero um clássico exclusivo</option>
+                <option>Busco luxo tecnológico</option>
+                <option>Prefiro esportivos extremos</option>
+              </select>
+            </label>
+            <button class="button button--primary">Começar agora</button>
+            <p class="muted">Criamos um feed personalizado em menos de 2 minutos.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div>
+        <p class="brand__name">Octane Atlas</p>
+        <p class="brand__tag">Conteúdo premium para apaixonados por carros fora do comum.</p>
+      </div>
+      <div class="footer__links">
+        <a href="#raridades">Raridades</a>
+        <a href="#luxo">Luxo moderno</a>
+        <a href="#esportivos">Esportivos</a>
+        <a href="#comunidade">Fórum</a>
+        <a href="#conta">Login</a>
+      </div>
+      <p class="footer__copy">© 2025 Octane Atlas. Todos os direitos reservados.</p>
+    </footer>
+    <script>
+      const buttons = document.querySelectorAll("[data-scroll]");
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const targetId = button.getAttribute("data-scroll");
+          const target = document.querySelector(targetId);
+
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
